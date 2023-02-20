@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# IDE directories
+.idea
+.fleet
+.vscode
+.vs
+
+# macOS directory files
+.DS_Store
+
+# Build output directories
+cmake-build-*
+build
