@@ -8,6 +8,14 @@
 #define GRAVEL_RELEASE_BUILD 0
 #endif  // NDEBUG
 
+#if __has_builtin(__builtin_debugtrap)
+#define GRAVEL_DEBUG_BREAK __builtin_debugtrap()
+#else
+#define GRAVEL_DEBUG_BREAK \
+  do {                     \
+  } while (false)
+#endif  // __has_builtin(__builtin_debugtrap)
+
 // clang-format off
 #define GRAVEL_DELETE_COPY(Class) \
   Class(const Class&) = delete;   \
