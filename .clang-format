@@ -1,0 +1,75 @@
+BasedOnStyle: Google
+
+Language: Cpp
+Standard: Latest
+
+ColumnLimit: 90
+IndentWidth: 2
+
+DerivePointerAlignment: false
+PointerAlignment: Left
+QualifierAlignment: Left
+
+AlignTrailingComments: true
+AlignConsecutiveDeclarations: None
+AlignConsecutiveBitFields: Consecutive
+
+IndentCaseLabels: true
+IndentAccessModifiers: false
+AccessModifierOffset: -1
+
+NamespaceIndentation: None
+FixNamespaceComments: true
+
+MaxEmptyLinesToKeep: 1
+EmptyLineBeforeAccessModifier: Always
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+
+PackConstructorInitializers: Never
+BinPackParameters: false
+BinPackArguments: false
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+SpaceAfterCStyleCast: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeRangeBasedForLoopColon: true
+
+BreakBeforeBraces: Stroustrup
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: true
+BreakBeforeConceptDeclarations: true
+
+RequiresClausePosition: OwnLine
+IndentRequiresClause: true
+
+BreakStringLiterals: true
+BreakInheritanceList: AfterColon
+BreakConstructorInitializers: BeforeColon
+
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Standard headers, located in <> with no extension.
+  - Regex: '<([A-Za-z0-9\_\-]+)>'
+    SortPriority: 1
+    Priority: 1
+
+  # Headers in <> with extension and optional prefix.
+  - Regex: '<([A-Za-z0-9\_\-]+\/)*(\.\.)*([A-Za-z0-9\_\-]+)\.([A-Za-z0-9\_\-]+)>'
+    SortPriority: 2
+    Priority: 2
+
+  # Headers in "" with extension.
+  - Regex: '"([A-Za-z0-9.\Q/-_\E])+"'
+    SortPriority: 3
+    Priority: 3
