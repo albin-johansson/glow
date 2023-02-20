@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "gravel",
+  "license": "MIT",
+  "version-semver": "0.1.0",
+  "maintainers": [
+    "albin-johansson"
+  ],
+  "builtin-baseline": "31a159c1cae2bf905299085d9ef01bdfea0ca7b8",
+  "dependencies": [
+  ]
+}
