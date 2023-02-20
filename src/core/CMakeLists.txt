@@ -21,6 +21,7 @@ target_link_libraries(libgravel
                       EnTT::EnTT
                       fmt::fmt
                       glad::glad
+                      glm::glm
                       magic_enum::magic_enum
                       OpenGL::GL
                       spdlog::spdlog

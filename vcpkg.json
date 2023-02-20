@@ -16,6 +16,7 @@
         "gl-api-41"
       ]
     },
+    "glm",
     "magic-enum",
     "sdl2",
     "spdlog"
