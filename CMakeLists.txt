@@ -20,3 +20,5 @@ include(cmake/gravel.cmake)
 # System dependencies
 find_package(OpenGL REQUIRED)
 
+add_subdirectory(src/core)
+add_subdirectory(src/editor)
