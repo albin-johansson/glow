@@ -22,6 +22,9 @@ target_link_libraries(libgravel
                       fmt::fmt
                       glad::glad
                       magic_enum::magic_enum
+                      OpenGL::GL
+                      spdlog::spdlog
+                      $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
                       )
 
 target_precompile_headers(libgravel PRIVATE ${GRAVEL_PRECOMPILED_HEADERS})

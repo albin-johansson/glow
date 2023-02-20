@@ -20,5 +20,13 @@ include(cmake/gravel.cmake)
 # System dependencies
 find_package(OpenGL REQUIRED)
 
+# Vcpkg dependencies
+find_package(EnTT CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(glad CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
 add_subdirectory(src/core)
 add_subdirectory(src/editor)

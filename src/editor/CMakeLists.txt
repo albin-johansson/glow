@@ -12,6 +12,10 @@ add_dependencies(gravel libgravel)
 gravel_configure_compile_options(gravel)
 
 target_include_directories(gravel PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(gravel PRIVATE libgravel)
+target_link_libraries(gravel
+                      PRIVATE
+                      libgravel
+                      $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+                      )
 
 target_precompile_headers(gravel REUSE_FROM libgravel)
