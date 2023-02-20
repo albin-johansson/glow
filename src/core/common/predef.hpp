@@ -8,6 +8,16 @@
 #define GRAVEL_RELEASE_BUILD 0
 #endif  // NDEBUG
 
+// clang-format off
+#define GRAVEL_DELETE_COPY(Class) \
+  Class(const Class&) = delete;   \
+  auto operator=(const Class&) -> Class& = delete
+
+#define GRAVEL_DELETE_MOVE(Class) \
+  Class(Class&&) noexcept = delete;        \
+  auto operator=(Class&&) noexcept -> Class& = delete
+// clang-format on
+
 namespace gravel {
 
 #if GRAVEL_DEBUG_BUILD
