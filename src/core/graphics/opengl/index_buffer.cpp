@@ -53,9 +53,9 @@ void IndexBuffer::unbind()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void IndexBuffer::UploadData(const usize data_size,
-                             const uint* data,
-                             const BufferUsage usage)
+void IndexBuffer::upload_data(const usize data_size,
+                              const uint* data,
+                              const BufferUsage usage)
 {
   assert(get_bound_index_buffer() == mID);
 
