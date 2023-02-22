@@ -14,6 +14,8 @@ class Context final {
  public:
   explicit Context(SDL_Window* window);
 
+  [[nodiscard]] auto get_handle() -> SDL_GLContext { return mContext.get(); }
+
  private:
   std::unique_ptr<void, ContextDeleter> mContext;
 };
