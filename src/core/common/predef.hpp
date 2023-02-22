@@ -26,6 +26,8 @@
   auto operator=(Class&&) noexcept -> Class& = delete
 // clang-format on
 
+#define GRAVEL_FORWARD_DECLARE(Class) class Class
+
 namespace gravel {
 
 #if GRAVEL_DEBUG_BUILD

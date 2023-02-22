@@ -11,7 +11,7 @@
 
 namespace gravel::gl {
 
-class Shader;
+GRAVEL_FORWARD_DECLARE(Shader);
 
 /// Represents an OpenGL shader program.
 class Program final {
