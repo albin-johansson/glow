@@ -5,7 +5,7 @@
 
 namespace gravel {
 
-using byte = std::byte;
+using Byte = std::byte;
 
 using usize = std::size_t;
 using ssize = std::ptrdiff_t;
