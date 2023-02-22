@@ -17,6 +17,13 @@
       ]
     },
     "glm",
+    {
+      "name": "imgui",
+      "features": [
+        "sdl2-binding",
+        "opengl3-binding"
+      ]
+    },
     "magic-enum",
     "sdl2",
     "spdlog"
