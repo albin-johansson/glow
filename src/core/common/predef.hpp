@@ -8,6 +8,11 @@
 #define GRAVEL_RELEASE_BUILD 0
 #endif  // NDEBUG
 
+#ifdef WIN32
+#define GRAVEL_DEBUG_BREAK \
+  do {                     \
+  } while (false)
+#else
 #if __has_builtin(__builtin_debugtrap)
 #define GRAVEL_DEBUG_BREAK __builtin_debugtrap()
 #else
@@ -15,6 +20,7 @@
   do {                     \
   } while (false)
 #endif  // __has_builtin(__builtin_debugtrap)
+#endif  // WIN32
 
 // clang-format off
 #define GRAVEL_DELETE_COPY(Class) \
