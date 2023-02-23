@@ -54,6 +54,41 @@ void PerspectiveCamera::set_far_plane(const float far_plane)
   mFarPlane = far_plane;
 }
 
+auto PerspectiveCamera::get_position() const -> const Vec3&
+{
+  return mPos;
+}
+
+auto PerspectiveCamera::get_direction() const -> const Vec3&
+{
+  return mDir;
+}
+
+auto PerspectiveCamera::get_world_up() const -> const Vec3&
+{
+  return mWorldUp;
+}
+
+auto PerspectiveCamera::get_fov() const -> float
+{
+  return mFov;
+}
+
+auto PerspectiveCamera::get_aspect_ratio() const -> float
+{
+  return mAspectRatio;
+}
+
+auto PerspectiveCamera::get_near_plane() const -> float
+{
+  return mNearPlane;
+}
+
+auto PerspectiveCamera::get_far_plane() const -> float
+{
+  return mFarPlane;
+}
+
 auto PerspectiveCamera::to_projection_matrix() const -> Mat4
 {
   return glm::perspective(glm::radians(mFov), mAspectRatio, mNearPlane, mFarPlane);

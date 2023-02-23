@@ -24,6 +24,20 @@ class PerspectiveCamera final {
 
   void set_far_plane(float far_plane);
 
+  [[nodiscard]] auto get_position() const -> const Vec3&;
+
+  [[nodiscard]] auto get_direction() const -> const Vec3&;
+
+  [[nodiscard]] auto get_world_up() const -> const Vec3&;
+
+  [[nodiscard]] auto get_fov() const -> float;
+
+  [[nodiscard]] auto get_aspect_ratio() const -> float;
+
+  [[nodiscard]] auto get_near_plane() const -> float;
+
+  [[nodiscard]] auto get_far_plane() const -> float;
+
   [[nodiscard]] auto to_projection_matrix() const -> Mat4;
 
   [[nodiscard]] auto to_view_matrix() const -> Mat4;
