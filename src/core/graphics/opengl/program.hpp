@@ -102,6 +102,10 @@ class Program final {
   /// Returns the location of a uniform in the program.
   [[nodiscard]] auto get_uniform_location(const char* name) const -> Maybe<int>;
 
+  [[nodiscard]] auto get_uniform_block_index(const char* name) const -> Maybe<int>;
+
+  [[nodiscard]] auto get_uniform_block_size(int block_index) const -> Maybe<int>;
+
   [[nodiscard]] auto get_id() const -> uint { return mID; }
 
  private:

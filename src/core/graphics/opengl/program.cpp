@@ -240,4 +240,31 @@ auto Program::get_uniform_location(const char* name) const -> Maybe<int>
   }
 }
 
+auto Program::get_uniform_block_index(const char* name) const -> Maybe<int>
+{
+  const auto index = glGetUniformBlockIndex(mID, name);
+  if (index != GL_INVALID_INDEX) {
+    return index;
+  }
+  else {
+    spdlog::error("[GL] Found no uniform block index for '{}'", name);
+    return kNothing;
+  }
+}
+
+auto Program::get_uniform_block_size(const int block_index) const -> Maybe<int>
+{
+  int block_size = -1;
+  glGetActiveUniformBlockiv(mID, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size);
+  GRAVEL_GL_CHECK_ERRORS();
+
+  if (block_size != -1) {
+    return block_size;
+  }
+  else {
+    spdlog::error("[GL] Failed to get uniform block size for index '{}'", block_index);
+    return kNothing;
+  }
+}
+
 }  // namespace gravel::gl
