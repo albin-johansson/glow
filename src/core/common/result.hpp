@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/debug/error.hpp"
+
 namespace gravel {
 
 /// Simple type that encodes to possible values: success or failure.
@@ -19,6 +21,13 @@ class Result final {
   [[nodiscard]] constexpr auto succeeded() const noexcept { return mSucceeded; }
 
   [[nodiscard]] constexpr auto failed() const noexcept { return !mSucceeded; }
+
+  void check(const char* msg) const
+  {
+    if (!mSucceeded) {
+      throw Error {msg ? msg : "?"};
+    }
+  }
 
  private:
   bool mSucceeded {};
