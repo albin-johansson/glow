@@ -19,3 +19,5 @@ target_link_libraries(gravel
                       )
 
 target_precompile_headers(gravel REUSE_FROM libgravel)
+
+gravel_copy_directory_post_build(gravel ${GRAVEL_ASSET_DIR} "${CMAKE_CURRENT_BINARY_DIR}/assets")

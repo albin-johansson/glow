@@ -14,7 +14,13 @@ set_target_properties(libgravel PROPERTIES
 
 gravel_configure_compile_options(libgravel)
 
-target_include_directories(libgravel PUBLIC ${PROJECT_SOURCE_DIR})
+target_include_directories(libgravel
+                           PUBLIC
+                           ${PROJECT_SOURCE_DIR}
+
+                           SYSTEM PUBLIC
+                           ${Stb_INCLUDE_DIR}
+                           )
 
 target_link_libraries(libgravel
                       PUBLIC
