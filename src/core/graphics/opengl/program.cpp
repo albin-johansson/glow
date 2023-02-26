@@ -231,8 +231,8 @@ void Program::set_uniform_array(const int location, const ssize count, const Vec
 
 auto Program::get_uniform_location(const char* name) const -> Maybe<int>
 {
-  const auto index = glGetUniformBlockIndex(mID, name);
-  if (index != GL_INVALID_INDEX) {
+  const auto index = glGetUniformLocation(mID, name);
+  if (index != -1) {
     return index;
   }
   else {
