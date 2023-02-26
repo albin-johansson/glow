@@ -13,19 +13,16 @@ class Quad final {
   /**
    * Creates a quad object.
    *
-   * \param v0 bottom-left vertex.
-   * \param v1 bottom-right vertex.
-   * \param v2 upper-right vertex.
-   * \param v3 upper-left vertex.
+   * \param bl bottom-left vertex.
+   * \param br bottom-right vertex.
+   * \param tr upper-right vertex.
+   * \param tl upper-left vertex.
    */
-  Quad(const Vec3& v0, const Vec3& v1, const Vec3& v2, const Vec3& v3);
+  Quad(const Vec2& bl, const Vec2& br, const Vec2& tr, const Vec2& tl);
 
-  /// Creates a unit quad.
+  /// Creates a quad covering the entire screen.
   Quad()
-      : Quad {{-1.0f, -1.0f, 0.0f},
-              {1.0f, -1.0f, 0.0f},
-              {1.0f, 1.0f, 0.0f},
-              {-1.0f, 1.0f, 0.0f}}
+      : Quad {{-1.0f, -1.0f}, {1.0f, -1.0f}, {1.0f, 1.0f}, {-1.0f, 1.0f}}
   {
   }
 
