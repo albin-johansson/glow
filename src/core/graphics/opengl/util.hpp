@@ -12,6 +12,8 @@ namespace gravel::gl {
 auto check_errors() -> bool;
 auto check_errors(const char* file, int line) -> bool;
 
+void set_option(uint option, bool value);
+
 [[nodiscard]] auto convert_shader_type(ShaderType type) -> uint;
 [[nodiscard]] auto convert_buffer_usage(BufferUsage usage) -> uint;
 

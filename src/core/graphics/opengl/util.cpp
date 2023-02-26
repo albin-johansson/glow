@@ -56,6 +56,16 @@ auto check_errors(const char* file, const int line) -> bool
   return had_error;
 }
 
+void set_option(const uint option, const bool value)
+{
+  if (value) {
+    glEnable(option);
+  }
+  else {
+    glDisable(option);
+  }
+}
+
 auto convert_shader_type(const ShaderType type) -> uint
 {
   switch (type) {
