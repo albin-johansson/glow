@@ -40,7 +40,7 @@ class VertexArray final {
   void init_attr(uint location,
                  int value_count,
                  uint value_type,
-                 usize vertex_size,
+                 usize vertex_size = 0,
                  usize offset = 0,
                  bool normalized = false);
 
