@@ -68,10 +68,14 @@ class Program final {
   void set_uniform(int location, const Mat4& mat);
 
   template <typename T>
-  void set_uniform(const char* name, T&& value)
+  auto set_uniform(const char* name, T&& value) -> Result
   {
     if (const auto location = get_uniform_location(name)) {
       set_uniform(*location, std::forward<T>(value));
+      return kSuccess;
+    }
+    else {
+      return kFailure;
     }
   }
 
@@ -92,10 +96,14 @@ class Program final {
   void set_uniform_array(int location, ssize count, const Vec4i* array);
 
   template <typename T>
-  void set_uniform_array(const char* name, const ssize count, const T* array)
+  auto set_uniform_array(const char* name, const ssize count, const T* array) -> Result
   {
     if (const auto location = get_uniform_location(name)) {
       set_uniform_array(*location, count, array);
+      return kSuccess;
+    }
+    else {
+      return kFailure;
     }
   }
 
