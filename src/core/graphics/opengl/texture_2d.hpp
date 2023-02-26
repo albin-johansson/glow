@@ -29,6 +29,9 @@ class Texture2D final {
   /// Enables the texture for subsequent draw calls.
   void bind();
 
+  /// Enables a texture for subsequent draw calls.
+  static void bind(uint id);
+
   /// Unbinds any bound 2D texture.
   static void unbind();
 

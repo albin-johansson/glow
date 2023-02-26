@@ -11,14 +11,15 @@ namespace gravel::gl {
 Texture2D::Texture2D()
 {
   glGenTextures(1, &mID);
-
   bind();
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  unbind();
 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  unbind();
   GRAVEL_GL_CHECK_ERRORS();
 }
 
@@ -55,11 +56,19 @@ void Texture2D::dispose() noexcept
 void Texture2D::bind()
 {
   glBindTexture(GL_TEXTURE_2D, mID);
+  GRAVEL_GL_CHECK_ERRORS();
+}
+
+void Texture2D::bind(const uint id)
+{
+  glBindTexture(GL_TEXTURE_2D, id);
+  GRAVEL_GL_CHECK_ERRORS();
 }
 
 void Texture2D::unbind()
 {
   glBindTexture(GL_TEXTURE_2D, 0);
+  GRAVEL_GL_CHECK_ERRORS();
 }
 
 void Texture2D::set_data(const int detail_level,

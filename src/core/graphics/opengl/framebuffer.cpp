@@ -19,6 +19,7 @@ Framebuffer::Framebuffer()
                          GL_TEXTURE_2D,
                          mColorTexture.get_id(),
                          0);
+
   glFramebufferTexture2D(GL_FRAMEBUFFER,
                          GL_DEPTH_ATTACHMENT,
                          GL_TEXTURE_2D,
@@ -100,12 +101,13 @@ void Framebuffer::resize(const Vec2i size)
                          nullptr);
 
   Texture2D::unbind();
+  GRAVEL_GL_CHECK_ERRORS();
 }
 
 void Framebuffer::clear()
 {
   assert(get_bound_framebuffer() == mID);
-  assert(is_complete());
+  assert(is_complete() && "Incomplete framebuffer used, remember to set size");
 
   glViewport(0, 0, mSize.x, mSize.y);
 
