@@ -12,7 +12,9 @@ out vec4 frag_color;
 
 uniform mat4 inverse_proj_view_matrix;
 uniform vec3 camera_pos;
-uniform float multiplier;
+uniform float multiplier = 1.0;
+uniform float gamma = 2.2;
+uniform bool use_gamma_correction = false;
 
 #define PI 3.14159265359
 
@@ -35,4 +37,8 @@ void main()
   // Use these to lookup the color in the environment map
   vec2 texel = vec2(phi / (2.0 * PI), 1 - theta / PI);
   frag_color = multiplier * texture(env_texture, texel);
+
+  if (use_gamma_correction) {
+    frag_color.xyz = pow(frag_color.xyz, vec3(1.0 / gamma));
+  }
 }
