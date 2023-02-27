@@ -230,8 +230,8 @@ void OpenGLBackend::render_gui()
     ImGui::Text("Position: (%.1f, %.1f, %.1f)", cam_pos.x, cam_pos.y, cam_pos.z);
     ImGui::Text("Direction: (%.2f, %.2f, %.2f)", cam_dir.x, cam_dir.y, cam_dir.z);
     ImGui::Text("Aspect ratio: %.2f", mCamera.get_aspect_ratio());
-    ImGui::SliderFloat("Speed: %.2f", &mCameraSpeed, 0.1f, 5.0f);
-    ImGui::SliderFloat("Sensitivity: %.2f", &mCameraSensitivity, 0.1f, 5.0f);
+    ImGui::SliderFloat("Speed", &mCameraSpeed, 0.1f, 5.0f);
+    ImGui::SliderFloat("Sensitivity", &mCameraSensitivity, 0.1f, 5.0f);
 
     ImGui::SeparatorText("Environment");
 
