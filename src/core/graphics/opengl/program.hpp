@@ -45,6 +45,9 @@ class Program final {
   /// Disables any bound shader program.
   static void unbind();
 
+  /// Sets the binding index of a uniform buffer block (similar to sampler bindings).
+  auto set_uniform_block_binding(const char* name, int binding) -> Result;
+
   void set_uniform(int location, bool b);
 
   void set_uniform(int location, int i);

@@ -115,6 +115,17 @@ void Program::unbind()
   glUseProgram(0);
 }
 
+auto Program::set_uniform_block_binding(const char* name, const int binding) -> Result
+{
+  if (const auto block_index = get_uniform_block_index(name)) {
+    glUniformBlockBinding(mID, *block_index, binding);
+    return kSuccess;
+  }
+  else {
+    return kFailure;
+  }
+}
+
 void Program::set_uniform(const int location, const bool b)
 {
   glProgramUniform1i(mID, location, b ? GL_TRUE : GL_FALSE);
