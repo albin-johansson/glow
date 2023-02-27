@@ -10,7 +10,8 @@ namespace {
 
 [[nodiscard]] auto to_window_flags(const GraphicsApi api) -> uint32
 {
-  const auto base_flags = SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
+  const auto base_flags =
+      SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE;
   switch (api) {
     case GraphicsApi::OpenGL:
       return base_flags | SDL_WINDOW_OPENGL;
