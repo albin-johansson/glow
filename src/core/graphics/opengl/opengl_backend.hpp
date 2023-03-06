@@ -59,6 +59,7 @@ class OpenGLBackend final {
   bool mCullFaces {true};
   bool mBlending {true};
   bool mWireframe {false};
+  bool mHideUI {false};
   bool mQuit {false};
 
   void load_framebuffer_program();

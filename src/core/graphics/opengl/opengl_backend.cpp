@@ -69,6 +69,11 @@ void OpenGLBackend::update(const float dt)
     if (event.type == SDL_QUIT) {
       mQuit = true;
     }
+    else if (event.type == SDL_KEYUP) {
+      if (event.key.keysym.scancode == SDL_SCANCODE_H) {
+        mHideUI = !mHideUI;
+      }
+    }
   }
 
   Vec2i mouse_pos {};
@@ -167,7 +172,10 @@ void OpenGLBackend::render()
   glPolygonMode(GL_FRONT_AND_BACK, mWireframe ? GL_LINE : GL_FILL);
 
   render_buffer_to_screen(mPrimaryBuffer);
-  render_gui();
+
+  if (!mHideUI) {
+    render_gui(scene);
+  }
 
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
