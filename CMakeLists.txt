@@ -32,6 +32,7 @@ find_package(magic_enum CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Stb REQUIRED)
+find_package(tinyobjloader CONFIG REQUIRED)
 
 add_subdirectory(src/core)
 add_subdirectory(src/editor)
