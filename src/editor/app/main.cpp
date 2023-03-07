@@ -32,7 +32,7 @@ auto main(int, char*[]) -> int
 {
   try {
     spdlog::set_pattern("%^[%L][%T.%f]%$ %v");
-    spdlog::set_level(spdlog::level::info);
+    spdlog::set_level(spdlog::level::debug);
 
     const auto api = GraphicsApi::OpenGL;
 
