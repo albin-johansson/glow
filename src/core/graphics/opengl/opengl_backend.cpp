@@ -204,6 +204,8 @@ void OpenGLBackend::update_camera_direction(const float dt)
 
 void OpenGLBackend::render(Scene& scene)
 {
+  const auto render_pass_start = Clock::now();
+
   ImGui_ImplSDL2_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
@@ -243,6 +245,10 @@ void OpenGLBackend::render(Scene& scene)
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
   GRAVEL_GL_CHECK_ERRORS();
+
+  // Measure the render pass before swapping the framebuffers, avoiding VSync idle time.
+  const auto render_pass_end = Clock::now();
+  mRenderPassDuration = render_pass_end - render_pass_start;
 
   if constexpr (kOnApple) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -309,7 +315,8 @@ void OpenGLBackend::render_gui(Scene& scene)
     const auto& io = ImGui::GetIO();
     ImGui::SeparatorText("Performance");
     ImGui::Text("FPS: %.2f", io.Framerate);
-    // TODO mRenderDurationMs
+    ImGui::Text("Render pass: %.3f ms",
+                static_cast<float64>(mRenderPassDuration.count()) / 1'000.0);
 
     ImGui::SeparatorText("Debug");
     ImGui::Checkbox("Depth test", &mDepthTest);
