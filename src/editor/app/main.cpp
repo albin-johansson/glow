@@ -13,6 +13,7 @@
 #include "init/dear_imgui.hpp"
 #include "init/sdl.hpp"
 #include "init/window.hpp"
+#include "scene/scene.hpp"
 
 using namespace gravel;
 
@@ -60,6 +61,9 @@ auto main(int, char*[]) -> int
 
     SDL_ShowWindow(window.get_handle());
 
+    Scene scene;
+    const auto model_entity = scene.make_node();
+
     gl::OpenGLBackend backend {window.get_handle()};
 
     // The following is a semi-fixed delta time game loop implementation.
@@ -97,7 +101,7 @@ auto main(int, char*[]) -> int
         last_framebuffer_scale = fb_scale;
       }
 
-      backend.render();
+      backend.render(scene);
     }
 
     SDL_HideWindow(window.get_handle());

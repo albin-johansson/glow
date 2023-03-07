@@ -1,14 +1,23 @@
 #include "opengl_backend.hpp"
 
 #include <cassert>  // assert
+#include <cstdlib>  // offsetof
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
+#include <spdlog/spdlog.h>
 
 #include "common/predef.hpp"
+#include "graphics/opengl/component/model.hpp"
 #include "graphics/opengl/util.hpp"
+#include "io/model_loader.hpp"
+#include "scene/component/identifier.hpp"
+#include "scene/component/node.hpp"
+#include "scene/component/transform.hpp"
+#include "scene/scene.hpp"
 #include "util/textures.hpp"
 
 namespace gravel::gl {
@@ -18,7 +27,11 @@ OpenGLBackend::OpenGLBackend(SDL_Window* window)
 {
   load_framebuffer_program();
   load_environment_program();
-  load_environment_texture("assets/textures/enderndorf.hdr");
+  load_basic_program();
+  init_uniform_buffers();
+  load_environment_texture("assets/textures/sky.hdr");
+
+  mCamera.set_position(Vec3 {0, 1, 2});
 }
 
 void OpenGLBackend::load_framebuffer_program()
@@ -49,6 +62,26 @@ void OpenGLBackend::load_environment_program()
   UniformBuffer::unbind();
 }
 
+void OpenGLBackend::load_basic_program()
+{
+  const char* vert_path = "assets/shaders/basic.vert";
+  const char* frag_path = "assets/shaders/basic.frag";
+
+  mBasicProgram.load_shader_files(vert_path, frag_path).check("[GL] Basic program error");
+  mBasicProgram.link().check("[GL] Basic program link error");
+
+  mBasicProgram.set_uniform_block_binding("DynamicMatrices", 0)
+      .check("[GL] Bad UBO binding");
+}
+
+void OpenGLBackend::init_uniform_buffers()
+{
+  mDynamicMatricesUbo.bind();
+  mDynamicMatricesUbo.reserve_space(sizeof(DynamicMatrices));
+
+  UniformBuffer::unbind();
+}
+
 void OpenGLBackend::load_environment_texture(const Path& path)
 {
   const auto data =
@@ -58,6 +91,33 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   mEnvTexture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data.size, data.pixels.get());
 
   Texture2D::unbind();
+}
+
+void OpenGLBackend::load_obj_model(Registry& registry,
+                                   const Entity entity,
+                                   const Path& path)
+{
+  if (const auto obj = gravel::load_obj_model(path)) {
+    auto& model = registry.emplace<comp::OpenGLModel>(entity);
+    model.vao.bind();
+
+    model.vbo.bind();
+    model.vbo.upload_data(obj->vertices.size() * sizeof(Vertex), obj->vertices.data());
+
+    model.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
+    model.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
+    model.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
+
+    using index_type = decltype(ModelData::indices)::value_type;
+    model.ebo.bind();
+    model.ebo.upload_data(obj->indices.size() * sizeof(index_type), obj->indices.data());
+
+    model.index_count = obj->indices.size();
+
+    VertexArray::unbind();
+    VertexBuffer::unbind();
+    IndexBuffer::unbind();
+  }
 }
 
 void OpenGLBackend::update(const float dt)
@@ -142,7 +202,7 @@ void OpenGLBackend::update_camera_direction(const float dt)
   }
 }
 
-void OpenGLBackend::render()
+void OpenGLBackend::render(Scene& scene)
 {
   ImGui_ImplSDL2_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
@@ -168,9 +228,11 @@ void OpenGLBackend::render()
 
   // Render the environment backdrop
   render_environment(projection, view);
-
   glPolygonMode(GL_FRONT_AND_BACK, mWireframe ? GL_LINE : GL_FILL);
 
+  render_models(scene, projection, view);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   render_buffer_to_screen(mPrimaryBuffer);
 
   if (!mHideUI) {
@@ -212,7 +274,36 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
   UniformBuffer::unbind_block(0);
 }
 
-void OpenGLBackend::render_gui()
+void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Mat4& view)
+{
+  mDynamicMatricesUbo.bind_block(0);
+  mBasicProgram.bind();
+
+  auto& registry = scene.get_registry();
+  for (auto&& [entity, transform, model] :
+       registry.view<comp::Transform, comp::OpenGLModel>().each()) {
+    mDynamicMatrices.model = transform.to_model_matrix();
+    mDynamicMatrices.mv = view * mDynamicMatrices.model;
+    mDynamicMatrices.mvp = projection * mDynamicMatrices.mv;
+    mDynamicMatrices.normal = glm::inverse(glm::transpose(mDynamicMatrices.mv));
+
+    mDynamicMatricesUbo.bind();
+    mDynamicMatricesUbo.update_data(0, sizeof mDynamicMatrices, &mDynamicMatrices);
+    UniformBuffer::unbind();
+
+    model.vao.bind();
+    glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
+    VertexArray::unbind();
+
+    GRAVEL_GL_CHECK_ERRORS();
+  }
+
+  Program::unbind();
+  UniformBuffer::unbind_block(0);
+  UniformBuffer::unbind_block(1);
+}
+
+void OpenGLBackend::render_gui(Scene& scene)
 {
   if (ImGui::Begin("Information", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     const auto& io = ImGui::GetIO();
@@ -256,6 +347,53 @@ void OpenGLBackend::render_gui()
     ImGui::Text("Resolution: (%d, %d)", resolution.x, resolution.y);
   }
   ImGui::End();
+
+  if (ImGui::Begin("Scene")) {
+    const auto exclusions = entt::exclude<comp::ChildNode>;
+    const auto view = scene.get_registry().view<comp::Node>(exclusions);
+    for (auto [entity, node] : view.each()) {
+      render_node_gui(scene, entity);
+    }
+  }
+  ImGui::End();
+}
+
+void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
+{
+  assert(scene.get_registry().all_of<comp::Node>(entity));
+
+  ImGui::PushID(static_cast<int>(entity));
+
+  auto& registry = scene.get_registry();
+  const auto& identifier = registry.get<comp::Identifier>(entity);
+
+  if (ImGui::CollapsingHeader(identifier.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+    ImGui::Indent();
+
+    if (auto* transform = registry.try_get<comp::Transform>(entity)) {
+      ImGui::SeparatorText("Transform");
+      ImGui::DragFloat3("Translation", glm::value_ptr(transform->translation), 0.25f);
+      ImGui::DragFloat3("Rotation", glm::value_ptr(transform->rotation));
+      ImGui::DragFloat3("Scale", glm::value_ptr(transform->scale), 0.25f);
+    }
+
+    if (const auto* model = registry.try_get<comp::OpenGLModel>(entity)) {
+      ImGui::SeparatorText("OpenGLModel");
+      ImGui::Text("Indices: %lu", model->index_count);
+    }
+
+    ImGui::Spacing();
+
+    const auto& node = registry.get<comp::Node>(entity);
+    for (const auto child_entity : node.children) {
+      render_node_gui(scene, child_entity);
+    }
+
+    ImGui::Spacing();
+    ImGui::Unindent();
+  }
+
+  ImGui::PopID();
 }
 
 void OpenGLBackend::render_buffer_to_screen(const Framebuffer& buffer)
