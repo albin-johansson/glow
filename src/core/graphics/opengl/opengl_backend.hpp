@@ -82,6 +82,7 @@ class OpenGLBackend final {
   bool mCullFaces {true};
   bool mBlending {true};
   bool mWireframe {false};
+  bool mVSync {true};
   bool mHideUI {false};
   bool mQuit {false};
 

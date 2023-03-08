@@ -303,12 +303,15 @@ void OpenGLBackend::render_gui(Scene& scene)
     ImGui::Text("FPS: %.2f", io.Framerate);
     ImGui::Text("Render pass: %.3f ms",
                 static_cast<float64>(mRenderPassDuration.count()) / 1'000.0);
+    if (ImGui::Checkbox("VSync", &mVSync)) {
+      SDL_GL_SetSwapInterval(mVSync ? 1 : 0);
+    }
+    ImGui::Checkbox("Face culling", &mCullFaces);
 
     ImGui::SeparatorText("Debug");
-    ImGui::Checkbox("Depth test", &mDepthTest);
-    ImGui::Checkbox("Face culling", &mCullFaces);
     ImGui::Checkbox("Blending", &mBlending);
     ImGui::Checkbox("Wireframe", &mWireframe);
+    ImGui::Checkbox("Depth test", &mDepthTest);
 
     Vec2i window_size {};
     SDL_GetWindowSize(mWindow, &window_size.x, &window_size.y);
