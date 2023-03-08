@@ -30,7 +30,6 @@ OpenGLBackend::OpenGLBackend(SDL_Window* window)
   load_environment_program();
   load_basic_program();
   init_uniform_buffers();
-  load_environment_texture("assets/textures/helicopter_landing_pad.hdr");
 
   mCamera.set_position(Vec3 {0, 0, 2});
 }
@@ -88,8 +87,9 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   const auto data =
       load_texture_data(path, TextureFormat::Float, TextureChannels::RGB).value();
 
-  mEnvTexture.bind();
-  mEnvTexture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data.size, data.pixels.get());
+  auto& env_texture = mEnvTexture.emplace();
+  env_texture.bind();
+  env_texture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data.size, data.pixels.get());
 
   Texture2D::unbind();
 }
@@ -287,8 +287,12 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
 {
   assert(get_bound_framebuffer() == mPrimaryBuffer.get_id());
 
+  if (!mEnvTexture.has_value()) {
+    return;
+  }
+
   glActiveTexture(GL_TEXTURE0);
-  mEnvTexture.bind();
+  mEnvTexture->bind();
 
   mEnvOptions.inverse_proj_view = glm::inverse(projection * view);
   mEnvOptions.camera_pos = Vec4 {mCamera.get_position(), 0};

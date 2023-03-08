@@ -6,6 +6,7 @@
 #include "common/type/chrono.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
+#include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 #include "graphics/opengl/framebuffer.hpp"
 #include "graphics/opengl/program.hpp"
@@ -45,6 +46,8 @@ class OpenGLBackend final {
 
   void render(Scene& scene);
 
+  void load_environment_texture(const Path& path);
+
   void assign_model(Registry& registry, const Entity entity, const Path& path);
 
   [[nodiscard]] auto should_quit() const -> bool { return mQuit; }
@@ -55,7 +58,7 @@ class OpenGLBackend final {
   PerspectiveCamera mCamera;
   Quad mFullscreenQuad;
 
-  Texture2D mEnvTexture;
+  Maybe<Texture2D> mEnvTexture;
   Texture2D mExplosionTexture;
 
   Program mFramebufferProgram;
@@ -89,8 +92,6 @@ class OpenGLBackend final {
   void load_basic_program();
 
   void init_uniform_buffers();
-
-  void load_environment_texture(const Path& path);
 
   void update_camera_position(float dt);
   void update_camera_direction(float dt);
