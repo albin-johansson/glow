@@ -28,7 +28,6 @@
     "magic-enum",
     "sdl2",
     "spdlog",
-    "stb",
-    "tinyobjloader"
+    "stb"
   ]
 }
