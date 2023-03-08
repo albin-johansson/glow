@@ -117,7 +117,7 @@ void process_mesh(ModelData& model,
   }
 }
 
-void process_node(ModelData& model, const aiScene* scene, aiNode* node)
+void process_node(ModelData& model, const aiScene* scene, const aiNode* node)
 {
   for (uint mesh_idx = 0; mesh_idx < node->mNumMeshes; ++mesh_idx) {
     process_mesh(model, scene, node, scene->mMeshes[node->mMeshes[mesh_idx]]);
@@ -141,7 +141,7 @@ auto load_model_data(const Path& path) -> Maybe<ModelData>
   const auto* scene =
       importer.ReadFile(path.string(), aiProcessPreset_TargetRealtime_MaxQuality);
 
-  if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
+  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     spdlog::error("[IO] Could not read 3D object file: {}", importer.GetErrorString());
     return kNothing;
   }

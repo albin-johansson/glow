@@ -31,7 +31,7 @@ struct EnvironmentOptions final {
 
 /// This struct corresponds to a std140 layout uniform block.
 struct DynamicMatrices final {
-  Mat4 model {};
+  Mat4 m {};
   Mat4 mv {};
   Mat4 mvp {};
   Mat4 normal {};

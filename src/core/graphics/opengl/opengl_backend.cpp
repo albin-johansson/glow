@@ -32,7 +32,7 @@ OpenGLBackend::OpenGLBackend(SDL_Window* window)
   init_uniform_buffers();
   load_environment_texture("assets/textures/helicopter_landing_pad.hdr");
 
-  mCamera.set_position(Vec3 {0, 1, 2});
+  mCamera.set_position(Vec3 {0, 0, 2});
 }
 
 void OpenGLBackend::load_framebuffer_program()
@@ -312,7 +312,7 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   mBasicProgram.bind();
 
   auto& registry = scene.get_registry();
-  for (auto&& [entity, transform, model] :
+  for (auto [entity, transform, model] :
        registry.view<comp::Transform, comp::OpenGLModel>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
@@ -321,8 +321,8 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
     for (auto& mesh : model.meshes) {
       // TODO const auto& material = registry.get<comp::OpenGLMaterial>(mesh.material);
 
-      mDynamicMatrices.model = model_transform * mesh.transform;
-      mDynamicMatrices.mv = view * mDynamicMatrices.model;
+      mDynamicMatrices.m = model_transform * mesh.transform;
+      mDynamicMatrices.mv = view * mDynamicMatrices.m;
       mDynamicMatrices.mvp = projection * mDynamicMatrices.mv;
       mDynamicMatrices.normal = glm::inverse(glm::transpose(mDynamicMatrices.mv));
 
