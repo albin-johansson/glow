@@ -5,13 +5,15 @@
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
 #include "common/type/maybe.hpp"
+#include "common/type/path.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/opengl/index_buffer.hpp"
 #include "graphics/opengl/texture_2d.hpp"
 #include "graphics/opengl/vertex_array.hpp"
 #include "graphics/opengl/vertex_buffer.hpp"
 
-namespace gravel::comp {
+namespace gravel {
+namespace comp {
 
 struct OpenGLMaterial final {
   Maybe<gl::Texture2D> diffuse_tex;
@@ -37,4 +39,9 @@ struct OpenGLModel final {
   Vector<OpenGLMesh> meshes;
 };
 
-}  // namespace gravel::comp
+}  // namespace comp
+
+/// Loads and assigns an OpenGL model component to an entity.
+void assign_opengl_model(Registry& registry, Entity entity, const Path& path);
+
+}  // namespace gravel

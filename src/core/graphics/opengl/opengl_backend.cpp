@@ -11,9 +11,8 @@
 #include <spdlog/spdlog.h>
 
 #include "common/predef.hpp"
-#include "graphics/opengl/component/model.hpp"
+#include "graphics/component/gl_model.hpp"
 #include "graphics/opengl/util.hpp"
-#include "io/model_loader.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/component/identifier.hpp"
 #include "scene/component/node.hpp"
@@ -92,57 +91,6 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   env_texture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data.size, data.pixels.get());
 
   Texture2D::unbind();
-}
-
-void OpenGLBackend::assign_model(Registry& registry,
-                                 const Entity entity,
-                                 const Path& path)
-{
-  if (const auto model_data = load_model_data(path)) {
-    auto& gl_model = registry.emplace<comp::OpenGLModel>(entity);
-
-    Vector<Entity> material_entities;
-    material_entities.reserve(model_data->materials.size());
-
-    for (const auto& material : model_data->materials) {
-      const auto material_entity = registry.create();
-      auto& gl_material = registry.emplace<comp::OpenGLMaterial>(material_entity);
-
-      if (material.diffuse_tex.has_value()) {
-        // TODO
-      }
-
-      material_entities.push_back(material_entity);
-    }
-
-    for (const auto& mesh : model_data->meshes) {
-      auto& gl_mesh = gl_model.meshes.emplace_back();
-      // TODO gl_mesh.material = material_entities.at(mesh.vertices);
-
-      gl_mesh.transform = mesh.transform;
-      gl_mesh.vertex_count = static_cast<uint>(mesh.vertices.size());
-      gl_mesh.index_count = static_cast<uint>(mesh.indices.size());
-
-      gl_mesh.vao.bind();
-
-      gl_mesh.vbo.bind();
-      gl_mesh.vbo.upload_data(mesh.vertices.size() * sizeof(Vertex),
-                              mesh.vertices.data());
-
-      using index_type = decltype(MeshData::indices)::value_type;
-      gl_mesh.ebo.bind();
-      gl_mesh.ebo.upload_data(mesh.indices.size() * sizeof(index_type),
-                              mesh.indices.data());
-
-      gl_mesh.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
-      gl_mesh.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
-      gl_mesh.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
-
-      VertexArray::unbind();
-      VertexBuffer::unbind();
-      IndexBuffer::unbind();
-    }
-  }
 }
 
 void OpenGLBackend::update(const float dt)
