@@ -43,3 +43,6 @@
 # Build output directories
 cmake-build-*
 build
+
+assets/textures
+assets/models
