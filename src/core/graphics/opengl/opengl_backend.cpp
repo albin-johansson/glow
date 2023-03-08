@@ -119,6 +119,7 @@ void OpenGLBackend::assign_model(Registry& registry,
       auto& gl_mesh = gl_model.meshes.emplace_back();
       // TODO gl_mesh.material = material_entities.at(mesh.vertices);
 
+      gl_mesh.transform = mesh.transform;
       gl_mesh.vertex_count = static_cast<uint>(mesh.vertices.size());
       gl_mesh.index_count = static_cast<uint>(mesh.indices.size());
 
@@ -128,14 +129,14 @@ void OpenGLBackend::assign_model(Registry& registry,
       gl_mesh.vbo.upload_data(mesh.vertices.size() * sizeof(Vertex),
                               mesh.vertices.data());
 
-      gl_mesh.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
-      gl_mesh.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
-      gl_mesh.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
-
       using index_type = decltype(MeshData::indices)::value_type;
       gl_mesh.ebo.bind();
       gl_mesh.ebo.upload_data(mesh.indices.size() * sizeof(index_type),
                               mesh.indices.data());
+
+      gl_mesh.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
+      gl_mesh.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
+      gl_mesh.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
 
       VertexArray::unbind();
       VertexBuffer::unbind();
@@ -312,22 +313,26 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   auto& registry = scene.get_registry();
   for (auto&& [entity, transform, model] :
        registry.view<comp::Transform, comp::OpenGLModel>().each()) {
-    mDynamicMatrices.model = transform.to_model_matrix();
-    mDynamicMatrices.mv = view * mDynamicMatrices.model;
-    mDynamicMatrices.mvp = projection * mDynamicMatrices.mv;
-    mDynamicMatrices.normal = glm::inverse(glm::transpose(mDynamicMatrices.mv));
+    const auto model_transform = transform.to_model_matrix();
 
     mDynamicMatricesUbo.bind();
-    mDynamicMatricesUbo.update_data(0, sizeof mDynamicMatrices, &mDynamicMatrices);
-    UniformBuffer::unbind();
 
     for (auto& mesh : model.meshes) {
-      //      const auto& material = registry.get<comp::OpenGLMaterial>(mesh.material);
+      // TODO const auto& material = registry.get<comp::OpenGLMaterial>(mesh.material);
+
+      mDynamicMatrices.model = model_transform * mesh.transform;
+      mDynamicMatrices.mv = view * mDynamicMatrices.model;
+      mDynamicMatrices.mvp = projection * mDynamicMatrices.mv;
+      mDynamicMatrices.normal = glm::inverse(glm::transpose(mDynamicMatrices.mv));
+
+      mDynamicMatricesUbo.update_data(0, sizeof mDynamicMatrices, &mDynamicMatrices);
+
       mesh.vao.bind();
       glDrawElements(GL_TRIANGLES, mesh.index_count, GL_UNSIGNED_INT, nullptr);
     }
 
     VertexArray::unbind();
+    UniformBuffer::unbind();
   }
 
   GRAVEL_GL_CHECK_ERRORS();

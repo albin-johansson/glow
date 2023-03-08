@@ -3,6 +3,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/ecs.hpp"
+#include "common/type/math.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/opengl/index_buffer.hpp"
@@ -18,11 +19,11 @@ struct OpenGLMaterial final {
 };
 
 struct OpenGLMesh final {
+  Mat4 transform {1.0f};
   gl::VertexArray vao;
   gl::VertexBuffer vbo;
   gl::IndexBuffer ebo;
   Entity material {kNullEntity};
-
   uint vertex_count {};
   uint index_count {};
 };

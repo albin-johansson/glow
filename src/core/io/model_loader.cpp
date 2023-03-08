@@ -12,6 +12,33 @@
 namespace gravel {
 namespace {
 
+[[nodiscard]] auto convert_matrix(const aiMatrix4x4& row_major) -> Mat4
+{
+  Mat4 column_major {1.0f};
+
+  column_major[0].x = row_major.a1;
+  column_major[0].y = row_major.b1;
+  column_major[0].z = row_major.c1;
+  column_major[0].w = row_major.d1;
+
+  column_major[1].x = row_major.a2;
+  column_major[1].y = row_major.b2;
+  column_major[1].z = row_major.c2;
+  column_major[1].w = row_major.d2;
+
+  column_major[2].x = row_major.a3;
+  column_major[2].y = row_major.b3;
+  column_major[2].z = row_major.c3;
+  column_major[2].w = row_major.d3;
+
+  column_major[3].x = row_major.a4;
+  column_major[3].y = row_major.b4;
+  column_major[3].z = row_major.c4;
+  column_major[3].w = row_major.d4;
+
+  return column_major;
+}
+
 [[nodiscard]] auto get_texture_path(const aiMaterial* material, const aiTextureType type)
     -> Maybe<Path>
 {
@@ -65,9 +92,13 @@ namespace {
   return vertex;
 }
 
-void process_mesh(ModelData& model, const aiScene* scene, aiMesh* mesh)
+void process_mesh(ModelData& model,
+                  const aiScene* scene,
+                  const aiNode* node,
+                  const aiMesh* mesh)
 {
   auto& mesh_data = model.meshes.emplace_back();
+  mesh_data.transform = convert_matrix(node->mTransformation);
 
   for (uint vertex_idx = 0; vertex_idx < mesh->mNumVertices; ++vertex_idx) {
     mesh_data.vertices.push_back(create_mesh_vertex(mesh, vertex_idx));
@@ -89,7 +120,7 @@ void process_mesh(ModelData& model, const aiScene* scene, aiMesh* mesh)
 void process_node(ModelData& model, const aiScene* scene, aiNode* node)
 {
   for (uint mesh_idx = 0; mesh_idx < node->mNumMeshes; ++mesh_idx) {
-    process_mesh(model, scene, scene->mMeshes[node->mMeshes[mesh_idx]]);
+    process_mesh(model, scene, node, scene->mMeshes[node->mMeshes[mesh_idx]]);
   }
 
   for (uint child_idx = 0; child_idx < node->mNumChildren; ++child_idx) {
@@ -108,10 +139,7 @@ auto load_model_data(const Path& path) -> Maybe<ModelData>
 
   Assimp::Importer importer;
 
-  const auto process_flags = aiProcess_Triangulate | aiProcess_GenNormals |
-                             aiProcess_GenUVCoords | aiProcess_OptimizeMeshes |
-                             aiProcess_JoinIdenticalVertices;
-  const auto* scene = importer.ReadFile(path, process_flags);
+  const auto* scene = importer.ReadFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
 
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     spdlog::error("[IO] Could not read 3D object file: {}", importer.GetErrorString());
