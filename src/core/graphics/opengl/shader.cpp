@@ -5,7 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include "graphics/opengl/util.hpp"
-#include "util/files.hpp"
+#include "io/files.hpp"
 
 namespace gravel::gl {
 
