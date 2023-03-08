@@ -1,4 +1,4 @@
-#include "textures.hpp"
+#include "texture_loader.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 

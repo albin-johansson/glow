@@ -14,12 +14,12 @@
 #include "graphics/opengl/component/model.hpp"
 #include "graphics/opengl/util.hpp"
 #include "io/model_loader.hpp"
+#include "io/texture_loader.hpp"
 #include "scene/component/identifier.hpp"
 #include "scene/component/node.hpp"
 #include "scene/component/transform.hpp"
 #include "scene/scene.hpp"
 #include "util/bits.hpp"
-#include "util/textures.hpp"
 
 namespace gravel::gl {
 
