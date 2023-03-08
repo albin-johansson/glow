@@ -18,6 +18,7 @@
 #include "scene/component/node.hpp"
 #include "scene/component/transform.hpp"
 #include "scene/scene.hpp"
+#include "util/bits.hpp"
 #include "util/textures.hpp"
 
 namespace gravel::gl {
@@ -29,7 +30,7 @@ OpenGLBackend::OpenGLBackend(SDL_Window* window)
   load_environment_program();
   load_basic_program();
   init_uniform_buffers();
-  load_environment_texture("assets/textures/sky.hdr");
+  load_environment_texture("assets/textures/helicopter_landing_pad.hdr");
 
   mCamera.set_position(Vec3 {0, 1, 2});
 }
@@ -98,25 +99,48 @@ void OpenGLBackend::load_obj_model(Registry& registry,
                                    const Path& path)
 {
   if (const auto obj = gravel::load_obj_model(path)) {
-    auto& model = registry.emplace<comp::OpenGLModel>(entity);
-    model.vao.bind();
+    auto& gl_model = registry.emplace<comp::OpenGLModel>(entity);
 
-    model.vbo.bind();
-    model.vbo.upload_data(obj->vertices.size() * sizeof(Vertex), obj->vertices.data());
+    Vector<Entity> material_entities;
+    material_entities.reserve(obj->materials.size());
 
-    model.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
-    model.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
-    model.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
+    for (const auto& material : obj->materials) {
+      const auto material_entity = registry.create();
+      auto& gl_material = registry.emplace<comp::OpenGLMaterial>(material_entity);
 
-    using index_type = decltype(ModelData::indices)::value_type;
-    model.ebo.bind();
-    model.ebo.upload_data(obj->indices.size() * sizeof(index_type), obj->indices.data());
+      if (material.diffuse_tex.has_value()) {
+        // TODO
+      }
 
-    model.index_count = obj->indices.size();
+      material_entities.push_back(material_entity);
+    }
 
-    VertexArray::unbind();
-    VertexBuffer::unbind();
-    IndexBuffer::unbind();
+    for (const auto& mesh : obj->meshes) {
+      auto& gl_mesh = gl_model.meshes.emplace_back();
+      // TODO gl_mesh.material = material_entities.at(mesh.vertices);
+
+      gl_mesh.vertex_count = static_cast<uint>(mesh.vertices.size());
+      gl_mesh.index_count = static_cast<uint>(mesh.indices.size());
+
+      gl_mesh.vao.bind();
+
+      gl_mesh.vbo.bind();
+      gl_mesh.vbo.upload_data(mesh.vertices.size() * sizeof(Vertex),
+                              mesh.vertices.data());
+
+      gl_mesh.vao.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
+      gl_mesh.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
+      gl_mesh.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
+
+      using index_type = decltype(MeshData::indices)::value_type;
+      gl_mesh.ebo.bind();
+      gl_mesh.ebo.upload_data(mesh.indices.size() * sizeof(index_type),
+                              mesh.indices.data());
+
+      VertexArray::unbind();
+      VertexBuffer::unbind();
+      IndexBuffer::unbind();
+    }
   }
 }
 
@@ -204,6 +228,8 @@ void OpenGLBackend::update_camera_direction(const float dt)
 
 void OpenGLBackend::render(Scene& scene)
 {
+  const auto render_pass_start = Clock::now();
+
   ImGui_ImplSDL2_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
@@ -243,6 +269,10 @@ void OpenGLBackend::render(Scene& scene)
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
   GRAVEL_GL_CHECK_ERRORS();
+
+  // Measure the render pass before swapping the framebuffers, avoiding VSync idle time.
+  const auto render_pass_end = Clock::now();
+  mRenderPassDuration = render_pass_end - render_pass_start;
 
   if constexpr (kOnApple) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -291,12 +321,16 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
     mDynamicMatricesUbo.update_data(0, sizeof mDynamicMatrices, &mDynamicMatrices);
     UniformBuffer::unbind();
 
-    model.vao.bind();
-    glDrawElements(GL_TRIANGLES, model.index_count, GL_UNSIGNED_INT, nullptr);
-    VertexArray::unbind();
+    for (auto& mesh : model.meshes) {
+      //      const auto& material = registry.get<comp::OpenGLMaterial>(mesh.material);
+      mesh.vao.bind();
+      glDrawElements(GL_TRIANGLES, mesh.index_count, GL_UNSIGNED_INT, nullptr);
+    }
 
-    GRAVEL_GL_CHECK_ERRORS();
+    VertexArray::unbind();
   }
+
+  GRAVEL_GL_CHECK_ERRORS();
 
   Program::unbind();
   UniformBuffer::unbind_block(0);
@@ -309,7 +343,8 @@ void OpenGLBackend::render_gui(Scene& scene)
     const auto& io = ImGui::GetIO();
     ImGui::SeparatorText("Performance");
     ImGui::Text("FPS: %.2f", io.Framerate);
-    // TODO mRenderDurationMs
+    ImGui::Text("Render pass: %.3f ms",
+                static_cast<float64>(mRenderPassDuration.count()) / 1'000.0);
 
     ImGui::SeparatorText("Debug");
     ImGui::Checkbox("Depth test", &mDepthTest);
@@ -329,7 +364,12 @@ void OpenGLBackend::render_gui(Scene& scene)
     ImGui::Text("Position: (%.1f, %.1f, %.1f)", cam_pos.x, cam_pos.y, cam_pos.z);
     ImGui::Text("Direction: (%.2f, %.2f, %.2f)", cam_dir.x, cam_dir.y, cam_dir.z);
     ImGui::Text("Aspect ratio: %.2f", mCamera.get_aspect_ratio());
-    ImGui::SliderFloat("Speed", &mCameraSpeed, 0.1f, 5.0f);
+    ImGui::SliderFloat("Speed",
+                       &mCameraSpeed,
+                       0.1f,
+                       500.0f,
+                       "%.3f",
+                       ImGuiSliderFlags_Logarithmic);
     ImGui::SliderFloat("Sensitivity", &mCameraSensitivity, 0.1f, 5.0f);
 
     ImGui::SeparatorText("Environment");
@@ -373,13 +413,19 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
     if (auto* transform = registry.try_get<comp::Transform>(entity)) {
       ImGui::SeparatorText("Transform");
       ImGui::DragFloat3("Translation", glm::value_ptr(transform->translation), 0.25f);
-      ImGui::DragFloat3("Rotation", glm::value_ptr(transform->rotation));
-      ImGui::DragFloat3("Scale", glm::value_ptr(transform->scale), 0.25f);
+      ImGui::SliderFloat3("Rotation", glm::value_ptr(transform->rotation), 0, 360);
+      ImGui::DragFloat3("Scale",
+                        glm::value_ptr(transform->scale),
+                        1,
+                        0.001f,
+                        10'000,
+                        "%.3f",
+                        ImGuiSliderFlags_Logarithmic);
     }
 
     if (const auto* model = registry.try_get<comp::OpenGLModel>(entity)) {
       ImGui::SeparatorText("OpenGLModel");
-      ImGui::Text("Indices: %lu", model->index_count);
+      ImGui::Text("Meshes: %lu", model->meshes.size());
     }
 
     ImGui::Spacing();

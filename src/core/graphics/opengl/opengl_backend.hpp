@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "common/predef.hpp"
+#include "common/type/chrono.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
 #include "common/type/path.hpp"
@@ -72,6 +73,8 @@ class OpenGLBackend final {
 
   EnvironmentOptions mEnvOptions;
   DynamicMatrices mDynamicMatrices;
+
+  Microseconds mRenderPassDuration {};
 
   // Debug options
   bool mDepthTest {true};

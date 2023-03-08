@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstddef>  // byte, size_t, ptrdiff_t
-#include <cstdint>  // uint{}_t, int{}_t
+#include <cstdint>  // uint{}_t, int{}_t, uintptr_t
 
 namespace gravel {
 
@@ -9,6 +9,7 @@ using Byte = std::byte;
 
 using usize = std::size_t;
 using ssize = std::ptrdiff_t;
+using uintptr = std::uintptr_t;
 
 using uchar = unsigned char;
 using uint = unsigned int;

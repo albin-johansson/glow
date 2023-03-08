@@ -23,9 +23,17 @@
 #endif  // WIN32
 
 // clang-format off
+#define GRAVEL_DEFAULT_COPY(Class) \
+  Class(const Class&) = default;   \
+  auto operator=(const Class&) -> Class& = default
+
 #define GRAVEL_DELETE_COPY(Class) \
   Class(const Class&) = delete;   \
   auto operator=(const Class&) -> Class& = delete
+
+#define GRAVEL_DEFAULT_MOVE(Class) \
+  Class(Class&&) noexcept = default;        \
+  auto operator=(Class&&) noexcept -> Class& = default
 
 #define GRAVEL_DELETE_MOVE(Class) \
   Class(Class&&) noexcept = delete;        \
