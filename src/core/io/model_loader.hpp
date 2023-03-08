@@ -24,6 +24,6 @@ struct ModelData final {
   Vector<MeshData> meshes;
 };
 
-[[nodiscard]] auto load_obj_model(const Path& path) -> Maybe<ModelData>;
+[[nodiscard]] auto load_model_data(const Path& path) -> Maybe<ModelData>;
 
 }  // namespace gravel

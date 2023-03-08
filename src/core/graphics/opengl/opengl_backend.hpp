@@ -45,7 +45,7 @@ class OpenGLBackend final {
 
   void render(Scene& scene);
 
-  void load_obj_model(Registry& registry, Entity entity, const Path& path);
+  void assign_model(Registry& registry, const Entity entity, const Path& path);
 
   [[nodiscard]] auto should_quit() const -> bool { return mQuit; }
 

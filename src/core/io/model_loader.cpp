@@ -99,7 +99,7 @@ void process_node(ModelData& model, const aiScene* scene, aiNode* node)
 
 }  // namespace
 
-auto load_obj_model(const Path& path) -> Maybe<ModelData>
+auto load_model_data(const Path& path) -> Maybe<ModelData>
 {
   const auto start_time = Clock::now();
 

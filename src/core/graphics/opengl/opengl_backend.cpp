@@ -94,17 +94,17 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   Texture2D::unbind();
 }
 
-void OpenGLBackend::load_obj_model(Registry& registry,
-                                   const Entity entity,
-                                   const Path& path)
+void OpenGLBackend::assign_model(Registry& registry,
+                                 const Entity entity,
+                                 const Path& path)
 {
-  if (const auto obj = gravel::load_obj_model(path)) {
+  if (const auto model_data = load_model_data(path)) {
     auto& gl_model = registry.emplace<comp::OpenGLModel>(entity);
 
     Vector<Entity> material_entities;
-    material_entities.reserve(obj->materials.size());
+    material_entities.reserve(model_data->materials.size());
 
-    for (const auto& material : obj->materials) {
+    for (const auto& material : model_data->materials) {
       const auto material_entity = registry.create();
       auto& gl_material = registry.emplace<comp::OpenGLMaterial>(material_entity);
 
@@ -115,7 +115,7 @@ void OpenGLBackend::load_obj_model(Registry& registry,
       material_entities.push_back(material_entity);
     }
 
-    for (const auto& mesh : obj->meshes) {
+    for (const auto& mesh : model_data->meshes) {
       auto& gl_mesh = gl_model.meshes.emplace_back();
       // TODO gl_mesh.material = material_entities.at(mesh.vertices);
 
