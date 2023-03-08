@@ -48,7 +48,7 @@ class OpenGLBackend final {
 
   void load_environment_texture(const Path& path);
 
-  void assign_model(Registry& registry, const Entity entity, const Path& path);
+  void assign_model(Registry& registry, Entity entity, const Path& path);
 
   [[nodiscard]] auto should_quit() const -> bool { return mQuit; }
 
