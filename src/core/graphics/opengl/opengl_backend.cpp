@@ -18,7 +18,6 @@
 #include "scene/component/node.hpp"
 #include "scene/component/transform.hpp"
 #include "scene/scene.hpp"
-#include "util/bits.hpp"
 
 namespace gravel::gl {
 
