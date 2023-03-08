@@ -138,8 +138,8 @@ auto load_model_data(const Path& path) -> Maybe<ModelData>
   const auto directory = path.parent_path().string();
 
   Assimp::Importer importer;
-
-  const auto* scene = importer.ReadFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
+  const auto* scene =
+      importer.ReadFile(path.string(), aiProcessPreset_TargetRealtime_MaxQuality);
 
   if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     spdlog::error("[IO] Could not read 3D object file: {}", importer.GetErrorString());

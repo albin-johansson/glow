@@ -67,7 +67,7 @@ class OpenGLBackend final {
 
   Framebuffer mPrimaryBuffer;
 
-  float mCameraSpeed {1};
+  float mCameraSpeed {100};
   float mCameraSensitivity {1};
   Vec2 mLastMousePos {};
 

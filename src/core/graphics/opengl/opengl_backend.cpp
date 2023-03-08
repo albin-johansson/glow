@@ -273,7 +273,8 @@ void OpenGLBackend::render(Scene& scene)
 
   // Measure the render pass before swapping the framebuffers, avoiding VSync idle time.
   const auto render_pass_end = Clock::now();
-  mRenderPassDuration = render_pass_end - render_pass_start;
+  mRenderPassDuration =
+      chrono::duration_cast<Microseconds>(render_pass_end - render_pass_start);
 
   if constexpr (kOnApple) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -372,7 +373,7 @@ void OpenGLBackend::render_gui(Scene& scene)
     ImGui::SliderFloat("Speed",
                        &mCameraSpeed,
                        0.1f,
-                       500.0f,
+                       2000.0f,
                        "%.3f",
                        ImGuiSliderFlags_Logarithmic);
     ImGui::SliderFloat("Sensitivity", &mCameraSensitivity, 0.1f, 5.0f);
@@ -418,7 +419,7 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
     if (auto* transform = registry.try_get<comp::Transform>(entity)) {
       ImGui::SeparatorText("Transform");
       ImGui::DragFloat3("Translation", glm::value_ptr(transform->translation), 0.25f);
-      ImGui::SliderFloat3("Rotation", glm::value_ptr(transform->rotation), 0, 360);
+      ImGui::DragFloat3("Rotation", glm::value_ptr(transform->rotation));
       ImGui::DragFloat3("Scale",
                         glm::value_ptr(transform->scale),
                         1,
@@ -430,7 +431,7 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
 
     if (const auto* model = registry.try_get<comp::OpenGLModel>(entity)) {
       ImGui::SeparatorText("OpenGLModel");
-      ImGui::Text("Meshes: %lu", model->meshes.size());
+      ImGui::Text("Meshes: %zu", model->meshes.size());
     }
 
     ImGui::Spacing();

@@ -59,6 +59,7 @@ auto main(int, char*[]) -> int
     float64 last_update = query_counter();
     Vec2 last_framebuffer_scale {};
 
+    SDL_MaximizeWindow(window.get_handle());
     SDL_ShowWindow(window.get_handle());
 
     Scene scene;
