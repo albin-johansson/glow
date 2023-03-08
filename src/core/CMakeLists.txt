@@ -24,6 +24,7 @@ target_include_directories(libgravel
 
 target_link_libraries(libgravel
                       PUBLIC
+                      assimp::assimp
                       EnTT::EnTT
                       fmt::fmt
                       glad::glad

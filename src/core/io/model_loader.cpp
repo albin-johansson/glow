@@ -1,120 +1,132 @@
 #include "model_loader.hpp"
 
-#define TINYOBJLOADER_IMPLEMENTATION
-
-#include <chrono>  // system_clock, duration_cast, milliseconds
-
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <fmt/chrono.h>
 #include <spdlog/spdlog.h>
-#include <tiny_obj_loader.h>
 
-#include "common/primitives.hpp"
+#include "common/type/chrono.hpp"
 #include "common/type/map.hpp"
-#include "common/type/string.hpp"
-#include "common/type/vector.hpp"
 
 namespace gravel {
+namespace {
 
-namespace chrono = std::chrono;
+[[nodiscard]] auto get_texture_path(const aiMaterial* material, const aiTextureType type)
+    -> Maybe<Path>
+{
+  if (material->GetTextureCount(type) > 0) {
+    aiString path;
+    material->GetTexture(type, 0, &path);
+    return Path {path.C_Str()};
+  }
+  else {
+    return kNothing;
+  }
+}
+
+[[nodiscard]] auto load_material_data(const aiScene* scene, const aiMesh* mesh)
+    -> MaterialData
+{
+  auto* material = scene->mMaterials[mesh->mMaterialIndex];
+
+  MaterialData material_data;
+  material_data.diffuse_tex = get_texture_path(material, aiTextureType_DIFFUSE);
+  material_data.specular_tex = get_texture_path(material, aiTextureType_SPECULAR);
+
+  return material_data;
+}
+
+[[nodiscard]] auto create_mesh_vertex(const aiMesh* mesh, const uint vertex_idx) -> Vertex
+{
+  Vertex vertex;
+
+  const auto& position = mesh->mVertices[vertex_idx];
+  vertex.position.x = position.x;
+  vertex.position.y = position.y;
+  vertex.position.z = position.z;
+
+  if (mesh->HasNormals()) {
+    const auto& normal = mesh->mNormals[vertex_idx];
+    vertex.normal.x = normal.x;
+    vertex.normal.y = normal.y;
+    vertex.normal.z = normal.z;
+  }
+
+  if (mesh->HasTextureCoords(0)) {
+    const auto& tex_coords = mesh->mTextureCoords[0][vertex_idx];
+    vertex.tex_coords.x = tex_coords.x;
+    vertex.tex_coords.y = tex_coords.y;
+  }
+  else {
+    vertex.tex_coords = Vec2 {0, 0};
+  }
+
+  return vertex;
+}
+
+void process_mesh(ModelData& model, const aiScene* scene, aiMesh* mesh)
+{
+  auto& mesh_data = model.meshes.emplace_back();
+
+  for (uint vertex_idx = 0; vertex_idx < mesh->mNumVertices; ++vertex_idx) {
+    mesh_data.vertices.push_back(create_mesh_vertex(mesh, vertex_idx));
+  }
+
+  for (uint face_idx = 0; face_idx < mesh->mNumFaces; ++face_idx) {
+    const auto& face = mesh->mFaces[face_idx];
+
+    for (uint index_idx = 0; index_idx < face.mNumIndices; ++index_idx) {
+      mesh_data.indices.push_back(face.mIndices[index_idx]);
+    }
+  }
+
+  if (mesh->mMaterialIndex >= 0) {
+    model.materials.push_back(load_material_data(scene, mesh));
+  }
+}
+
+void process_node(ModelData& model, const aiScene* scene, aiNode* node)
+{
+  for (uint mesh_idx = 0; mesh_idx < node->mNumMeshes; ++mesh_idx) {
+    process_mesh(model, scene, scene->mMeshes[node->mMeshes[mesh_idx]]);
+  }
+
+  for (uint child_idx = 0; child_idx < node->mNumChildren; ++child_idx) {
+    process_node(model, scene, node->mChildren[child_idx]);
+  }
+}
+
+}  // namespace
 
 auto load_obj_model(const Path& path) -> Maybe<ModelData>
 {
-  const auto start_time = chrono::system_clock::now();
-
-  if (path.extension() != ".obj") {
-    spdlog::error("[IO] OBJ model files should have '.obj' extension");
-    return kNothing;
-  }
+  const auto start_time = Clock::now();
 
   const auto absolute_path = fs::absolute(path).string();
   const auto directory = path.parent_path().string();
 
-  tinyobj::attrib_t attrib {};
-  Vector<tinyobj::shape_t> shapes;
-  Vector<tinyobj::material_t> materials;
+  Assimp::Importer importer;
 
-  String warn;
-  String err;
+  const auto process_flags = aiProcess_Triangulate | aiProcess_GenNormals |
+                             aiProcess_GenUVCoords | aiProcess_OptimizeMeshes |
+                             aiProcess_JoinIdenticalVertices;
+  const auto* scene = importer.ReadFile(path, process_flags);
 
-  const bool triangulate = true;
-  const bool fallback_vertex_colors = false;
-  const bool success = tinyobj::LoadObj(&attrib,
-                                        &shapes,
-                                        &materials,
-                                        &warn,
-                                        &err,
-                                        absolute_path.c_str(),
-                                        directory.c_str(),
-                                        triangulate,
-                                        fallback_vertex_colors);
-
-  if (!warn.empty()) {
-    spdlog::warn("[IO] {}", warn);
-  }
-
-  if (!err.empty()) {
-    spdlog::error("[IO] {}", err);
-  }
-
-  if (!success) {
-    return kNothing;
-  }
-
-  if (attrib.vertices.size() != attrib.normals.size()) {
-    spdlog::error("[IO] Vertex count must match normal count");
+  if (!scene || !scene->mRootNode || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
+    spdlog::error("[IO] Could not read 3D object file: {}", importer.GetErrorString());
     return kNothing;
   }
 
   ModelData model;
-  model.vertices.reserve(attrib.vertices.size());
-  // model.materials.reserve(materials.size());
-  // model.meshes.reserve(shapes.size());
+  process_node(model, scene, scene->mRootNode);
 
-  HashMap<Vertex, uint> vertex_indices;
-
-  model.indices.reserve(attrib.vertices.size());
-  vertex_indices.reserve(attrib.vertices.size() / 4);
-
-  // TODO handle meshes and materials
-  for (const auto& shape : shapes) {
-    for (const auto& index : shape.mesh.indices) {
-      Vertex vertex;
-
-      const auto position_index = 3 * static_cast<usize>(index.vertex_index);
-      const auto normal_index = 3 * static_cast<usize>(index.normal_index);
-      const auto tex_coords_index = 2 * static_cast<usize>(index.texcoord_index);
-
-      vertex.position = Vec3 {
-          attrib.vertices.at(position_index + 0),
-          attrib.vertices.at(position_index + 1),
-          attrib.vertices.at(position_index + 2),
-      };
-
-      vertex.normal = Vec3 {
-          attrib.normals.at(normal_index + 0),
-          attrib.normals.at(normal_index + 1),
-          attrib.normals.at(normal_index + 2),
-      };
-
-      vertex.tex_coords = Vec2 {
-          attrib.texcoords.at(tex_coords_index + 0),
-          attrib.texcoords.at(tex_coords_index + 1),
-      };
-
-      auto [iter, did_insert] = vertex_indices.try_emplace(vertex);
-      if (did_insert) {
-        const auto vertex_index = static_cast<uint>(model.vertices.size());
-        iter->second = vertex_index;
-        model.vertices.push_back(vertex);
-      }
-
-      model.indices.push_back(vertex_indices.at(vertex));
-    }
-  }
-
-  const auto end_time = chrono::system_clock::now();
-  const auto total_duration =
-      chrono::duration_cast<chrono::milliseconds>(end_time - start_time);
+  const auto end_time = Clock::now();
+  const auto total_duration = chrono::duration_cast<Milliseconds>(end_time - start_time);
+  spdlog::debug("[IO] Loaded 3D model in {} (meshes: {}, materials: {})",
+                total_duration,
+                model.meshes.size(),
+                model.materials.size());
 
   return model;
 }
