@@ -8,7 +8,6 @@
 #include "common/type/path.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/opengl/index_buffer.hpp"
-#include "graphics/opengl/texture_2d.hpp"
 #include "graphics/opengl/vertex_array.hpp"
 #include "graphics/opengl/vertex_buffer.hpp"
 
@@ -16,8 +15,13 @@ namespace gravel {
 namespace comp {
 
 struct OpenGLMaterial final {
-  Maybe<gl::Texture2D> diffuse_tex;
-  Maybe<gl::Texture2D> specular_tex;
+  Maybe<uint> diffuse_tex;
+  Maybe<uint> specular_tex;
+
+  Vec3 ambient {};
+  Vec3 diffuse {};
+  Vec3 specular {};
+  Vec3 emission {};
 };
 
 struct OpenGLMesh final {
