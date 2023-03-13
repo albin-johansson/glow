@@ -54,10 +54,6 @@ void OpenGLBackend::load_environment_program()
 
   mEnvProgram.set_uniform("env_texture", 0).check("[GL] Bad env_texture binding");
   mEnvProgram.set_uniform_block_binding("UBO", 0).check("[GL] Bad UBO binding");
-
-  mEnvProgramUbo.bind();
-  mEnvProgramUbo.reserve_space(sizeof(EnvironmentOptions));
-  UniformBuffer::unbind();
 }
 
 void OpenGLBackend::load_basic_program()
@@ -74,6 +70,9 @@ void OpenGLBackend::load_basic_program()
 
 void OpenGLBackend::init_uniform_buffers()
 {
+  mEnvProgramUbo.bind();
+  mEnvProgramUbo.reserve_space(sizeof(EnvironmentOptions));
+
   mDynamicMatricesUbo.bind();
   mDynamicMatricesUbo.reserve_space(sizeof(DynamicMatrices));
 
