@@ -43,6 +43,16 @@ namespace {
   return column_major;
 }
 
+[[nodiscard]] auto convert_vector(const aiVector3D& from) -> Vec3
+{
+  return Vec3 {from.x, from.y, from.z};
+}
+
+[[nodiscard]] auto convert_vector(const aiVector2D& from) -> Vec2
+{
+  return Vec2 {from.x, from.y};
+}
+
 [[nodiscard]] auto get_texture(const aiMaterial* material, const aiTextureType type)
     -> Maybe<Path>
 {
@@ -100,21 +110,16 @@ namespace {
   Vertex vertex;
 
   const auto& position = mesh->mVertices[vertex_idx];
-  vertex.position.x = position.x;
-  vertex.position.y = position.y;
-  vertex.position.z = position.z;
+  vertex.position = convert_vector(position);
 
   if (mesh->HasNormals()) {
     const auto& normal = mesh->mNormals[vertex_idx];
-    vertex.normal.x = normal.x;
-    vertex.normal.y = normal.y;
-    vertex.normal.z = normal.z;
+    vertex.normal = convert_vector(normal);
   }
 
   if (mesh->HasTextureCoords(0)) {
     const auto& tex_coords = mesh->mTextureCoords[0][vertex_idx];
-    vertex.tex_coords.x = tex_coords.x;
-    vertex.tex_coords.y = tex_coords.y;
+    vertex.tex_coords = convert_vector(tex_coords);
   }
   else {
     vertex.tex_coords = Vec2 {0, 0};
