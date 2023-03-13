@@ -7,10 +7,14 @@
 #include <spdlog/spdlog.h>
 
 #include "common/type/chrono.hpp"
-#include "common/type/map.hpp"
 
 namespace gravel {
 namespace {
+
+[[nodiscard]] auto convert_color(const aiColor4D& color) -> Vec3
+{
+  return Vec3 {color.r, color.g, color.b};
+}
 
 [[nodiscard]] auto convert_matrix(const aiMatrix4x4& row_major) -> Mat4
 {
@@ -39,7 +43,7 @@ namespace {
   return column_major;
 }
 
-[[nodiscard]] auto get_texture_path(const aiMaterial* material, const aiTextureType type)
+[[nodiscard]] auto get_texture(const aiMaterial* material, const aiTextureType type)
     -> Maybe<Path>
 {
   if (material->GetTextureCount(type) > 0) {
@@ -55,11 +59,38 @@ namespace {
 [[nodiscard]] auto load_material_data(const aiScene* scene, const aiMesh* mesh)
     -> MaterialData
 {
-  auto* material = scene->mMaterials[mesh->mMaterialIndex];
+  const auto* material = scene->mMaterials[mesh->mMaterialIndex];
 
   MaterialData material_data;
-  material_data.diffuse_tex = get_texture_path(material, aiTextureType_DIFFUSE);
-  material_data.specular_tex = get_texture_path(material, aiTextureType_SPECULAR);
+  material_data.name = material->GetName().C_Str();
+
+  material_data.diffuse_tex = get_texture(material, aiTextureType_DIFFUSE);
+  material_data.specular_tex = get_texture(material, aiTextureType_SPECULAR);
+  material_data.roughness_tex = get_texture(material, aiTextureType_DIFFUSE_ROUGHNESS);
+  material_data.metalness_tex = get_texture(material, aiTextureType_METALNESS);
+  material_data.ao_tex = get_texture(material, aiTextureType_AMBIENT_OCCLUSION);
+  material_data.normal_tex = get_texture(material, aiTextureType_NORMALS);
+
+  aiColor4D ambient_color {};
+  aiColor4D diffuse_color {};
+  aiColor4D specular_color {};
+  aiColor4D emission_color {};
+
+  material->Get(AI_MATKEY_COLOR_AMBIENT, ambient_color);
+  material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse_color);
+  material->Get(AI_MATKEY_COLOR_SPECULAR, specular_color);
+  material->Get(AI_MATKEY_COLOR_EMISSIVE, emission_color);
+
+  material_data.ambient = convert_color(ambient_color);
+  material_data.diffuse = convert_color(diffuse_color);
+  material_data.specular = convert_color(specular_color);
+  material_data.emission = convert_color(emission_color);
+
+  material->Get(AI_MATKEY_ROUGHNESS_FACTOR, material_data.roughness);
+  material->Get(AI_MATKEY_METALLIC_FACTOR, material_data.metalness);
+  material->Get(AI_MATKEY_SHININESS, material_data.shininess);
+  material->Get(AI_MATKEY_REFRACTI, material_data.refraction_index);
+  material->Get(AI_MATKEY_SHEEN_ROUGHNESS_FACTOR, material_data.sheen);
 
   return material_data;
 }
@@ -92,12 +123,10 @@ namespace {
   return vertex;
 }
 
-void process_mesh(ModelData& model,
-                  const aiScene* scene,
-                  const aiNode* node,
-                  const aiMesh* mesh)
+[[nodiscard]] auto load_mesh_data(const aiNode* node, const aiMesh* mesh) -> MeshData
 {
-  auto& mesh_data = model.meshes.emplace_back();
+  MeshData mesh_data;
+  mesh_data.material_id = mesh->mMaterialIndex;
   mesh_data.transform = convert_matrix(node->mTransformation);
 
   for (uint vertex_idx = 0; vertex_idx < mesh->mNumVertices; ++vertex_idx) {
@@ -112,19 +141,25 @@ void process_mesh(ModelData& model,
     }
   }
 
-  if (mesh->mMaterialIndex >= 0) {
-    model.materials.push_back(load_material_data(scene, mesh));
-  }
+  return mesh_data;
 }
 
 void process_node(ModelData& model, const aiScene* scene, const aiNode* node)
 {
   for (uint mesh_idx = 0; mesh_idx < node->mNumMeshes; ++mesh_idx) {
-    process_mesh(model, scene, node, scene->mMeshes[node->mMeshes[mesh_idx]]);
+    const auto* mesh = scene->mMeshes[node->mMeshes[mesh_idx]];
+
+    auto [iter, did_insert] = model.materials.try_emplace(mesh->mMaterialIndex);
+    if (did_insert) {
+      iter->second = load_material_data(scene, mesh);
+    }
+
+    model.meshes.push_back(load_mesh_data(node, mesh));
   }
 
   for (uint child_idx = 0; child_idx < node->mNumChildren; ++child_idx) {
-    process_node(model, scene, node->mChildren[child_idx]);
+    const auto* child_node = node->mChildren[child_idx];
+    process_node(model, scene, child_node);
   }
 }
 
