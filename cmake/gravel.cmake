@@ -6,6 +6,13 @@ function(gravel_copy_directory_post_build target from to)
                      ${to})
 endfunction()
 
+function(gravel_symlink_directory_post_build target from to)
+  add_custom_command(TARGET ${target} POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E create_symlink
+                     ${from}
+                     ${to})
+endfunction()
+
 function(gravel_configure_compile_options target)
   if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${target}
