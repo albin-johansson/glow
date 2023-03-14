@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 
 #include "common/predef.hpp"
-#include "graphics/component/gl_model.hpp"
+#include "graphics/opengl/model.hpp"
 #include "graphics/opengl/util.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/component/identifier.hpp"
@@ -263,7 +263,7 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
 
   auto& registry = scene.get_registry();
   for (auto [entity, transform, model] :
-       registry.view<comp::Transform, comp::OpenGLModel>().each()) {
+       registry.view<comp::Transform, gl::Model>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
     mDynamicMatricesUbo.bind();
@@ -382,7 +382,7 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
                         ImGuiSliderFlags_Logarithmic);
     }
 
-    if (const auto* model = registry.try_get<comp::OpenGLModel>(entity)) {
+    if (const auto* model = registry.try_get<gl::Model>(entity)) {
       ImGui::SeparatorText("OpenGLModel");
       ImGui::Text("Meshes: %zu", model->meshes.size());
     }
