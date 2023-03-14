@@ -23,10 +23,10 @@ jobs:
         with:
           path: |
             ${{env.VCPKG_ROOT}}
-            !${{env.VCPKG_ROOT}}\buildtrees
-            !${{env.VCPKG_ROOT}}\packages
-            !${{env.VCPKG_ROOT}}\downloads
-            !${{env.VCPKG_ROOT}}\installed
+            !${{env.VCPKG_ROOT}}/buildtrees
+            !${{env.VCPKG_ROOT}}/packages
+            !${{env.VCPKG_ROOT}}/downloads
+            !${{env.VCPKG_ROOT}}/installed
           key: gravel-macos-vcpkg-${{hashFiles('vcpkg.json')}}
       - name: Install Vcpkg
         if: steps.restore-vcpkg.outputs.cache-hit != 'true'
@@ -43,14 +43,74 @@ jobs:
       - name: Build
         run: ninja -C build
 
-  windows:
-    runs-on: windows-latest
-    if: contains(github.event.head_commit.message, '[skip-ci]') == false
-    steps:
-      - uses: actions/checkout@v3
-
   linux:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    env:
+      VCPKG_ROOT: ${{github.workspace}}/vcpkg
+      VCPKG_DEFAULT_BINARY_CACHE: ${{github.workspace}}/vcpkg/bincache
     steps:
       - uses: actions/checkout@v3
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install cmake ninja-build
+      - name: Restore Vcpkg
+        uses: actions/cache@v3
+        id: restore-vcpkg
+        with:
+          path: |
+            ${{env.VCPKG_ROOT}}
+            !${{env.VCPKG_ROOT}}/buildtrees
+            !${{env.VCPKG_ROOT}}/packages
+            !${{env.VCPKG_ROOT}}/downloads
+            !${{env.VCPKG_ROOT}}/installed
+          key: gravel-ubuntu-vcpkg-${{hashFiles('vcpkg.json')}}
+      - name: Install Vcpkg
+        if: steps.restore-vcpkg.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          mkdir -p ${{env.VCPKG_DEFAULT_BINARY_CACHE}}
+      - name: Generate build files
+        run: |
+          mkdir build && cd build
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: ninja -C build
+
+  windows:
+    runs-on: windows-latest
+    if: contains(github.event.head_commit.message, '[skip-ci]') == false
+    env:
+      VCPKG_ROOT: ${{github.workspace}}\vcpkg
+      VCPKG_TARGET_TRIPLET: x64-windows-static-md
+      VCPKG_DEFAULT_BINARY_CACHE: ${{github.workspace}}\vcpkg\bincache
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restore Vcpkg
+        uses: actions/cache@v3
+        id: restore-vcpkg
+        with:
+          path: |
+            ${{env.VCPKG_ROOT}}
+            !${{env.VCPKG_ROOT}}\buildtrees
+            !${{env.VCPKG_ROOT}}\packages
+            !${{env.VCPKG_ROOT}}\downloads
+            !${{env.VCPKG_ROOT}}\installed
+          key: gravel-windows-vcpkg-${{hashFiles('vcpkg.json')}}
+      - name: Install Vcpkg
+        if: steps.restore-vcpkg.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          .\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+          mkdir -p ${{env.VCPKG_DEFAULT_BINARY_CACHE}}
+      - name: Generate build files
+        run: |
+          mkdir build
+          cd build
+          cmake .. -GNinja `
+                   -DCMAKE_BUILD_TYPE=Debug `
+                   -DVCPKG_TARGET_TRIPLET=${{env.VCPKG_TARGET_TRIPLET}}
+      - name: Build
+        run: ninja -C build
