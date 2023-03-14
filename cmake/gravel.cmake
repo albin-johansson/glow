@@ -41,6 +41,8 @@ function(gravel_configure_compile_options target)
                              PRIVATE
                              BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
                              GLM_ENABLE_EXPERIMENTAL
+                             IMGUI_DEFINE_MATH_OPERATORS
+                             IMGUI_DISABLE_OBSOLETE_FUNCTIONS
                              NOMINMAX
                              SPDLOG_FMT_EXTERNAL
                              WIN32_LEAN_AND_MEAN
