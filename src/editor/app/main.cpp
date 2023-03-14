@@ -39,9 +39,10 @@ auto main(int, char*[]) -> int
 
     const SDL sdl {api};
     Window window {api};
+    auto* window_handle = window.get_handle();
 
-    const gl::Context context {window.get_handle()};
-    DearImGui imgui {window.get_handle(), api};
+    const gl::Context context {window_handle};
+    DearImGui imgui {window_handle, api};
 
     const auto counter_freq = static_cast<float64>(SDL_GetPerformanceFrequency());
     const auto refresh_rate = determine_refresh_rate();
@@ -59,13 +60,13 @@ auto main(int, char*[]) -> int
     float64 last_update = query_counter();
     Vec2 last_framebuffer_scale {};
 
-    SDL_MaximizeWindow(window.get_handle());
-    SDL_ShowWindow(window.get_handle());
+    SDL_MaximizeWindow(window_handle);
+    SDL_ShowWindow(window_handle);
 
     Scene scene;
     const auto model_entity = scene.make_node();
 
-    gl::OpenGLBackend backend {window.get_handle()};
+    gl::OpenGLBackend backend {window_handle};
 
     // The following is a semi-fixed delta time game loop implementation.
     // Logic updates are detached from rendered frames, that is, there may be multiple
@@ -105,7 +106,7 @@ auto main(int, char*[]) -> int
       backend.render(scene);
     }
 
-    SDL_HideWindow(window.get_handle());
+    SDL_HideWindow(window_handle);
     return EXIT_SUCCESS;
   }
   catch (const std::exception& e) {
