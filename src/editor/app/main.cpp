@@ -1,11 +1,11 @@
 #include <algorithm>  // min
 #include <cstdlib>    // EXIT_FAILURE, EXIT_SUCCESS
-#include <exception>  // exception
 
 #include <SDL2/SDL.h>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
+#include "common/debug/error.hpp"
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
 #include "graphics/opengl/context.hpp"
@@ -109,8 +109,8 @@ auto main(int, char*[]) -> int
     SDL_HideWindow(window_handle);
     return EXIT_SUCCESS;
   }
-  catch (const std::exception& e) {
-    spdlog::critical("Unhandled exception: {}", e.what());
+  catch (const Error& err) {
+    spdlog::critical("Unhandled exception: {}\n{}", err.what(), err.trace());
     return EXIT_FAILURE;
   }
   catch (...) {

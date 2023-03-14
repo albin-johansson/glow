@@ -12,8 +12,11 @@ class Error final : public std::exception {
 
   [[nodiscard]] auto what() const noexcept -> const char* override;
 
+  [[nodiscard]] auto trace() const -> const String&;
+
  private:
   String mMsg;
+  String mTrace;
 };
 
 }  // namespace gravel
