@@ -37,11 +37,10 @@ void OpenGLBackend::load_framebuffer_program()
   const char* vert_path = "assets/shaders/framebuffer.vert";
   const char* frag_path = "assets/shaders/framebuffer.frag";
 
-  mFramebufferProgram.load_shader_files(vert_path, frag_path)
-      .check("[GL] Framebuffer program error");
-  mFramebufferProgram.link().check("[GL] Framebuffer program link error");
+  mFramebufferProgram.load_shader_files(vert_path, frag_path).check("Compilation error");
+  mFramebufferProgram.link().check("Link error");
 
-  mFramebufferProgram.set_uniform("framebuffer", 0).check("[GL] Bad framebuffer binding");
+  mFramebufferProgram.set_uniform("framebuffer", 0).check("framebuffer");
 }
 
 void OpenGLBackend::load_environment_program()
@@ -49,11 +48,11 @@ void OpenGLBackend::load_environment_program()
   const char* vert_path = "assets/shaders/environment.vert";
   const char* frag_path = "assets/shaders/environment.frag";
 
-  mEnvProgram.load_shader_files(vert_path, frag_path).check("[GL] Env program error");
-  mEnvProgram.link().check("[GL] Env program link error");
+  mEnvProgram.load_shader_files(vert_path, frag_path).check("Compilation error");
+  mEnvProgram.link().check("Link error");
 
-  mEnvProgram.set_uniform("env_texture", 0).check("[GL] Bad env_texture binding");
-  mEnvProgram.set_uniform_block_binding("UBO", 0).check("[GL] Bad UBO binding");
+  mEnvProgram.set_uniform("env_texture", 0).check("env_texture");
+  mEnvProgram.set_uniform_block_binding("UBO", 0).check("UBO");
 }
 
 void OpenGLBackend::load_basic_program()
@@ -61,11 +60,13 @@ void OpenGLBackend::load_basic_program()
   const char* vert_path = "assets/shaders/basic.vert";
   const char* frag_path = "assets/shaders/basic.frag";
 
-  mBasicProgram.load_shader_files(vert_path, frag_path).check("[GL] Basic program error");
-  mBasicProgram.link().check("[GL] Basic program link error");
+  mBasicProgram.load_shader_files(vert_path, frag_path).check("Compilation error");
+  mBasicProgram.link().check("Link error");
 
-  mBasicProgram.set_uniform_block_binding("DynamicMatrices", 0)
-      .check("[GL] Bad UBO binding");
+  mBasicProgram.set_uniform("material_diffuse_tex", 5).check("material_diffuse_tex");
+
+  mBasicProgram.set_uniform_block_binding("DynamicMatrices", 0).check("Matrix UBO");
+  mBasicProgram.set_uniform_block_binding("Material", 1).check("Material UBO");
 }
 
 void OpenGLBackend::init_uniform_buffers()
