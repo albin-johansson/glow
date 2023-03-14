@@ -14,6 +14,9 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
     throw Error {"[GUI] Failed to create ImGui context"};
   }
 
+  auto& io = ImGui::GetIO();
+  io.ConfigFlags |= static_cast<ImGuiConfigFlags>(ImGuiConfigFlags_DockingEnable);
+
   if (api == GraphicsApi::OpenGL) {
     mGL.emplace(window);
   }
