@@ -1,5 +1,9 @@
 #pragma once
 
+#include <boost/config.hpp>
+#include <boost/predef/compiler.h>
+#include <boost/predef/os.h>
+
 #ifdef NDEBUG
 #define GRAVEL_DEBUG_BUILD 0
 #define GRAVEL_RELEASE_BUILD 1
@@ -8,19 +12,30 @@
 #define GRAVEL_RELEASE_BUILD 0
 #endif  // NDEBUG
 
-#ifdef WIN32
+// Compiler detection
+#define GRAVEL_COMPILER_MSVC BOOST_COMP_MSVC
+#define GRAVEL_COMPILER_CLANG BOOST_COMP_CLANG
+#define GRAVEL_COMPILER_GCC BOOST_COMP_GNUC
+
+// OS detection
+#define GRAVEL_OS_WINDOWS BOOST_OS_WINDOWS
+#define GRAVEL_OS_LINUX BOOST_OS_LINUX
+#define GRAVEL_OS_MACOS BOOST_OS_MACOS
+
+// Attributes
+#define GRAVEL_NOINLINE BOOST_NOINLINE
+
+#if GRAVEL_OS_WINDOWS
 #define GRAVEL_DEBUG_BREAK \
   do {                     \
   } while (false)
-#else
-#if __has_builtin(__builtin_debugtrap)
+#elif __has_builtin(__builtin_debugtrap)
 #define GRAVEL_DEBUG_BREAK __builtin_debugtrap()
 #else
 #define GRAVEL_DEBUG_BREAK \
   do {                     \
   } while (false)
-#endif  // __has_builtin(__builtin_debugtrap)
-#endif  // WIN32
+#endif
 
 // clang-format off
 #define GRAVEL_DEFAULT_COPY(Class) \

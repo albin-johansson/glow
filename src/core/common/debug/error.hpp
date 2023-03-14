@@ -2,13 +2,14 @@
 
 #include <exception>  // exception
 
+#include "common/predef.hpp"
 #include "common/type/string.hpp"
 
 namespace gravel {
 
 class Error final : public std::exception {
  public:
-  explicit Error(String msg);
+  GRAVEL_NOINLINE explicit Error(String msg);
 
   [[nodiscard]] auto what() const noexcept -> const char* override;
 
