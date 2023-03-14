@@ -32,10 +32,10 @@ struct EnvironmentOptions final {
 
 /// This struct corresponds to a std140 layout uniform block.
 struct DynamicMatrices final {
-  Mat4 m {};
-  Mat4 mv {};
-  Mat4 mvp {};
-  Mat4 normal {};
+  Mat4 m {};       ///< Model matrix.
+  Mat4 mv {};      ///< Model-view matrix.
+  Mat4 mvp {};     ///< Model-view-projection matrix.
+  Mat4 normal {};  ///< Normal matrix.
 };
 
 class OpenGLBackend final {
@@ -57,7 +57,6 @@ class OpenGLBackend final {
   Quad mFullscreenQuad;
 
   Maybe<Texture2D> mEnvTexture;
-  Texture2D mExplosionTexture;
 
   Program mFramebufferProgram;
   Program mEnvProgram;
@@ -68,7 +67,7 @@ class OpenGLBackend final {
 
   Framebuffer mPrimaryBuffer;
 
-  float mCameraSpeed {100};
+  float mCameraSpeed {10};
   float mCameraSensitivity {1};
   Vec2 mLastMousePos {};
 
