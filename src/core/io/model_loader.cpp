@@ -48,11 +48,6 @@ namespace {
   return Vec3 {from.x, from.y, from.z};
 }
 
-[[nodiscard]] auto convert_vector(const aiVector2D& from) -> Vec2
-{
-  return Vec2 {from.x, from.y};
-}
-
 [[nodiscard]] auto get_texture(const aiMaterial* material, const aiTextureType type)
     -> Maybe<Path>
 {
@@ -174,9 +169,6 @@ auto load_model_data(const Path& path) -> Maybe<ModelData>
 {
   const auto start_time = Clock::now();
 
-  const auto absolute_path = fs::absolute(path).string();
-  const auto directory = path.parent_path().string();
-
   Assimp::Importer importer;
   const auto* scene =
       importer.ReadFile(path.string(), aiProcessPreset_TargetRealtime_MaxQuality);
@@ -187,6 +179,8 @@ auto load_model_data(const Path& path) -> Maybe<ModelData>
   }
 
   ModelData model;
+  model.dir = path.parent_path();
+
   process_node(model, scene, scene->mRootNode);
 
   const auto end_time = Clock::now();

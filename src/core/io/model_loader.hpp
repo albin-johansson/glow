@@ -44,6 +44,7 @@ struct MeshData final {
 };
 
 struct ModelData final {
+  Path dir;
   Vector<MeshData> meshes;
   HashMap<usize, MaterialData> materials;
 };
