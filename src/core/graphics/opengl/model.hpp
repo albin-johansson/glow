@@ -26,9 +26,9 @@ struct Material final {
 /// OpenGL mesh component.
 struct Mesh final {
   Mat4 transform {1.0f};          ///< Transform matrix relative to parent model.
-  gl::VertexArray vao;            ///< Associated vertex array object.
-  gl::VertexBuffer vbo;           ///< Associated vertex buffer object.
-  gl::IndexBuffer ebo;            ///< Associated index buffer object.
+  VertexArray vao;                ///< Associated vertex array object.
+  VertexBuffer vbo;               ///< Associated vertex buffer object.
+  IndexBuffer ebo;                ///< Associated index buffer object.
   Entity material {kNullEntity};  ///< The associated material entity.
   uint index_count {};            ///< The amount of indices needed to render the mesh.
 };

@@ -79,9 +79,9 @@ namespace {
   mesh.vao.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
   mesh.vao.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
 
-  gl::VertexArray::unbind();
-  gl::VertexBuffer::unbind();
-  gl::IndexBuffer::unbind();
+  VertexArray::unbind();
+  VertexBuffer::unbind();
+  IndexBuffer::unbind();
 
   return mesh;
 }

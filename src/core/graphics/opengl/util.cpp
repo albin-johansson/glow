@@ -1,18 +1,17 @@
 #include "util.hpp"
 
-#include <unordered_map>  // unordered_map
-
 #include <fmt/format.h>
 #include <glad/glad.h>
 #include <magic_enum.hpp>
 #include <spdlog/spdlog.h>
 
 #include "common/debug/error.hpp"
+#include "common/type/map.hpp"
 
 namespace gravel::gl {
 namespace {
 
-inline const std::unordered_map<uint, const char*> kErrorMessages = {
+inline const HashMap<uint, const char*> kErrorMessages = {
     {GL_NO_ERROR, "GL_NO_ERROR"},
     {GL_INVALID_ENUM, "GL_INVALID_ENUM"},
     {GL_INVALID_VALUE, "GL_INVALID_VALUE"},
