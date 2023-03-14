@@ -278,4 +278,39 @@ auto Program::get_uniform_block_size(const int block_index) const -> Maybe<int>
   }
 }
 
+auto Program::get_uniform_names() const -> Vector<String>
+{
+  Vector<String> uniform_names;
+
+  const auto uniform_count = get_uniform_count();
+  uniform_names.reserve(static_cast<usize>(uniform_count));
+
+  for (int uniform_index = 0; uniform_index < uniform_count; ++uniform_index) {
+    char name_buffer[256] {};
+    GLsizei name_length {};
+
+    glGetActiveUniform(mID,
+                       uniform_index,
+                       sizeof name_buffer,
+                       &name_length,
+                       nullptr,
+                       nullptr,
+                       name_buffer);
+
+    auto& name = uniform_names.emplace_back(name_buffer);
+    name.reserve(static_cast<usize>(name_length));
+
+    name = name_buffer;
+  }
+
+  return uniform_names;
+}
+
+auto Program::get_uniform_count() const -> int
+{
+  int uniform_count {};
+  glGetProgramiv(mID, GL_ACTIVE_UNIFORMS, &uniform_count);
+  return uniform_count;
+}
+
 }  // namespace gravel::gl

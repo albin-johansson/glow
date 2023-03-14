@@ -8,6 +8,8 @@
 #include "common/type/math.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
+#include "common/type/string.hpp"
+#include "common/type/vector.hpp"
 
 namespace gravel::gl {
 
@@ -116,6 +118,10 @@ class Program final {
   [[nodiscard]] auto get_uniform_block_index(const char* name) const -> Maybe<int>;
 
   [[nodiscard]] auto get_uniform_block_size(int block_index) const -> Maybe<int>;
+
+  [[nodiscard]] auto get_uniform_names() const -> Vector<String>;
+
+  [[nodiscard]] auto get_uniform_count() const -> int;
 
   [[nodiscard]] auto get_id() const -> uint { return mID; }
 
