@@ -3,6 +3,8 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
+#include "common/type/maybe.hpp"
+#include "common/type/path.hpp"
 
 namespace gravel::gl {
 
@@ -25,6 +27,10 @@ class Texture2D final {
   Texture2D(Texture2D&& other) noexcept;
 
   auto operator=(Texture2D&& other) noexcept -> Texture2D&;
+
+  [[nodiscard]] static auto load_rgb(const Path& path) -> Maybe<Texture2D>;
+
+  [[nodiscard]] static auto load_rgb_f32(const Path& path) -> Maybe<Texture2D>;
 
   /// Enables the texture for subsequent draw calls.
   void bind();

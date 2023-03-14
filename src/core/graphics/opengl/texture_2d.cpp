@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 
 #include "graphics/opengl/util.hpp"
+#include "io/texture_loader.hpp"
 
 namespace gravel::gl {
 
@@ -51,6 +52,38 @@ void Texture2D::dispose() noexcept
   if (mID != 0) {
     glDeleteTextures(1, &mID);
   }
+}
+
+auto Texture2D::load_rgb(const Path& path) -> Maybe<Texture2D>
+{
+  const auto data = load_texture_data(path, TextureFormat::Byte, TextureChannels::RGB);
+  if (!data) {
+    return kNothing;
+  }
+
+  Texture2D texture;
+
+  texture.bind();
+  texture.set_data(0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, data->size, data->pixels.get());
+  Texture2D::unbind();
+
+  return texture;
+}
+
+auto Texture2D::load_rgb_f32(const Path& path) -> Maybe<Texture2D>
+{
+  const auto data = load_texture_data(path, TextureFormat::Float, TextureChannels::RGB);
+  if (!data) {
+    return kNothing;
+  }
+
+  Texture2D texture;
+
+  texture.bind();
+  texture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data->size, data->pixels.get());
+  Texture2D::unbind();
+
+  return texture;
 }
 
 void Texture2D::bind()

@@ -81,14 +81,7 @@ void OpenGLBackend::init_uniform_buffers()
 
 void OpenGLBackend::load_environment_texture(const Path& path)
 {
-  const auto data =
-      load_texture_data(path, TextureFormat::Float, TextureChannels::RGB).value();
-
-  auto& env_texture = mEnvTexture.emplace();
-  env_texture.bind();
-  env_texture.set_data(0, GL_RGB32F, GL_RGB, GL_FLOAT, data.size, data.pixels.get());
-
-  Texture2D::unbind();
+  mEnvTexture = Texture2D::load_rgb_f32(path);
 }
 
 void OpenGLBackend::update(const float dt)
