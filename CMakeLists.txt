@@ -24,6 +24,7 @@ find_package(OpenGL REQUIRED)
 
 # Vcpkg dependencies
 find_package(assimp CONFIG REQUIRED)
+find_package(Boost REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)

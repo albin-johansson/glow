@@ -39,10 +39,11 @@ function(gravel_configure_compile_options target)
 
   target_compile_definitions(${target}
                              PRIVATE
-                             WIN32_LEAN_AND_MEAN
+                             BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+                             GLM_ENABLE_EXPERIMENTAL
                              NOMINMAX
                              SPDLOG_FMT_EXTERNAL
-                             GLM_ENABLE_EXPERIMENTAL
+                             WIN32_LEAN_AND_MEAN
                              )
 endfunction()
 
