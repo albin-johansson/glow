@@ -79,29 +79,27 @@ class OpenGLBackend final {
   UniformBuffer mMatrixUBO;
   UniformBuffer mMaterialUBO;
 
-  Framebuffer mPrimaryBuffer;
-
-  float mCameraSpeed {5};
-  float mCameraSensitivity {0.5f};
-
-  Vec2i mViewportSize {};
-  Vec2i mViewportResolution {};
+  Framebuffer mPrimaryFBO;
 
   EnvironmentBuffer mEnvBuffer;
   MatrixBuffer mMatrixBuffer;
   MaterialBuffer mMaterialBuffer;
 
+  float mCameraSpeed {5};
+  float mCameraSensitivity {0.5f};
+  Vec2i mViewportSize {};
+  Vec2i mViewportResolution {};
   Microseconds mRenderPassDuration {};
 
   // Debug options
-  bool mDepthTest {true};
-  bool mCullFaces {true};
-  bool mBlending {true};
-  bool mWireframe {false};
-  bool mVSync {true};
-  bool mQuit {false};
+  bool mUseDepthTest {true};
+  bool mUseFaceCulling {true};
+  bool mUseBlending {true};
+  bool mUseWireframe {false};
+  bool mUseVSync {true};
 
   bool mRestoreLayout {true};
+  bool mQuit {false};
 
   void load_framebuffer_program();
   void load_environment_program();
@@ -112,15 +110,10 @@ class OpenGLBackend final {
   void update_camera_position(float32 dt);
 
   void render_environment(const Mat4& projection, const Mat4& view);
-
   void render_models(Scene& scene, const Mat4& projection, const Mat4& view);
-
   void render_buffer_to_screen(const Framebuffer& buffer);
-
   void render_scene_viewport(Scene& scene);
-
   void render_dock_widgets(Scene& scene);
-
   void render_node_gui(Scene& scene, Entity entity);
 };
 

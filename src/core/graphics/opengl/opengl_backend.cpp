@@ -167,13 +167,13 @@ void OpenGLBackend::render(Scene& scene)
   }
 
   // Reset options
-  set_option(GL_DEPTH_TEST, mDepthTest);
-  set_option(GL_CULL_FACE, mCullFaces);
-  set_option(GL_BLEND, mBlending);
+  set_option(GL_DEPTH_TEST, mUseDepthTest);
+  set_option(GL_CULL_FACE, mUseFaceCulling);
+  set_option(GL_BLEND, mUseBlending);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   render_scene_viewport(scene);
-  render_buffer_to_screen(mPrimaryBuffer);
+  render_buffer_to_screen(mPrimaryFBO);
 
   render_dock_widgets(scene);
   ImGui::Render();
@@ -195,7 +195,7 @@ void OpenGLBackend::render(Scene& scene)
 
 void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
 {
-  assert(get_bound_framebuffer() == mPrimaryBuffer.get_id());
+  assert(get_bound_framebuffer() == mPrimaryFBO.get_id());
 
   if (!mEnvTexture.has_value()) {
     return;
@@ -305,9 +305,9 @@ void OpenGLBackend::render_scene_viewport(Scene& scene)
     mViewportResolution.y = static_cast<int>(framebuffer_size.y);
 
     // Update framebuffer dimensions
-    mPrimaryBuffer.bind();
-    mPrimaryBuffer.resize(mViewportResolution);
-    mPrimaryBuffer.clear();
+    mPrimaryFBO.bind();
+    mPrimaryFBO.resize(mViewportResolution);
+    mPrimaryFBO.clear();
 
     mCamera.set_aspect_ratio(framebuffer_size.x / framebuffer_size.y);
 
@@ -317,13 +317,13 @@ void OpenGLBackend::render_scene_viewport(Scene& scene)
     // Render the environment backdrop
     render_environment(projection, view);
 
-    glPolygonMode(GL_FRONT_AND_BACK, mWireframe ? GL_LINE : GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK, mUseWireframe ? GL_LINE : GL_FILL);
     render_models(scene, projection, view);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     Framebuffer::unbind();
 
-    ImGui::Image(bitcast<ImTextureID>(static_cast<uintptr>(mPrimaryBuffer.get_id())),
+    ImGui::Image(bitcast<ImTextureID>(static_cast<uintptr>(mPrimaryFBO.get_id())),
                  ImGui::GetContentRegionAvail(),
                  ImVec2 {0, 1},
                  ImVec2 {1, 0});
@@ -340,15 +340,15 @@ void OpenGLBackend::render_dock_widgets(Scene& scene)
     ImGui::Text("FPS: %.2f", io.Framerate);
     ImGui::Text("Render pass: %.3f ms",
                 static_cast<float64>(mRenderPassDuration.count()) / 1'000.0);
-    if (ImGui::Checkbox("VSync", &mVSync)) {
-      SDL_GL_SetSwapInterval(mVSync ? 1 : 0);
+    if (ImGui::Checkbox("VSync", &mUseVSync)) {
+      SDL_GL_SetSwapInterval(mUseVSync ? 1 : 0);
     }
-    ImGui::Checkbox("Face culling", &mCullFaces);
+    ImGui::Checkbox("Face culling", &mUseFaceCulling);
 
     ImGui::SeparatorText("Debug");
-    ImGui::Checkbox("Blending", &mBlending);
-    ImGui::Checkbox("Wireframe", &mWireframe);
-    ImGui::Checkbox("Depth test", &mDepthTest);
+    ImGui::Checkbox("Blending", &mUseBlending);
+    ImGui::Checkbox("Wireframe", &mUseWireframe);
+    ImGui::Checkbox("Depth test", &mUseDepthTest);
 
     const auto& cam_pos = mCamera.get_position();
     const auto& cam_dir = mCamera.get_direction();
