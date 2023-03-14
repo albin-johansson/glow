@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 
 #include "common/predef.hpp"
+#include "common/primitives.hpp"
 #include "common/type/chrono.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
@@ -54,7 +55,7 @@ class OpenGLBackend final {
  public:
   explicit OpenGLBackend(SDL_Window* window);
 
-  void update(float dt);
+  void update(float32 dt);
 
   void render(Scene& scene);
 
@@ -74,15 +75,17 @@ class OpenGLBackend final {
   Program mEnvProgram;
   Program mBasicProgram;
 
-  UniformBuffer mEnvProgramUbo;
-  UniformBuffer mDynamicMatricesUbo;
-  UniformBuffer mMaterialUbo;
+  UniformBuffer mEnvironmentUBO;
+  UniformBuffer mMatrixUBO;
+  UniformBuffer mMaterialUBO;
 
   Framebuffer mPrimaryBuffer;
 
-  float mCameraSpeed {10};
-  float mCameraSensitivity {1};
-  Vec2 mLastMousePos {};
+  float mCameraSpeed {5};
+  float mCameraSensitivity {0.5f};
+
+  Vec2i mViewportSize {};
+  Vec2i mViewportResolution {};
 
   EnvironmentBuffer mEnvBuffer;
   MatrixBuffer mMatrixBuffer;
@@ -96,8 +99,9 @@ class OpenGLBackend final {
   bool mBlending {true};
   bool mWireframe {false};
   bool mVSync {true};
-  bool mHideUI {false};
   bool mQuit {false};
+
+  bool mRestoreLayout {true};
 
   void load_framebuffer_program();
   void load_environment_program();
@@ -105,8 +109,7 @@ class OpenGLBackend final {
 
   void init_uniform_buffers();
 
-  void update_camera_position(float dt);
-  void update_camera_direction(float dt);
+  void update_camera_position(float32 dt);
 
   void render_environment(const Mat4& projection, const Mat4& view);
 
@@ -114,7 +117,10 @@ class OpenGLBackend final {
 
   void render_buffer_to_screen(const Framebuffer& buffer);
 
-  void render_gui(Scene& scene);
+  void render_scene_viewport(Scene& scene);
+
+  void render_dock_widgets(Scene& scene);
+
   void render_node_gui(Scene& scene, Entity entity);
 };
 

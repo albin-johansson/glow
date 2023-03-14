@@ -8,6 +8,7 @@
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
+#include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 
 #include "common/predef.hpp"
@@ -18,6 +19,7 @@
 #include "scene/node.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
+#include "util/bits.hpp"
 
 namespace gravel::gl {
 
@@ -73,14 +75,14 @@ void OpenGLBackend::load_basic_program()
 
 void OpenGLBackend::init_uniform_buffers()
 {
-  mEnvProgramUbo.bind();
-  mEnvProgramUbo.reserve_space(sizeof(EnvironmentBuffer));
+  mEnvironmentUBO.bind();
+  mEnvironmentUBO.reserve_space(sizeof(EnvironmentBuffer));
 
-  mDynamicMatricesUbo.bind();
-  mDynamicMatricesUbo.reserve_space(sizeof(MatrixBuffer));
+  mMatrixUBO.bind();
+  mMatrixUBO.reserve_space(sizeof(MatrixBuffer));
 
-  mMaterialUbo.bind();
-  mMaterialUbo.reserve_space(sizeof(MaterialBuffer));
+  mMaterialUBO.bind();
+  mMaterialUBO.reserve_space(sizeof(MaterialBuffer));
 
   UniformBuffer::unbind();
 }
@@ -90,8 +92,10 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   mEnvTexture = Texture2D::load_rgb_f32(path);
 }
 
-void OpenGLBackend::update(const float dt)
+void OpenGLBackend::update(const float32 dt)
 {
+  update_camera_position(dt);
+
   SDL_Event event {};
   while (SDL_PollEvent(&event)) {
     ImGui_ImplSDL2_ProcessEvent(&event);
@@ -99,36 +103,10 @@ void OpenGLBackend::update(const float dt)
     if (event.type == SDL_QUIT) {
       mQuit = true;
     }
-    else if (event.type == SDL_KEYUP) {
-      if (event.key.keysym.scancode == SDL_SCANCODE_H) {
-        mHideUI = !mHideUI;
-      }
-    }
   }
-
-  Vec2i mouse_pos {};
-  SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-
-  const auto& io = ImGui::GetIO();
-
-  if (!io.WantCaptureKeyboard) {
-    update_camera_position(dt);
-  }
-
-  if (!io.WantCaptureMouse) {
-    update_camera_direction(dt);
-  }
-
-  Vec2i resolution {};
-  SDL_GetWindowSizeInPixels(mWindow, &resolution.x, &resolution.y);
-
-  mCamera.set_aspect_ratio(static_cast<float>(resolution.x) /
-                           static_cast<float>(resolution.y));
-
-  mLastMousePos = mouse_pos;
 }
 
-void OpenGLBackend::update_camera_position(const float dt)
+void OpenGLBackend::update_camera_position(const float32 dt)
 {
   const uint8* state = SDL_GetKeyboardState(nullptr);
 
@@ -159,19 +137,6 @@ void OpenGLBackend::update_camera_position(const float dt)
   }
 }
 
-void OpenGLBackend::update_camera_direction(const float dt)
-{
-  Vec2i mouse_pos {};
-  const auto mouse_mask = SDL_GetMouseState(&mouse_pos.x, &mouse_pos.y);
-  const auto mouse_delta = mLastMousePos - Vec2 {mouse_pos};
-
-  if (mouse_mask & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-    const auto yaw = mCameraSensitivity * mouse_delta.x * dt;
-    const auto pitch = mCameraSensitivity * mouse_delta.y * dt;
-    mCamera.rotate_direction(yaw, pitch);
-  }
-}
-
 void OpenGLBackend::render(Scene& scene)
 {
   const auto render_pass_start = Clock::now();
@@ -180,37 +145,37 @@ void OpenGLBackend::render(Scene& scene)
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
 
+  const auto root_dock_id = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
+  if (mRestoreLayout) {
+    const auto size = ImGui::GetMainViewport()->Size;
+    if (size.x > 0 && size.y > 0) {
+      ImGui::DockBuilderRemoveNodeChildNodes(root_dock_id);
+
+      auto id = root_dock_id;
+      const auto right =
+          ImGui::DockBuilderSplitNode(id, ImGuiDir_Right, 0.33f, nullptr, &id);
+
+      ImGui::DockBuilderDockWindow("Viewport", id);
+      ImGui::DockBuilderDockWindow("Information", right);
+      ImGui::DockBuilderDockWindow("Scene", right);
+
+      ImGui::DockBuilderFinish(id);
+
+      mRestoreLayout = false;
+    }
+  }
+
   // Reset options
   set_option(GL_DEPTH_TEST, mDepthTest);
   set_option(GL_CULL_FACE, mCullFaces);
   set_option(GL_BLEND, mBlending);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  Vec2i resolution {};
-  SDL_GetWindowSizeInPixels(mWindow, &resolution.x, &resolution.y);
-
-  // Update framebuffer dimensions
-  mPrimaryBuffer.bind();
-  mPrimaryBuffer.resize(resolution);
-
-  mPrimaryBuffer.clear();
-
-  const Mat4 projection = mCamera.to_projection_matrix();
-  const Mat4 view = mCamera.to_view_matrix();
-
-  // Render the environment backdrop
-  render_environment(projection, view);
-  glPolygonMode(GL_FRONT_AND_BACK, mWireframe ? GL_LINE : GL_FILL);
-
-  render_models(scene, projection, view);
-
-  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  render_scene_viewport(scene);
   render_buffer_to_screen(mPrimaryBuffer);
 
-  if (!mHideUI) {
-    render_gui(scene);
-  }
-
+  render_dock_widgets(scene);
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -242,11 +207,11 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
   mEnvBuffer.inverse_proj_view = glm::inverse(projection * view);
   mEnvBuffer.camera_pos = Vec4 {mCamera.get_position(), 0};
 
-  mEnvProgramUbo.bind();
-  mEnvProgramUbo.update_data(0, sizeof mEnvBuffer, &mEnvBuffer);
+  mEnvironmentUBO.bind();
+  mEnvironmentUBO.update_data(0, sizeof mEnvBuffer, &mEnvBuffer);
   UniformBuffer::unbind();
 
-  mEnvProgramUbo.bind_block(0);
+  mEnvironmentUBO.bind_block(0);
   mEnvProgram.bind();
   mFullscreenQuad.draw_without_depth_test();
 
@@ -257,8 +222,8 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
 
 void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Mat4& view)
 {
-  mDynamicMatricesUbo.bind_block(0);
-  mMaterialUbo.bind_block(1);
+  mMatrixUBO.bind_block(0);
+  mMaterialUBO.bind_block(1);
 
   mBasicProgram.bind();
 
@@ -274,8 +239,8 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
       mMatrixBuffer.mvp = projection * mMatrixBuffer.mv;
       mMatrixBuffer.normal = glm::inverse(glm::transpose(mMatrixBuffer.mv));
 
-      mDynamicMatricesUbo.bind();
-      mDynamicMatricesUbo.update_data(0, sizeof mMatrixBuffer, &mMatrixBuffer);
+      mMatrixUBO.bind();
+      mMatrixUBO.update_data(0, sizeof mMatrixBuffer, &mMatrixBuffer);
 
       mMaterialBuffer.ambient = Vec4 {material.ambient, 0};
       mMaterialBuffer.diffuse = Vec4 {material.diffuse, 0};
@@ -285,8 +250,8 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
       mMaterialBuffer.has_diffuse_tex = material.diffuse_tex.has_value();
       mMaterialBuffer.has_specular_tex = material.specular_tex.has_value();
 
-      mMaterialUbo.bind();
-      mMaterialUbo.update_data(0, sizeof mMaterialBuffer, &mMaterialBuffer);
+      mMaterialUBO.bind();
+      mMaterialUBO.update_data(0, sizeof mMaterialBuffer, &mMaterialBuffer);
 
       if (mMaterialBuffer.has_diffuse_tex) {
         glActiveTexture(GL_TEXTURE5);
@@ -310,7 +275,64 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   UniformBuffer::unbind_block(1);
 }
 
-void OpenGLBackend::render_gui(Scene& scene)
+void OpenGLBackend::render_scene_viewport(Scene& scene)
+{
+  ImGuiWindowClass wc {};
+  wc.DockNodeFlagsOverrideSet =
+      ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
+  ImGui::SetNextWindowClass(&wc);
+
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
+
+  if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar)) {
+    if (ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
+      const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);
+
+      const auto dt = ImGui::GetIO().DeltaTime;
+      const auto yaw = mCameraSensitivity * mouse_delta.x * dt;
+      const auto pitch = mCameraSensitivity * mouse_delta.y * dt;
+      mCamera.rotate_direction(yaw, pitch);
+
+      ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+    }
+
+    const auto widget_size = ImGui::GetWindowSize();
+    const auto framebuffer_size = widget_size * ImGui::GetIO().DisplayFramebufferScale;
+
+    mViewportSize.x = static_cast<int>(widget_size.x);
+    mViewportSize.y = static_cast<int>(widget_size.y);
+    mViewportResolution.x = static_cast<int>(framebuffer_size.x);
+    mViewportResolution.y = static_cast<int>(framebuffer_size.y);
+
+    // Update framebuffer dimensions
+    mPrimaryBuffer.bind();
+    mPrimaryBuffer.resize(mViewportResolution);
+    mPrimaryBuffer.clear();
+
+    mCamera.set_aspect_ratio(framebuffer_size.x / framebuffer_size.y);
+
+    const auto projection = mCamera.to_projection_matrix();
+    const auto view = mCamera.to_view_matrix();
+
+    // Render the environment backdrop
+    render_environment(projection, view);
+
+    glPolygonMode(GL_FRONT_AND_BACK, mWireframe ? GL_LINE : GL_FILL);
+    render_models(scene, projection, view);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    Framebuffer::unbind();
+
+    ImGui::Image(bitcast<ImTextureID>(static_cast<uintptr>(mPrimaryBuffer.get_id())),
+                 ImGui::GetContentRegionAvail(),
+                 ImVec2 {0, 1},
+                 ImVec2 {1, 0});
+  }
+  ImGui::End();
+  ImGui::PopStyleVar();
+}
+
+void OpenGLBackend::render_dock_widgets(Scene& scene)
 {
   if (ImGui::Begin("Information", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     const auto& io = ImGui::GetIO();
@@ -328,18 +350,18 @@ void OpenGLBackend::render_gui(Scene& scene)
     ImGui::Checkbox("Wireframe", &mWireframe);
     ImGui::Checkbox("Depth test", &mDepthTest);
 
-    Vec2i window_size {};
-    SDL_GetWindowSize(mWindow, &window_size.x, &window_size.y);
-
-    Vec2i resolution {};
-    SDL_GetWindowSizeInPixels(mWindow, &resolution.x, &resolution.y);
-
     const auto& cam_pos = mCamera.get_position();
     const auto& cam_dir = mCamera.get_direction();
+    float fov = mCamera.get_fov();
+    float near_plane = mCamera.get_near_plane();
+    float far_plane = mCamera.get_far_plane();
     ImGui::SeparatorText("Camera");
     ImGui::Text("Position: (%.1f, %.1f, %.1f)", cam_pos.x, cam_pos.y, cam_pos.z);
     ImGui::Text("Direction: (%.2f, %.2f, %.2f)", cam_dir.x, cam_dir.y, cam_dir.z);
     ImGui::Text("Aspect ratio: %.2f", mCamera.get_aspect_ratio());
+    ImGui::SliderFloat("FOV", &fov, 30, 120);
+    ImGui::SliderFloat("Near plane", &near_plane, 0.01f, 1.0f);
+    ImGui::SliderFloat("Far plane", &far_plane, near_plane, near_plane + 1'000'000);
     ImGui::SliderFloat("Speed",
                        &mCameraSpeed,
                        0.1f,
@@ -347,6 +369,13 @@ void OpenGLBackend::render_gui(Scene& scene)
                        "%.3f",
                        ImGuiSliderFlags_Logarithmic);
     ImGui::SliderFloat("Sensitivity", &mCameraSensitivity, 0.1f, 5.0f);
+    mCamera.set_fov(fov);
+    mCamera.set_near_plane(near_plane);
+    mCamera.set_far_plane(far_plane);
+
+    ImGui::SeparatorText("Viewport");
+    ImGui::Text("Size: (%d, %d)", mViewportSize.x, mViewportSize.y);
+    ImGui::Text("Resolution: (%d, %d)", mViewportResolution.x, mViewportResolution.y);
 
     ImGui::SeparatorText("Environment");
 
@@ -359,8 +388,11 @@ void OpenGLBackend::render_gui(Scene& scene)
 
     ImGui::SeparatorText("System");
     ImGui::TextUnformatted("API: OpenGL 4.1.0 core");
-    ImGui::Text("Window size: (%d, %d)", window_size.x, window_size.y);
-    ImGui::Text("Resolution: (%d, %d)", resolution.x, resolution.y);
+
+    ImGui::SeparatorText("Misc");
+    if (ImGui::Button("Reset Layout")) {
+      mRestoreLayout = true;
+    }
   }
   ImGui::End();
 
