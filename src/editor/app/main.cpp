@@ -10,6 +10,7 @@
 #include "common/type/math.hpp"
 #include "graphics/opengl/context.hpp"
 #include "graphics/opengl/opengl_backend.hpp"
+#include "graphics/opengl/texture_cache.hpp"
 #include "init/dear_imgui.hpp"
 #include "init/sdl.hpp"
 #include "init/window.hpp"
@@ -65,6 +66,9 @@ auto main(int, char*[]) -> int
 
     Scene scene;
     const auto model_entity = scene.make_node();
+
+    auto& ctx = scene.get_registry().ctx();
+    ctx.emplace<gl::TextureCache>();
 
     gl::OpenGLBackend backend {window_handle};
 

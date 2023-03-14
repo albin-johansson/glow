@@ -22,7 +22,7 @@ GRAVEL_FORWARD_DECLARE(Scene);
 namespace gravel::gl {
 
 /// This struct corresponds to a std140 layout uniform block.
-struct EnvironmentOptions final {
+struct EnvironmentBuffer final {
   Mat4 inverse_proj_view {};
   Vec4 camera_pos {};
   float32 brightness {1.0f};
@@ -31,11 +31,23 @@ struct EnvironmentOptions final {
 };
 
 /// This struct corresponds to a std140 layout uniform block.
-struct DynamicMatrices final {
+struct MatrixBuffer final {
   Mat4 m {};       ///< Model matrix.
   Mat4 mv {};      ///< Model-view matrix.
   Mat4 mvp {};     ///< Model-view-projection matrix.
   Mat4 normal {};  ///< Normal matrix.
+};
+
+/// This struct corresponds to a std140 layout uniform block.
+struct MaterialBuffer final {
+  Vec4 ambient {};
+  Vec4 diffuse {};
+  Vec4 specular {};
+  Vec4 emission {};
+  int32 has_ambient_tex {false};
+  int32 has_diffuse_tex {false};
+  int32 has_specular_tex {false};
+  int32 has_emission_tex {false};
 };
 
 class OpenGLBackend final {
@@ -64,6 +76,7 @@ class OpenGLBackend final {
 
   UniformBuffer mEnvProgramUbo;
   UniformBuffer mDynamicMatricesUbo;
+  UniformBuffer mMaterialUbo;
 
   Framebuffer mPrimaryBuffer;
 
@@ -71,8 +84,9 @@ class OpenGLBackend final {
   float mCameraSensitivity {1};
   Vec2 mLastMousePos {};
 
-  EnvironmentOptions mEnvOptions;
-  DynamicMatrices mDynamicMatrices;
+  EnvironmentBuffer mEnvBuffer;
+  MatrixBuffer mMatrixBuffer;
+  MaterialBuffer mMaterialBuffer;
 
   Microseconds mRenderPassDuration {};
 

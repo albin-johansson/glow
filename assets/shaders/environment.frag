@@ -10,8 +10,7 @@ out vec4 frag_color;
 
 /* 0 */ uniform sampler2D env_texture;
 
-// This block corresponds to the gl::EnvironmentOptions struct.
-layout (std140) uniform UBO {
+layout (std140) uniform EnvironmentBuffer {
   mat4 inverse_proj_view_matrix;
   vec4 camera_pos;
   float brightness;

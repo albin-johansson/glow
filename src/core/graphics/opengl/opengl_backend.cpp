@@ -52,7 +52,9 @@ void OpenGLBackend::load_environment_program()
   mEnvProgram.link().check("Link error");
 
   mEnvProgram.set_uniform("env_texture", 0).check("env_texture");
-  mEnvProgram.set_uniform_block_binding("UBO", 0).check("UBO");
+
+  mEnvProgram.set_uniform_block_binding("EnvironmentBuffer", 0)
+      .check("EnvironmentBuffer UBO");
 }
 
 void OpenGLBackend::load_basic_program()
@@ -65,17 +67,20 @@ void OpenGLBackend::load_basic_program()
 
   mBasicProgram.set_uniform("material_diffuse_tex", 5).check("material_diffuse_tex");
 
-  mBasicProgram.set_uniform_block_binding("DynamicMatrices", 0).check("Matrix UBO");
-  mBasicProgram.set_uniform_block_binding("Material", 1).check("Material UBO");
+  mBasicProgram.set_uniform_block_binding("MatrixBuffer", 0).check("Matrix UBO");
+  mBasicProgram.set_uniform_block_binding("MaterialBuffer", 1).check("Material UBO");
 }
 
 void OpenGLBackend::init_uniform_buffers()
 {
   mEnvProgramUbo.bind();
-  mEnvProgramUbo.reserve_space(sizeof(EnvironmentOptions));
+  mEnvProgramUbo.reserve_space(sizeof(EnvironmentBuffer));
 
   mDynamicMatricesUbo.bind();
-  mDynamicMatricesUbo.reserve_space(sizeof(DynamicMatrices));
+  mDynamicMatricesUbo.reserve_space(sizeof(MatrixBuffer));
+
+  mMaterialUbo.bind();
+  mMaterialUbo.reserve_space(sizeof(MaterialBuffer));
 
   UniformBuffer::unbind();
 }
@@ -234,11 +239,11 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
   glActiveTexture(GL_TEXTURE0);
   mEnvTexture->bind();
 
-  mEnvOptions.inverse_proj_view = glm::inverse(projection * view);
-  mEnvOptions.camera_pos = Vec4 {mCamera.get_position(), 0};
+  mEnvBuffer.inverse_proj_view = glm::inverse(projection * view);
+  mEnvBuffer.camera_pos = Vec4 {mCamera.get_position(), 0};
 
   mEnvProgramUbo.bind();
-  mEnvProgramUbo.update_data(0, sizeof mEnvOptions, &mEnvOptions);
+  mEnvProgramUbo.update_data(0, sizeof mEnvBuffer, &mEnvBuffer);
   UniformBuffer::unbind();
 
   mEnvProgramUbo.bind_block(0);
@@ -253,23 +258,40 @@ void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
 void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Mat4& view)
 {
   mDynamicMatricesUbo.bind_block(0);
+  mMaterialUbo.bind_block(1);
+
   mBasicProgram.bind();
 
   auto& registry = scene.get_registry();
   for (auto [entity, transform, model] : registry.view<Transform, gl::Model>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
-    mDynamicMatricesUbo.bind();
-
     for (auto& mesh : model.meshes) {
-      // TODO const auto& material = registry.get<comp::OpenGLMaterial>(mesh.material);
+      const auto& material = registry.get<gl::Material>(mesh.material);
 
-      mDynamicMatrices.m = model_transform * mesh.transform;
-      mDynamicMatrices.mv = view * mDynamicMatrices.m;
-      mDynamicMatrices.mvp = projection * mDynamicMatrices.mv;
-      mDynamicMatrices.normal = glm::inverse(glm::transpose(mDynamicMatrices.mv));
+      mMatrixBuffer.m = model_transform * mesh.transform;
+      mMatrixBuffer.mv = view * mMatrixBuffer.m;
+      mMatrixBuffer.mvp = projection * mMatrixBuffer.mv;
+      mMatrixBuffer.normal = glm::inverse(glm::transpose(mMatrixBuffer.mv));
 
-      mDynamicMatricesUbo.update_data(0, sizeof mDynamicMatrices, &mDynamicMatrices);
+      mDynamicMatricesUbo.bind();
+      mDynamicMatricesUbo.update_data(0, sizeof mMatrixBuffer, &mMatrixBuffer);
+
+      mMaterialBuffer.ambient = Vec4 {material.ambient, 0};
+      mMaterialBuffer.diffuse = Vec4 {material.diffuse, 0};
+      mMaterialBuffer.specular = Vec4 {material.specular, 0};
+      mMaterialBuffer.emission = Vec4 {material.emission, 0};
+
+      mMaterialBuffer.has_diffuse_tex = material.diffuse_tex.has_value();
+      mMaterialBuffer.has_specular_tex = material.specular_tex.has_value();
+
+      mMaterialUbo.bind();
+      mMaterialUbo.update_data(0, sizeof mMaterialBuffer, &mMaterialBuffer);
+
+      if (mMaterialBuffer.has_diffuse_tex) {
+        glActiveTexture(GL_TEXTURE5);
+        gl::Texture2D::bind(material.diffuse_tex.value());
+      }
 
       mesh.vao.bind();
       glDrawElements(GL_TRIANGLES, mesh.index_count, GL_UNSIGNED_INT, nullptr);
@@ -282,6 +304,8 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   GRAVEL_GL_CHECK_ERRORS();
 
   Program::unbind();
+
+  Texture2D::unbind();
   UniformBuffer::unbind_block(0);
   UniformBuffer::unbind_block(1);
 }
@@ -326,12 +350,12 @@ void OpenGLBackend::render_gui(Scene& scene)
 
     ImGui::SeparatorText("Environment");
 
-    bool use_gamma = mEnvOptions.use_gamma_correction;
+    bool use_gamma = mEnvBuffer.use_gamma_correction;
     ImGui::Checkbox("Gamma correction", &use_gamma);
-    mEnvOptions.use_gamma_correction = use_gamma;
+    mEnvBuffer.use_gamma_correction = use_gamma;
 
-    ImGui::SliderFloat("Gamma", &mEnvOptions.gamma, 1.0f, 4.0f);
-    ImGui::SliderFloat("Brightness", &mEnvOptions.brightness, 0.0f, 1.0f, "%.2f");
+    ImGui::SliderFloat("Gamma", &mEnvBuffer.gamma, 1.0f, 4.0f);
+    ImGui::SliderFloat("Brightness", &mEnvBuffer.brightness, 0.0f, 1.0f, "%.2f");
 
     ImGui::SeparatorText("System");
     ImGui::TextUnformatted("API: OpenGL 4.1.0 core");
