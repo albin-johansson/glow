@@ -14,10 +14,10 @@
 #include "graphics/opengl/model.hpp"
 #include "graphics/opengl/util.hpp"
 #include "io/texture_loader.hpp"
-#include "scene/component/identifier.hpp"
-#include "scene/component/node.hpp"
-#include "scene/component/transform.hpp"
+#include "scene/identifier.hpp"
+#include "scene/node.hpp"
 #include "scene/scene.hpp"
+#include "scene/transform.hpp"
 
 namespace gravel::gl {
 
@@ -262,8 +262,7 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   mBasicProgram.bind();
 
   auto& registry = scene.get_registry();
-  for (auto [entity, transform, model] :
-       registry.view<comp::Transform, gl::Model>().each()) {
+  for (auto [entity, transform, model] : registry.view<Transform, gl::Model>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
     mDynamicMatricesUbo.bind();
@@ -348,8 +347,8 @@ void OpenGLBackend::render_gui(Scene& scene)
   ImGui::End();
 
   if (ImGui::Begin("Scene")) {
-    const auto exclusions = entt::exclude<comp::ChildNode>;
-    const auto view = scene.get_registry().view<comp::Node>(exclusions);
+    const auto exclusions = entt::exclude<ChildNode>;
+    const auto view = scene.get_registry().view<Node>(exclusions);
     for (auto [entity, node] : view.each()) {
       render_node_gui(scene, entity);
     }
@@ -359,17 +358,17 @@ void OpenGLBackend::render_gui(Scene& scene)
 
 void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
 {
-  assert(scene.get_registry().all_of<comp::Node>(entity));
+  assert(scene.get_registry().all_of<Node>(entity));
 
   ImGui::PushID(static_cast<int>(entity));
 
   auto& registry = scene.get_registry();
-  const auto& identifier = registry.get<comp::Identifier>(entity);
+  const auto& identifier = registry.get<Identifier>(entity);
 
   if (ImGui::CollapsingHeader(identifier.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
     ImGui::Indent();
 
-    if (auto* transform = registry.try_get<comp::Transform>(entity)) {
+    if (auto* transform = registry.try_get<Transform>(entity)) {
       ImGui::SeparatorText("Transform");
       ImGui::DragFloat3("Translation", glm::value_ptr(transform->translation), 0.25f);
       ImGui::DragFloat3("Rotation", glm::value_ptr(transform->rotation));
@@ -389,7 +388,7 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
 
     ImGui::Spacing();
 
-    const auto& node = registry.get<comp::Node>(entity);
+    const auto& node = registry.get<Node>(entity);
     for (const auto child_entity : node.children) {
       render_node_gui(scene, child_entity);
     }

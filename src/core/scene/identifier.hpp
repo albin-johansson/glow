@@ -2,10 +2,11 @@
 
 #include "common/type/string.hpp"
 
-namespace gravel::comp {
+namespace gravel {
 
+/// Basic identifier component.
 struct Identifier final {
   String name;
 };
 
-}  // namespace gravel::comp
+}  // namespace gravel

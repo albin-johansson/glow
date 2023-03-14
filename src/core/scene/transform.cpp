@@ -2,7 +2,7 @@
 
 #include <glm/gtx/transform.hpp>
 
-namespace gravel::comp {
+namespace gravel {
 
 auto Transform::to_model_matrix() const -> Mat4
 {
@@ -17,4 +17,4 @@ auto Transform::to_model_matrix() const -> Mat4
   return matrix;
 }
 
-}  // namespace gravel::comp
+}  // namespace gravel
