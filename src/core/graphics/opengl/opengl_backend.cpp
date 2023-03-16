@@ -10,6 +10,9 @@
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 
+// This comment prevents moving the following include before <imgui.h>
+#include <ImGuizmo.h>
+
 #include "common/debug/assert.hpp"
 #include "common/predef.hpp"
 #include "graphics/opengl/model.hpp"
@@ -144,6 +147,7 @@ void OpenGLBackend::render(Scene& scene)
   ImGui_ImplSDL2_NewFrame();
   ImGui_ImplOpenGL3_NewFrame();
   ImGui::NewFrame();
+  ImGuizmo::BeginFrame();
 
   const auto root_dock_id = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
@@ -284,7 +288,11 @@ void OpenGLBackend::render_scene_viewport(Scene& scene)
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
 
   if (ImGui::Begin("Viewport", nullptr, ImGuiWindowFlags_NoScrollbar)) {
-    if (ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
+    const auto window_pos = ImGui::GetWindowPos();
+    const auto window_size = ImGui::GetWindowSize();
+    ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+
+    if (!ImGuizmo::IsUsing() && ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
       const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);
 
       const auto dt = ImGui::GetIO().DeltaTime;
