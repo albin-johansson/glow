@@ -9,6 +9,7 @@
 #include "common/type/math.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
+#include "engine/backend.hpp"
 #include "graphics/opengl/buffers.hpp"
 #include "graphics/opengl/framebuffer.hpp"
 #include "graphics/opengl/program.hpp"
@@ -24,17 +25,19 @@ GRAVEL_FORWARD_DECLARE_C(Scene);
 
 namespace gravel::gl {
 
-class OpenGLBackend final {
+class OpenGLBackend final : public Backend {
  public:
   explicit OpenGLBackend(SDL_Window* window);
 
-  void update(float32 dt);
+  void on_init(Scene& scene) override;
 
-  void render(Scene& scene);
+  void on_update(float32 dt) override;
+
+  void on_render(Scene& scene) override;
 
   void load_environment_texture(const Path& path);
 
-  [[nodiscard]] auto should_quit() const -> bool { return mQuit; }
+  [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
   SDL_Window* mWindow {};

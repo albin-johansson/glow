@@ -16,6 +16,7 @@
 #include "common/debug/assert.hpp"
 #include "common/predef.hpp"
 #include "graphics/opengl/model.hpp"
+#include "graphics/opengl/texture_cache.hpp"
 #include "graphics/opengl/util.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/identifier.hpp"
@@ -95,7 +96,15 @@ void OpenGLBackend::load_environment_texture(const Path& path)
   mEnvTexture = Texture2D::load_rgb_f32(path);
 }
 
-void OpenGLBackend::update(const float32 dt)
+void OpenGLBackend::on_init(Scene& scene)
+{
+  auto& registry = scene.get_registry();
+
+  auto& ctx = registry.ctx();
+  ctx.emplace<gl::TextureCache>();
+}
+
+void OpenGLBackend::on_update(const float32 dt)
 {
   update_camera_position(dt);
 
@@ -140,7 +149,7 @@ void OpenGLBackend::update_camera_position(const float32 dt)
   }
 }
 
-void OpenGLBackend::render(Scene& scene)
+void OpenGLBackend::on_render(Scene& scene)
 {
   const auto render_pass_start = Clock::now();
 
