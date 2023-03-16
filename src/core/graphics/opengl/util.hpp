@@ -23,6 +23,7 @@ void set_option(uint option, bool value);
 [[nodiscard]] auto get_bound_uniform_buffer() -> uint;
 [[nodiscard]] auto get_bound_framebuffer() -> uint;
 [[nodiscard]] auto get_bound_texture() -> uint;
+[[nodiscard]] auto get_bound_program() -> uint;
 
 }  // namespace gravel::gl
 

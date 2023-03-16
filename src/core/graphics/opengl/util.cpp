@@ -128,4 +128,9 @@ auto get_bound_texture() -> uint
   return get_integer(GL_TEXTURE_BINDING_2D);
 }
 
+auto get_bound_program() -> uint
+{
+  return get_integer(GL_CURRENT_PROGRAM);
+}
+
 }  // namespace gravel::gl
