@@ -289,8 +289,8 @@ void OpenGLBackend::render_scene_viewport(Scene& scene)
       const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);
 
       const auto dt = ImGui::GetIO().DeltaTime;
-      const auto yaw = mCameraSensitivity * mouse_delta.x * dt;
-      const auto pitch = mCameraSensitivity * mouse_delta.y * dt;
+      const auto yaw = mCameraSensitivity * -mouse_delta.x * dt;
+      const auto pitch = mCameraSensitivity * -mouse_delta.y * dt;
       mCamera.rotate_direction(yaw, pitch);
 
       ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
