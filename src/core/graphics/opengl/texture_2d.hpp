@@ -41,24 +41,34 @@ class Texture2D final {
   /// Unbinds any bound 2D texture.
   static void unbind();
 
-  /**
-   * Sets the pixel data associated with texture.
-   *
-   * \pre The texture must be bound when this function is called.
-   *
-   * \param detail_level the level-of-detail (LOD) index.
-   * \param texture_format  the texture format, e.g. 'GL_RGB'.
-   * \param pixel_format the format of the pixel data, e.g. 'GL_RGB'.
-   * \param type the texture format data type, e.g. 'GL_UNSIGNED_BYTE'.
-   * \param size the texture size.
-   * \param pixel_data the raw pixel data.
-   */
+  /// Sets the pixel data associated with texture.
+  ///
+  /// \pre The texture must be bound when this function is called.
+  ///
+  /// \param detail_level the level-of-detail (LOD) index.
+  /// \param texture_format  the texture format, e.g. 'GL_RGB'.
+  /// \param pixel_format the format of the pixel data, e.g. 'GL_RGB'.
+  /// \param type the texture format data type, e.g. 'GL_UNSIGNED_BYTE'.
+  /// \param size the texture size.
+  /// \param pixel_data the raw pixel data.
   void set_data(int detail_level,
                 int texture_format,
                 uint pixel_format,
                 uint type,
                 const Vec2i& size,
                 const void* pixel_data);
+
+  /// Generates a mipmap for the texture.
+  ///
+  /// \note This should be called after the texture data has been provided.
+  ///
+  /// \pre The texture must be bound when this function is called.
+  void generate_mipmap();
+
+  /// Specifies whether anisotropic filtering should be used by the texture.
+  ///
+  /// \pre The texture must be bound when this function is called.
+  void set_anisotropic_filtering(bool enable);
 
   [[nodiscard]] auto get_id() const -> uint { return mID; }
 

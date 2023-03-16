@@ -13,8 +13,8 @@ Texture2D::Texture2D()
   glGenTextures(1, &mID);
   bind();
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -120,6 +120,28 @@ void Texture2D::set_data(const int detail_level,
                pixel_format,
                type,
                pixel_data);
+  GRAVEL_GL_CHECK_ERRORS();
+}
+
+void Texture2D::generate_mipmap()
+{
+  GRAVEL_ASSERT(get_bound_texture() == mID);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  GRAVEL_GL_CHECK_ERRORS();
+}
+
+void Texture2D::set_anisotropic_filtering(const bool enable)
+{
+  float level = 0;
+
+  if (enable) {
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &level);
+  }
+
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, level);
   GRAVEL_GL_CHECK_ERRORS();
 }
 

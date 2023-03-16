@@ -17,7 +17,7 @@
     {
       "name": "glad",
       "features": [
-        "gl-api-41"
+        "extensions"
       ]
     },
     "glm",
