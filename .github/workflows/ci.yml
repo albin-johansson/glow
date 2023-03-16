@@ -88,8 +88,8 @@ jobs:
       VCPKG_DEFAULT_BINARY_CACHE: ${{github.workspace}}\vcpkg\bincache
     steps:
       - uses: actions/checkout@v3
+      - uses: ilammy/msvc-dev-cmd@v1.11.0
       - uses: lukka/get-cmake@latest
-      - uses: seanmiddleditch/gha-setup-ninja@v3
       - name: Restore Vcpkg
         uses: actions/cache@v3
         id: restore-vcpkg
