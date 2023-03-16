@@ -15,6 +15,7 @@
 #include "graphics/opengl/texture_2d.hpp"
 #include "graphics/opengl/uniform_buffer.hpp"
 #include "graphics/perspective_camera.hpp"
+#include "ui/gizmos.hpp"
 
 namespace gravel {
 GRAVEL_FORWARD_DECLARE_C(Scene);
@@ -100,6 +101,8 @@ class OpenGLBackend final {
 
   bool mRestoreLayout {true};
   bool mQuit {false};
+
+  GizmoMode mGizmoMode {GizmoMode::Translate};
 
   void load_framebuffer_program();
   void load_environment_program();

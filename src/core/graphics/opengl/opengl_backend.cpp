@@ -268,6 +268,9 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
 
     VertexArray::unbind();
     UniformBuffer::unbind();
+
+    ImGuizmo::SetID(static_cast<int>(entity));
+    show_model_control_gizmo(mGizmoMode, projection, view, transform);
   }
 
   GRAVEL_GL_CHECK_ERRORS();
