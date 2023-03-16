@@ -101,7 +101,7 @@ void OpenGLBackend::on_init(Scene& scene)
   auto& registry = scene.get_registry();
 
   auto& ctx = registry.ctx();
-  ctx.emplace<gl::TextureCache>();
+  ctx.emplace<TextureCache>();
 }
 
 void OpenGLBackend::on_update(const float32 dt)
@@ -241,11 +241,11 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
   mBasicProgram.bind();
 
   auto& registry = scene.get_registry();
-  for (auto [entity, transform, model] : registry.view<Transform, gl::Model>().each()) {
+  for (auto [entity, transform, model] : registry.view<Transform, Model>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
     for (auto& mesh : model.meshes) {
-      const auto& material = registry.get<gl::Material>(mesh.material);
+      const auto& material = registry.get<Material>(mesh.material);
 
       mMatrixBuffer.m = model_transform * mesh.transform;
       mMatrixBuffer.mv = view * mMatrixBuffer.m;
@@ -268,7 +268,7 @@ void OpenGLBackend::render_models(Scene& scene, const Mat4& projection, const Ma
 
       if (mMaterialBuffer.has_diffuse_tex) {
         glActiveTexture(GL_TEXTURE5);
-        gl::Texture2D::bind(material.diffuse_tex.value());
+        Texture2D::bind(material.diffuse_tex.value());
       }
 
       mesh.vao.bind();
@@ -451,7 +451,7 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
                         ImGuiSliderFlags_Logarithmic);
     }
 
-    if (const auto* model = registry.try_get<gl::Model>(entity)) {
+    if (const auto* model = registry.try_get<Model>(entity)) {
       ImGui::SeparatorText("OpenGLModel");
       ImGui::Text("Meshes: %zu", model->meshes.size());
     }
