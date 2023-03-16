@@ -33,8 +33,11 @@ using namespace gravel;
 auto main(int, char*[]) -> int
 {
   try {
+    std::set_terminate(&on_terminate);
+
     spdlog::set_pattern("%^[%L][%T.%f]%$ %v");
     spdlog::set_level(spdlog::level::debug);
+    spdlog::flush_on(spdlog::level::critical);
 
     const auto api = GraphicsApi::OpenGL;
 

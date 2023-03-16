@@ -1,9 +1,8 @@
 #include "vertex_buffer.hpp"
 
-#include <cassert>  // assert
-
 #include <glad/glad.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
 namespace gravel::gl {
@@ -57,7 +56,7 @@ void VertexBuffer::upload_data(const usize data_size,
                                const void* data,
                                const BufferUsage usage)
 {
-  assert(get_bound_vertex_buffer() == mID);
+  GRAVEL_ASSERT(get_bound_vertex_buffer() == mID);
 
   glBufferData(GL_ARRAY_BUFFER,
                static_cast<GLsizeiptr>(data_size),

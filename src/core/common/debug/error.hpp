@@ -20,4 +20,7 @@ class Error final : public std::exception {
   String mTrace;
 };
 
+/// Custom terminate handler.
+[[noreturn]] GRAVEL_NOINLINE void on_terminate();
+
 }  // namespace gravel

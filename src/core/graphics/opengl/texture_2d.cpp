@@ -1,9 +1,8 @@
 #include "texture_2d.hpp"
 
-#include <cassert>  // assert
-
 #include <glad/glad.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 #include "io/texture_loader.hpp"
 
@@ -111,7 +110,7 @@ void Texture2D::set_data(const int detail_level,
                          const Vec2i& size,
                          const void* pixel_data)
 {
-  assert(get_bound_texture() == mID);
+  GRAVEL_ASSERT(get_bound_texture() == mID);
   glTexImage2D(GL_TEXTURE_2D,
                detail_level,
                texture_format,

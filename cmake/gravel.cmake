@@ -39,6 +39,7 @@ function(gravel_configure_compile_options target)
 
   target_compile_definitions(${target}
                              PRIVATE
+                             BOOST_ENABLE_ASSERT_DEBUG_HANDLER
                              BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
                              GLM_ENABLE_EXPERIMENTAL
                              IMGUI_DEFINE_MATH_OPERATORS

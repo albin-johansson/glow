@@ -1,10 +1,10 @@
 #include "scene.hpp"
 
-#include <cassert>  // assert
 #include <utility>  // move
 
 #include <fmt/format.h>
 
+#include "common/debug/assert.hpp"
 #include "common/primitives.hpp"
 #include "scene/identifier.hpp"
 #include "scene/node.hpp"
@@ -29,8 +29,8 @@ auto Scene::make_node(String name, const Entity parent) -> Entity
     parent_node.children.push_back(node_entity);
   }
 
-  assert(mRegistry.all_of<Identifier>(node_entity));
-  assert(mRegistry.all_of<Transform>(node_entity));
+  GRAVEL_ASSERT(mRegistry.all_of<Identifier>(node_entity));
+  GRAVEL_ASSERT(mRegistry.all_of<Transform>(node_entity));
 
   return node_entity;
 }

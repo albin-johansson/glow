@@ -1,10 +1,10 @@
 #include "framebuffer.hpp"
 
-#include <cassert>  // assert
 #include <utility>  // move
 
 #include <glad/glad.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
 namespace gravel::gl {
@@ -81,7 +81,7 @@ void Framebuffer::unbind()
 
 void Framebuffer::resize(const Vec2i size)
 {
-  assert(get_bound_framebuffer() == mID);
+  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
 
   if (mSize == size) {
     return;
@@ -106,8 +106,8 @@ void Framebuffer::resize(const Vec2i size)
 
 void Framebuffer::clear()
 {
-  assert(get_bound_framebuffer() == mID);
-  assert(is_complete() && "Incomplete framebuffer used, remember to set size");
+  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
+  GRAVEL_ASSERT_MSG(is_complete(), "Incomplete framebuffer used, remember to set size");
 
   glViewport(0, 0, mSize.x, mSize.y);
 
@@ -119,7 +119,7 @@ void Framebuffer::clear()
 
 auto Framebuffer::is_complete() const -> bool
 {
-  assert(get_bound_framebuffer() == mID);
+  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
   return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 

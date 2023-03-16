@@ -1,9 +1,8 @@
 #include "vertex_array.hpp"
 
-#include <cassert>  // assert
-
 #include <glad/glad.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 #include "util/bits.hpp"
 
@@ -61,7 +60,7 @@ void VertexArray::init_attr(const uint location,
                             const usize offset,
                             const bool normalized)
 {
-  assert(get_bound_vertex_array() == mID);
+  GRAVEL_ASSERT(get_bound_vertex_array() == mID);
 
   glVertexAttribPointer(location,
                         value_count,

@@ -1,6 +1,5 @@
 #include "opengl_backend.hpp"
 
-#include <cassert>  // assert
 #include <cstdlib>  // offsetof
 
 #include <glad/glad.h>
@@ -11,6 +10,7 @@
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 
+#include "common/debug/assert.hpp"
 #include "common/predef.hpp"
 #include "graphics/opengl/model.hpp"
 #include "graphics/opengl/util.hpp"
@@ -195,7 +195,7 @@ void OpenGLBackend::render(Scene& scene)
 
 void OpenGLBackend::render_environment(const Mat4& projection, const Mat4& view)
 {
-  assert(get_bound_framebuffer() == mPrimaryFBO.get_id());
+  GRAVEL_ASSERT(get_bound_framebuffer() == mPrimaryFBO.get_id());
 
   if (!mEnvTexture.has_value()) {
     return;
@@ -408,7 +408,7 @@ void OpenGLBackend::render_dock_widgets(Scene& scene)
 
 void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
 {
-  assert(scene.get_registry().all_of<Node>(entity));
+  GRAVEL_ASSERT(scene.get_registry().all_of<Node>(entity));
 
   ImGui::PushID(static_cast<int>(entity));
 

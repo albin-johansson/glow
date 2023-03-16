@@ -1,9 +1,11 @@
 #include "error.hpp"
 
+#include <cstdlib>  // abort
 #include <sstream>  // stringstream
 #include <utility>  // move
 
 #include <boost/stacktrace/stacktrace.hpp>
+#include <spdlog/spdlog.h>
 
 namespace gravel {
 
@@ -25,6 +27,20 @@ auto Error::what() const noexcept -> const char*
 auto Error::trace() const -> const String&
 {
   return mTrace;
+}
+
+void on_terminate()
+{
+  try {
+    std::stringstream stream;
+    stream << bst::stacktrace {};
+    spdlog::critical("Into exile I must go. Failed I have.\n{}", stream.str());
+  }
+  catch (...) {
+    // Not much we can do.
+  }
+
+  std::abort();
 }
 
 }  // namespace gravel

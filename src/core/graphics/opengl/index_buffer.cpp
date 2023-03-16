@@ -1,9 +1,8 @@
 #include "index_buffer.hpp"
 
-#include <cassert>  // assert
-
 #include <glad/glad.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
 namespace gravel::gl {
@@ -57,7 +56,7 @@ void IndexBuffer::upload_data(const usize data_size,
                               const uint* data,
                               const BufferUsage usage)
 {
-  assert(get_bound_index_buffer() == mID);
+  GRAVEL_ASSERT(get_bound_index_buffer() == mID);
 
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                static_cast<GLsizeiptr>(data_size),
