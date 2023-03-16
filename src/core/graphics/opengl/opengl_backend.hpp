@@ -111,7 +111,6 @@ class OpenGLBackend final {
 
   void render_environment(const Mat4& projection, const Mat4& view);
   void render_models(Scene& scene, const Mat4& projection, const Mat4& view);
-  void render_buffer_to_screen(const Framebuffer& buffer);
   void render_scene_viewport(Scene& scene);
   void render_dock_widgets(Scene& scene);
   void render_node_gui(Scene& scene, Entity entity);

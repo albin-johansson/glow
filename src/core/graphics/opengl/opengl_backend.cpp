@@ -173,9 +173,8 @@ void OpenGLBackend::render(Scene& scene)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   render_scene_viewport(scene);
-  render_buffer_to_screen(mPrimaryFBO);
-
   render_dock_widgets(scene);
+
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -448,27 +447,6 @@ void OpenGLBackend::render_node_gui(Scene& scene, const Entity entity)
   }
 
   ImGui::PopID();
-}
-
-void OpenGLBackend::render_buffer_to_screen(const Framebuffer& buffer)
-{
-  Framebuffer::unbind();
-
-  const auto& buffer_size = buffer.get_size();
-  glViewport(0, 0, buffer_size.x, buffer_size.y);
-
-  glClearColor(0, 0, 0, 1);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  mFramebufferProgram.bind();
-
-  glActiveTexture(GL_TEXTURE0);
-  Texture2D::bind(buffer.get_color_texture_id());
-
-  mFullscreenQuad.draw_without_depth_test();
-
-  Program::unbind();
-  Texture2D::unbind();
 }
 
 }  // namespace gravel::gl
