@@ -17,7 +17,7 @@
 #include "graphics/perspective_camera.hpp"
 
 namespace gravel {
-GRAVEL_FORWARD_DECLARE(Scene);
+GRAVEL_FORWARD_DECLARE_C(Scene);
 }  // namespace gravel
 
 namespace gravel::gl {

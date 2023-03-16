@@ -55,7 +55,8 @@
   auto operator=(Class&&) noexcept -> Class& = delete
 // clang-format on
 
-#define GRAVEL_FORWARD_DECLARE(Class) class Class
+#define GRAVEL_FORWARD_DECLARE_C(Class) class Class
+#define GRAVEL_FORWARD_DECLARE_S(Class) struct Class
 
 namespace gravel {
 
