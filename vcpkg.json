@@ -29,6 +29,7 @@
         "docking-experimental"
       ]
     },
+    "imguizmo",
     "magic-enum",
     "sdl2",
     "spdlog",

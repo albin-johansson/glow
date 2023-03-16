@@ -32,6 +32,7 @@ See [vcpkg.json](vcpkg.json) for the full Vcpkg manifest file.
 * [glad](https://github.com/Dav1dde/glad)
 * [glm](https://github.com/g-truc/glm)
 * [Dear ImGui](https://github.com/ocornut/imgui)
+* [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
 * [Magic Enum C++](https://github.com/Neargye/magic_enum)
 * [SDL2](https://github.com/libsdl-org/SDL)
 * [spdlog](https://github.com/gabime/spdlog)

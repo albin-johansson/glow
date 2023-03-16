@@ -31,6 +31,7 @@ target_link_libraries(libgravel
                       glad::glad
                       glm::glm
                       imgui::imgui
+                      imguizmo::imguizmo
                       magic_enum::magic_enum
                       OpenGL::GL
                       spdlog::spdlog
