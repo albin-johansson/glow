@@ -37,4 +37,4 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 
 add_subdirectory(src/core)
-add_subdirectory(src/editor)
+add_subdirectory(src/app)

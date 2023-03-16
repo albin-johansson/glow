@@ -1,12 +1,6 @@
-project(gravel-editor LANGUAGES CXX)
+project(gravel-app LANGUAGES CXX)
 
-file(GLOB_RECURSE GRAVEL_EDITOR_SOURCE_FILES
-     CONFIGURE_DEPENDS
-     **/*.cpp
-     **/*.hpp
-     )
-
-add_executable(gravel ${GRAVEL_EDITOR_SOURCE_FILES})
+add_executable(gravel main.cpp)
 add_dependencies(gravel libgravel)
 
 gravel_configure_compile_options(gravel)
