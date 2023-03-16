@@ -21,6 +21,11 @@ namespace {
   }
 
   if (auto texture = Texture2D::load_rgb(path)) {
+    texture->bind();
+    texture->set_anisotropic_filtering(true);
+    texture->generate_mipmap();
+    Texture2D::unbind();
+
     const auto texture_id = texture->get_id();
     cache.textures.try_emplace(std::move(path), std::move(*texture));
     return texture_id;
