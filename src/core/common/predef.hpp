@@ -55,6 +55,13 @@
   auto operator=(Class&&) noexcept -> Class& = delete
 // clang-format on
 
+// Convenience macro used to work around issues with move-only components.
+#define GRAVEL_MOVE_ONLY_COMPONENT(Class) \
+  Class() = default;                      \
+  ~Class() = default;                     \
+  GRAVEL_DEFAULT_MOVE(Class);             \
+  GRAVEL_DELETE_COPY(Class)
+
 #define GRAVEL_FORWARD_DECLARE_C(Class) class Class
 #define GRAVEL_FORWARD_DECLARE_S(Class) struct Class
 

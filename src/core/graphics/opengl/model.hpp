@@ -35,11 +35,7 @@ struct Mesh final {
 
 /// OpenGL model component.
 struct Model final {
-  Model() = default;
-  ~Model() = default;
-  GRAVEL_DEFAULT_MOVE(Model);
-  GRAVEL_DELETE_COPY(Model);
-
+  GRAVEL_MOVE_ONLY_COMPONENT(Model);
   Vector<Mesh> meshes;  ///< The meshes that constitute the model.
 };
 
