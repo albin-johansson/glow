@@ -157,12 +157,13 @@ void OpenGLBackend::render(Scene& scene)
       ImGui::DockBuilderRemoveNodeChildNodes(root_dock_id);
 
       auto id = root_dock_id;
-      const auto right =
-          ImGui::DockBuilderSplitNode(id, ImGuiDir_Right, 0.33f, nullptr, &id);
+      auto right = ImGui::DockBuilderSplitNode(id, ImGuiDir_Right, 0.33f, nullptr, &id);
+      auto right_bottom =
+          ImGui::DockBuilderSplitNode(right, ImGuiDir_Down, 0.5f, nullptr, &right);
 
       ImGui::DockBuilderDockWindow("Viewport", id);
-      ImGui::DockBuilderDockWindow("Information", right);
       ImGui::DockBuilderDockWindow("Scene", right);
+      ImGui::DockBuilderDockWindow("Information", right_bottom);
 
       ImGui::DockBuilderFinish(id);
 
