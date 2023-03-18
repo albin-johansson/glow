@@ -1,6 +1,6 @@
 #include "model.hpp"
 
-#include <cstdlib>  // offsetof
+#include <cstddef>  // offsetof
 #include <utility>  // move
 
 #include <glad/glad.h>
