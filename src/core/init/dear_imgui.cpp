@@ -15,7 +15,7 @@ void init_style(ImGuiStyle& style)
 {
   style.WindowPadding = ImVec2 {6, 6};
   style.FramePadding = ImVec2 {6, 3};
-  style.ItemSpacing = ImVec2 {12, 4};
+  style.ItemSpacing = ImVec2 {12, 6};
   style.ItemInnerSpacing = ImVec2 {4, 4};
   style.ScrollbarSize = 12;
   style.GrabMinSize = 10;
