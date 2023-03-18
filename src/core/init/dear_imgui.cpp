@@ -6,6 +6,37 @@
 #include "common/debug/error.hpp"
 
 namespace gravel {
+namespace {
+
+void init_style(ImGuiStyle& style)
+{
+  style.WindowPadding = ImVec2 {6, 6};
+  style.FramePadding = ImVec2 {6, 3};
+  style.ItemSpacing = ImVec2 {12, 4};
+  style.ItemInnerSpacing = ImVec2 {4, 4};
+  style.ScrollbarSize = 12;
+  style.GrabMinSize = 10;
+
+  style.WindowBorderSize = 0;
+  style.ChildBorderSize = 0;
+  style.PopupBorderSize = 0;
+  style.FrameBorderSize = 0;
+  style.TabBorderSize = 0;
+
+  style.WindowRounding = 4;
+  style.ChildRounding = 4;
+  style.FrameRounding = 6;
+  style.PopupRounding = 6;
+  style.ScrollbarRounding = 4;
+  style.GrabRounding = 4;
+  style.TabRounding = 4;
+
+  style.WindowTitleAlign = ImVec2 {0.5f, 0.5f};
+  style.WindowMenuButtonPosition = ImGuiDir_None;
+  style.SeparatorTextBorderSize = 2;
+}
+
+}  // namespace
 
 DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
 {
@@ -22,6 +53,7 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
   }
 
   ImGui::StyleColorsDark();
+  init_style(ImGui::GetStyle());
 }
 
 DearImGui::~DearImGui()
