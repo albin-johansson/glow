@@ -14,4 +14,11 @@ struct Transform final {
   [[nodiscard]] auto to_model_matrix() const -> Mat4;
 };
 
+/// Component used to indicate which transform members are meaningful.
+struct TransformOptions final {
+  bool use_position {true};
+  bool use_rotation {true};
+  bool use_scale {true};
+};
+
 }  // namespace gravel
