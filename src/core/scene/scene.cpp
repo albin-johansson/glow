@@ -18,6 +18,7 @@ auto Scene::make_node(String name, const Entity parent) -> Entity
 
   mRegistry.emplace<Identifier>(node_entity, std::move(name));
   mRegistry.emplace<Transform>(node_entity);
+  mRegistry.emplace<TransformOptions>(node_entity);
 
   auto& node = mRegistry.emplace<Node>(node_entity);
   node.parent = parent;
