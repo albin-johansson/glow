@@ -3,6 +3,7 @@
 #include "common/primitives.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
+#include "graphics/rendering_options.hpp"
 
 namespace gravel {
 
@@ -64,6 +65,10 @@ struct UpdateTransformEvent final {
   Vec3 translation {};
   Vec3 rotation {};
   Vec3 scale {};
+};
+
+struct ToggleRenderingOptionEvent final {
+  RenderingOption option {};
 };
 
 }  // namespace gravel

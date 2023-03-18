@@ -58,12 +58,6 @@ class OpenGLBackend final : public Backend {
   Maybe<Texture2D> mEnvTexture;
   Framebuffer mPrimaryFBO;
   GizmoMode mGizmoMode {GizmoMode::Translate};
-
-  bool mUseDepthTest {true};
-  bool mUseBlending {true};
-  bool mUseWireframe {false};
-  bool mUseFaceCulling {true};
-  bool mUseVSync {true};
   bool mQuit {false};
 
   void make_main_camera_node(Scene& scene);

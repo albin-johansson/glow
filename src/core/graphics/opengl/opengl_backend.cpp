@@ -45,6 +45,12 @@ void OpenGLBackend::on_init(Scene& scene)
   ctx.emplace<CameraOptions>();
   ctx.emplace<TextureCache>();
 
+  auto& rendering_options = ctx.emplace<RenderingOptions>();
+  rendering_options.options[RenderingOption::VSync] = true;
+  rendering_options.options[RenderingOption::DepthTest] = true;
+  rendering_options.options[RenderingOption::FaceCulling] = true;
+  rendering_options.options[RenderingOption::Wireframe] = false;
+  rendering_options.options[RenderingOption::Blending] = false;
 
   make_main_camera_node(scene);
 
@@ -96,11 +102,16 @@ void OpenGLBackend::render_scene(const Scene& scene,
                                  const Vec2& framebuffer_size,
                                  Dispatcher& dispatcher)
 {
+  const auto& registry = scene.get_registry();
+
   // Reset options
-  set_option(GL_DEPTH_TEST, mUseDepthTest);
-  set_option(GL_CULL_FACE, mUseFaceCulling);
-  set_option(GL_BLEND, mUseBlending);
+  const auto& rendering_options = registry.ctx().get<RenderingOptions>();
+  set_option(GL_DEPTH_TEST, rendering_options.test(RenderingOption::DepthTest));
+  set_option(GL_CULL_FACE, rendering_options.test(RenderingOption::FaceCulling));
+  set_option(GL_BLEND, rendering_options.test(RenderingOption::Blending));
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  SDL_GL_SetSwapInterval(rendering_options.test(RenderingOption::VSync) ? 1 : 0);
 
   // Update framebuffer dimensions
   mPrimaryFBO.bind();
@@ -108,7 +119,6 @@ void OpenGLBackend::render_scene(const Scene& scene,
   mPrimaryFBO.clear();
 
   const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
-  const auto& registry = scene.get_registry();
 
   if (has_active_camera(registry)) {
     const auto& [camera_entity, camera] = get_active_camera(registry);
@@ -128,7 +138,8 @@ void OpenGLBackend::render_scene(const Scene& scene,
     }
 
     // Render the scene objects
-    glPolygonMode(GL_FRONT_AND_BACK, mUseWireframe ? GL_LINE : GL_FILL);
+    glPolygonMode(GL_FRONT_AND_BACK,
+                  rendering_options.test(RenderingOption::Wireframe) ? GL_LINE : GL_FILL);
     render_models(scene, projection, view, dispatcher);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

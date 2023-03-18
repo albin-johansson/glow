@@ -10,6 +10,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/math.hpp"
 #include "engine/backend.hpp"
+#include "graphics/rendering_options.hpp"
 #include "scene/camera.hpp"
 #include "scene/transform.hpp"
 #include "ui/camera_options.hpp"
@@ -74,6 +75,8 @@ void Engine::register_events()
   mDispatcher.sink<RestoreLayoutEvent>().connect<&Engine::on_restore_layout>(this);
   mDispatcher.sink<ShowStyleEditorEvent>().connect<&Engine::on_show_style_editor>(this);
   mDispatcher.sink<ShowDemoWindowEvent>().connect<&Engine::on_show_demo_window>(this);
+
+  mDispatcher.sink<ToggleRenderingOptionEvent>().connect<&Engine::on_toggle_rendering_option>(this);
   // clang-format on
 }
 
@@ -182,7 +185,7 @@ void Engine::render()
 
   update_dock_space(mRestoreLayout);
 
-  show_menu_bar(mDispatcher);
+  show_menu_bar(mScene, mDispatcher);
   show_scene_viewport(mScene, *mBackend, mDispatcher);
   show_scene_tree_dock(mScene, mDispatcher);
 
@@ -321,6 +324,17 @@ void Engine::on_show_demo_window(const ShowDemoWindowEvent&)
 {
   spdlog::trace("ShowDemoWindowEvent");
   mShowDemoWindow = true;
+}
+
+void Engine::on_toggle_rendering_option(const ToggleRenderingOptionEvent& event)
+{
+  spdlog::trace("ToggleRenderingOptionEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& rendering_options = registry.ctx().get<RenderingOptions>();
+
+  auto& value = rendering_options.options.at(event.option);
+  value = !value;
 }
 
 void Engine::set_backend(Unique<Backend> backend)

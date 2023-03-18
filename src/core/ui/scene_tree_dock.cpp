@@ -126,7 +126,6 @@ void show_scene_node_widget(const Scene& scene,
   ImGui::PushID(static_cast<int>(entity));
 
   const auto& registry = scene.get_registry();
-  const auto& ctx = registry.ctx();
 
   const auto& node = registry.get<Node>(entity);
   const auto& identifier = registry.get<Identifier>(entity);

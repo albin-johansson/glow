@@ -19,8 +19,6 @@ Context::Context(SDL_Window* window)
     throw Error {fmt::format("[GL] Failed to create context: {}", SDL_GetError())};
   }
 
-  SDL_GL_SetSwapInterval(1);
-
   if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
     throw Error {"[GL] Failed to initialize GLAD"};
   }

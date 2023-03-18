@@ -74,6 +74,8 @@ class Engine final {
   void on_show_style_editor(const ShowStyleEditorEvent&);
   void on_show_demo_window(const ShowDemoWindowEvent&);
 
+  void on_toggle_rendering_option(const ToggleRenderingOptionEvent& event);
+
   [[nodiscard]] auto query_counter() const -> float64;
 };
 
