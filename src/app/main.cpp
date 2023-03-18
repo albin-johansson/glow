@@ -16,7 +16,7 @@ auto main(int, char*[]) -> int
     std::set_terminate(&on_terminate);
 
     spdlog::set_pattern("%^[%L][%T.%f]%$ %v");
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::flush_on(spdlog::level::critical);
 
     Engine engine {GraphicsApi::OpenGL};
