@@ -8,6 +8,7 @@
 
 #include "common/debug/error.hpp"
 #include "scene/transform.hpp"
+#include "ui/events.hpp"
 
 namespace gravel {
 namespace {
@@ -34,10 +35,12 @@ namespace {
 void show_model_control_gizmo(const GizmoMode mode,
                               const Mat4& projection,
                               const Mat4& view,
-                              Transform& transform)
+                              const Entity entity,
+                              const Transform& transform,
+                              Dispatcher& dispatcher)
 {
   float transform_matrix[16] {};
-  ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(transform.translation),
+  ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(transform.position),
                                           glm::value_ptr(transform.rotation),
                                           glm::value_ptr(transform.scale),
                                           transform_matrix);
@@ -56,9 +59,10 @@ void show_model_control_gizmo(const GizmoMode mode,
       return Vec3 {array[0], array[1], array[2]};
     };
 
-    transform.translation = to_vec3(translation);
-    transform.rotation = to_vec3(rotation);
-    transform.scale = to_vec3(scale);
+    dispatcher.enqueue<UpdateTransformEvent>(entity,
+                                             to_vec3(translation),
+                                             to_vec3(rotation),
+                                             to_vec3(scale));
   }
 }
 
