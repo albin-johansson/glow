@@ -1,5 +1,7 @@
 #include "quad.hpp"
 
+#include <cstddef>  // offsetof
+
 #include <glad/glad.h>
 
 #include "common/primitives.hpp"
@@ -8,17 +10,40 @@
 
 namespace gravel::gl {
 
-Quad::Quad(const Vec2& bl, const Vec2& br, const Vec2& tr, const Vec2& tl)
+Quad::Quad(const Vec3& bl, const Vec3& br, const Vec3& tr, const Vec3& tl)
 {
   mVAO.bind();
 
-  const Vec2 vertices[] = {bl, br, tr, tl};
+  const Vertex vertices[] = {
+      {
+          .position = bl,
+          .normal = Vec3 {0, 1, 0},
+          .tex_coords = Vec2 {0, 0},
+      },
+      {
+          .position = br,
+          .normal = Vec3 {0, 1, 0},
+          .tex_coords = Vec2 {1, 0},
+      },
+      {
+          .position = tr,
+          .normal = Vec3 {0, 1, 0},
+          .tex_coords = Vec2 {1, 1},
+      },
+      {
+          .position = tl,
+          .normal = Vec3 {0, 1, 0},
+          .tex_coords = Vec2 {0, 1},
+      },
+  };
   const uint indices[] = {0, 1, 2, 2, 3, 0};
 
   mVBO.bind();
   mVBO.upload_data(sizeof vertices, vertices);
 
-  mVAO.init_attr(0, 2, GL_FLOAT);
+  mVAO.init_attr(0, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, position));
+  mVAO.init_attr(1, 3, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, normal));
+  mVAO.init_attr(2, 2, GL_FLOAT, sizeof(Vertex), offsetof(Vertex, tex_coords));
 
   mEBO.bind();
   mEBO.upload_data(sizeof indices, indices);

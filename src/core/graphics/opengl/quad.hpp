@@ -18,11 +18,11 @@ class Quad final {
    * \param tr upper-right vertex.
    * \param tl upper-left vertex.
    */
-  Quad(const Vec2& bl, const Vec2& br, const Vec2& tr, const Vec2& tl);
+  Quad(const Vec3& bl, const Vec3& br, const Vec3& tr, const Vec3& tl);
 
   /// Creates a quad covering the entire screen.
   Quad()
-      : Quad {{-1.0f, -1.0f}, {1.0f, -1.0f}, {1.0f, 1.0f}, {-1.0f, 1.0f}}
+      : Quad {{-1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 0.0f}}
   {
   }
 
