@@ -13,15 +13,10 @@
 #include "graphics/opengl/buffers.hpp"
 #include "graphics/opengl/framebuffer.hpp"
 #include "graphics/opengl/program.hpp"
-#include "graphics/opengl/quad.hpp"
+#include "graphics/opengl/renderer.hpp"
 #include "graphics/opengl/texture_2d.hpp"
 #include "graphics/opengl/uniform_buffer.hpp"
-#include "graphics/perspective_camera.hpp"
 #include "ui/gizmos.hpp"
-
-namespace gravel {
-GRAVEL_FORWARD_DECLARE_C(Scene);
-}  // namespace gravel
 
 namespace gravel::gl {
 
@@ -29,69 +24,54 @@ class OpenGLBackend final : public Backend {
  public:
   explicit OpenGLBackend(SDL_Window* window);
 
+  void stop() override;
+
   void on_init(Scene& scene) override;
 
-  void on_update(float32 dt) override;
+  void on_event(const SDL_Event& event) override;
 
-  void on_render(Scene& scene) override;
+  void begin_frame() override;
+
+  void end_frame() override;
+
+  void render_scene(const Scene& scene,
+                    const Vec2& framebuffer_size,
+                    Dispatcher& dispatcher) override;
 
   void load_environment_texture(const Path& path);
 
+  void set_gizmo_mode(GizmoMode mode) override;
+
+  [[nodiscard]] auto get_gizmo_mode() const -> GizmoMode override;
+
+  [[nodiscard]] auto get_primary_framebuffer_handle() -> void* override;
+
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
+  [[nodiscard]] auto get_name() const -> const char* override
+  {
+    return "OpenGL 4.1.0 core";
+  }
+
  private:
-  SDL_Window* mWindow {};
-
-  PerspectiveCamera mCamera;
-  Quad mFullscreenQuad;
-
+  Renderer mRenderer;
   Maybe<Texture2D> mEnvTexture;
-
-  Program mFramebufferProgram;
-  Program mEnvProgram;
-  Program mBasicProgram;
-
-  UniformBuffer mEnvironmentUBO;
-  UniformBuffer mMatrixUBO;
-  UniformBuffer mMaterialUBO;
-
   Framebuffer mPrimaryFBO;
-
-  EnvironmentBuffer mEnvBuffer;
-  MatrixBuffer mMatrixBuffer;
-  MaterialBuffer mMaterialBuffer;
-
-  float mCameraSpeed {5};
-  float mCameraSensitivity {0.5f};
-  Vec2i mViewportSize {};
-  Vec2i mViewportResolution {};
-  Microseconds mRenderPassDuration {};
-
-  // Debug options
-  bool mUseDepthTest {true};
-  bool mUseFaceCulling {true};
-  bool mUseBlending {true};
-  bool mUseWireframe {false};
-  bool mUseVSync {true};
-
-  bool mRestoreLayout {true};
-  bool mQuit {false};
-
   GizmoMode mGizmoMode {GizmoMode::Translate};
 
-  void load_framebuffer_program();
-  void load_environment_program();
-  void load_basic_program();
+  bool mUseDepthTest {true};
+  bool mUseBlending {true};
+  bool mUseWireframe {false};
+  bool mUseFaceCulling {true};
+  bool mUseVSync {true};
+  bool mQuit {false};
 
-  void init_uniform_buffers();
+  void make_main_camera_node(Scene& scene);
 
-  void update_camera_position(float32 dt);
-
-  void render_environment(const Mat4& projection, const Mat4& view);
-  void render_models(Scene& scene, const Mat4& projection, const Mat4& view);
-  void render_scene_viewport(Scene& scene);
-  void render_dock_widgets(Scene& scene);
-  void render_node_gui(Scene& scene, Entity entity);
+  void render_models(const Scene& scene,
+                     const Mat4& projection,
+                     const Mat4&,
+                     Dispatcher& dispatcher);
 };
 
 }  // namespace gravel::gl

@@ -1,7 +1,12 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
+#include "common/type/dispatcher.hpp"
+#include "common/type/math.hpp"
+#include "ui/gizmos.hpp"
 
 namespace gravel {
 
@@ -11,13 +16,29 @@ class Backend {
  public:
   virtual ~Backend() = default;
 
+  virtual void stop() = 0;
+
   virtual void on_init([[maybe_unused]] Scene& scene) {}
 
-  virtual void on_update(float32 dt) = 0;
+  virtual void on_event(const SDL_Event& event) = 0;
 
-  virtual void on_render(Scene& scene) = 0;
+  virtual void begin_frame() = 0;
+
+  virtual void end_frame() = 0;
+
+  virtual void render_scene(const Scene& scene,
+                            const Vec2& framebuffer_size,
+                            Dispatcher& dispatcher) = 0;
+
+  virtual void set_gizmo_mode(GizmoMode mode) = 0;
 
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
+
+  [[nodiscard]] virtual auto get_primary_framebuffer_handle() -> void* = 0;
+
+  [[nodiscard]] virtual auto get_gizmo_mode() const -> GizmoMode = 0;
+
+  [[nodiscard]] virtual auto get_name() const -> const char* = 0;
 };
 
 }  // namespace gravel
