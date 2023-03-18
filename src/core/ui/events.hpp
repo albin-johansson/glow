@@ -16,6 +16,14 @@ struct RotateActiveCameraEvent final {
   float32 pitch {};
 };
 
+struct SetCameraSpeedEvent final {
+  float32 speed {};
+};
+
+struct SetCameraSensitivityEvent final {
+  float32 sensitivity {};
+};
+
 struct SetCameraAspectRatioEvent final {
   Entity camera_entity {kNullEntity};
   float32 aspect_ratio {};
