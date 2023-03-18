@@ -1,5 +1,6 @@
 #include "dear_imgui.hpp"
 
+#include <IconsFontAwesome6.h>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
 
@@ -7,6 +8,8 @@
 
 namespace gravel {
 namespace {
+
+inline constexpr ImWchar kFontIconRange[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 
 void init_style(ImGuiStyle& style)
 {
@@ -67,18 +70,30 @@ void DearImGui::reload_fonts()
   spdlog::debug("[GUI] Reloading fonts...");
 
   auto& io = ImGui::GetIO();
-  const auto scale = io.DisplayFramebufferScale;
+  const auto& framebuffer_scale = io.DisplayFramebufferScale;
 
   io.Fonts->Clear();
 
   const float size = 13.0f;
 
-  ImFontConfig config {};
-  config.SizePixels = size * scale.x;
-  io.Fonts->AddFontDefault(&config);
+  ImFontConfig default_config {};
+  default_config.SizePixels = size * framebuffer_scale.x;
+  io.Fonts->AddFontDefault(&default_config);
 
   // The global scale is 1 on most platforms, and 0.5 on macOS
-  io.FontGlobalScale = 1.0f / scale.x;
+  io.FontGlobalScale = 1.0f / framebuffer_scale.x;
+
+  ImFontConfig fa_config {};
+  fa_config.MergeMode = true;
+  fa_config.SizePixels = size * framebuffer_scale.x;
+  fa_config.GlyphMinAdvanceX = fa_config.SizePixels;
+  fa_config.GlyphMaxAdvanceX = fa_config.GlyphMinAdvanceX;
+  fa_config.GlyphOffset = {0, 2};
+  io.Fonts->AddFontFromFileTTF("assets/fonts/fa/" FONT_ICON_FILE_NAME_FAS,
+                               fa_config.GlyphMinAdvanceX,
+                               &fa_config,
+                               kFontIconRange);
+
   io.Fonts->Build();
 
   if (mGL) {

@@ -1,5 +1,6 @@
 #include "menu_bar.hpp"
 
+#include <IconsFontAwesome6.h>
 #include <imgui.h>
 
 #include "graphics/rendering_options.hpp"
@@ -15,8 +16,13 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
 
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
+      if (ImGui::MenuItem(ICON_FA_FILE_IMPORT " Load Model...")) {
+        dispatcher.enqueue<QuitEvent>();
+      }
 
-      if (ImGui::MenuItem("Exit")) {
+      ImGui::Separator();
+
+      if (ImGui::MenuItem(ICON_FA_ARROW_RIGHT_FROM_BRACKET " Exit")) {
         dispatcher.enqueue<QuitEvent>();
       }
 
@@ -24,37 +30,37 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
     }
 
     if (ImGui::BeginMenu("View")) {
-      if (ImGui::MenuItem("Reset UI")) {
+      if (ImGui::MenuItem(ICON_FA_ROTATE " Reset UI")) {
         dispatcher.enqueue<RestoreLayoutEvent>();
       }
 
       ImGui::Separator();
 
-      if (ImGui::MenuItem("VSync",
+      if (ImGui::MenuItem(ICON_FA_GAUGE_HIGH " VSync",
                           nullptr,
                           rendering_options.test(RenderingOption::VSync))) {
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::VSync);
       }
 
-      if (ImGui::MenuItem("Depth Test",
+      if (ImGui::MenuItem(ICON_FA_LAYER_GROUP " Depth Test",
                           nullptr,
                           rendering_options.test(RenderingOption::DepthTest))) {
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::DepthTest);
       }
 
-      if (ImGui::MenuItem("Face Culling",
+      if (ImGui::MenuItem(ICON_FA_EYE_SLASH " Face Culling",
                           nullptr,
                           rendering_options.test(RenderingOption::FaceCulling))) {
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::FaceCulling);
       }
 
-      if (ImGui::MenuItem("Wireframe Rendering",
+      if (ImGui::MenuItem(ICON_FA_CIRCLE_NODES " Wireframe Rendering",
                           nullptr,
                           rendering_options.test(RenderingOption::Wireframe))) {
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::Wireframe);
       }
 
-      if (ImGui::MenuItem("Blending",
+      if (ImGui::MenuItem(ICON_FA_DROPLET " Blending",
                           nullptr,
                           rendering_options.test(RenderingOption::Blending))) {
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::Blending);
@@ -64,11 +70,13 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
     }
 
     if (ImGui::BeginMenu("Debug")) {
-      if (ImGui::MenuItem("Open Style Editor...")) {
+      if (ImGui::MenuItem(ICON_FA_PALETTE " Open Style Editor...")) {
         dispatcher.enqueue<ShowStyleEditorEvent>();
       }
 
-      if (ImGui::MenuItem("Open Demo Window...")) {
+      ImGui::Separator();
+
+      if (ImGui::MenuItem(ICON_FA_CIRCLE_INFO " Open Demo Window...")) {
         dispatcher.enqueue<ShowDemoWindowEvent>();
       }
 

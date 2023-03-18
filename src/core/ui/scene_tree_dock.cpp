@@ -1,5 +1,6 @@
 #include "scene_tree_dock.hpp"
 
+#include <IconsFontAwesome6.h>
 #include <imgui.h>
 
 #include "common/debug/assert.hpp"
@@ -37,7 +38,7 @@ void show_transform_component(const Registry& registry,
                               const Entity entity,
                               Dispatcher& dispatcher)
 {
-  ImGui::SeparatorText("Transform");
+  ImGui::SeparatorText(ICON_FA_UP_DOWN_LEFT_RIGHT " Transform");
 
   const auto& transform_options = registry.get<TransformOptions>(entity);
 
@@ -69,7 +70,7 @@ void show_camera_component(const Registry& registry,
                            const Entity entity,
                            Dispatcher& dispatcher)
 {
-  ImGui::SeparatorText("Camera");
+  ImGui::SeparatorText(ICON_FA_CAMERA " Camera");
   ImGui::Text("Aspect ratio: %.2f", camera.aspect_ratio);
 
   bool active_camera {entity == registry.ctx().get<CameraContext>().active_camera};
@@ -142,7 +143,7 @@ void show_scene_node_widget(const Scene& scene,
     }
 
     if (const auto* model = registry.try_get<gl::Model>(entity)) {
-      ImGui::SeparatorText("OpenGLModel");
+      ImGui::SeparatorText(ICON_FA_CUBES " Model (OpenGL)");
       ImGui::Text("Meshes: %zu", model->meshes.size());
     }
 
