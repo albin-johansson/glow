@@ -1,10 +1,9 @@
 #pragma once
 
-#include <memory>  // unique_ptr
-
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
 #include "common/type/maybe.hpp"
+#include "common/type/memory.hpp"
 #include "common/type/path.hpp"
 
 namespace gravel {
@@ -25,7 +24,7 @@ struct PixelDataDeleter final {
   void operator()(uchar* data) noexcept;
 };
 
-using PixelData = std::unique_ptr<uchar, PixelDataDeleter>;
+using PixelData = Unique<uchar, PixelDataDeleter>;
 
 struct TextureData final {
   PixelData pixels;

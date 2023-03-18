@@ -1,8 +1,8 @@
 #pragma once
 
-#include <memory>  // unique_ptr
-
 #include <SDL2/SDL.h>
+
+#include "common/type/memory.hpp"
 
 namespace gravel::gl {
 
@@ -17,7 +17,7 @@ class Context final {
   [[nodiscard]] auto get_handle() -> SDL_GLContext { return mContext.get(); }
 
  private:
-  std::unique_ptr<void, ContextDeleter> mContext;
+  Unique<void, ContextDeleter> mContext;
 };
 
 }  // namespace gravel::gl

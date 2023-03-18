@@ -1,9 +1,8 @@
 #pragma once
 
-#include <memory>  // unique_ptr
-
 #include <SDL2/SDL.h>
 
+#include "common/type/memory.hpp"
 #include "graphics/graphics_api.hpp"
 
 namespace gravel {
@@ -20,7 +19,7 @@ class Window final {
   [[nodiscard]] auto get_handle() -> SDL_Window* { return mWindow.get(); }
 
  private:
-  std::unique_ptr<SDL_Window, WindowDeleter> mWindow {};
+  Unique<SDL_Window, WindowDeleter> mWindow;
 };
 
 }  // namespace gravel

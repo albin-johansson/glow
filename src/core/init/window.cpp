@@ -1,7 +1,5 @@
 #include "window.hpp"
 
-#include <memory>  // unique_ptr
-
 #include <fmt/format.h>
 
 #include "common/debug/error.hpp"
@@ -42,7 +40,7 @@ void use_win32_dark_title_bar(SDL_Window* window)
   SDL_VERSION(&wm_info.version);
 
   if (SDL_GetWindowWMInfo(window, &wm_info)) {
-    std::unique_ptr<void, ObjectDeleter> dwmapi {SDL_LoadObject("dwmapi.dll")};
+    Unique<void, ObjectDeleter> dwmapi {SDL_LoadObject("dwmapi.dll")};
 
     using Signature = HRESULT (*)(HWND, DWORD, LPCVOID, DWORD);
     if (auto* func = reinterpret_cast<Signature>(
