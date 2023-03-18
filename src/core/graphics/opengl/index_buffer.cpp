@@ -42,7 +42,7 @@ void IndexBuffer::dispose() noexcept
   }
 }
 
-void IndexBuffer::bind()
+void IndexBuffer::bind() const
 {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
 }

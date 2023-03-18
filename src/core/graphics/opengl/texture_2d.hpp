@@ -33,7 +33,7 @@ class Texture2D final {
   [[nodiscard]] static auto load_rgb_f32(const Path& path) -> Maybe<Texture2D>;
 
   /// Enables the texture for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Enables a texture for subsequent draw calls.
   static void bind(uint id);

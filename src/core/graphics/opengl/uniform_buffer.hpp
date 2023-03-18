@@ -21,7 +21,7 @@ class UniformBuffer final {
   auto operator=(UniformBuffer&& other) noexcept -> UniformBuffer&;
 
   /// Binds the UBO for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Unbinds any bound UBO.
   static void unbind();

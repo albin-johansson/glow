@@ -21,7 +21,7 @@ class IndexBuffer final {
   auto operator=(IndexBuffer&& other) noexcept -> IndexBuffer&;
 
   /// Binds the index buffer for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Unbinds any bound index buffer.
   static void unbind();

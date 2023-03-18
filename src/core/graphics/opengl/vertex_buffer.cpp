@@ -42,7 +42,7 @@ void VertexBuffer::dispose() noexcept
   }
 }
 
-void VertexBuffer::bind()
+void VertexBuffer::bind() const
 {
   glBindBuffer(GL_ARRAY_BUFFER, mID);
 }

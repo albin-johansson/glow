@@ -26,7 +26,7 @@ class Framebuffer final {
   auto operator=(Framebuffer&& other) noexcept -> Framebuffer&;
 
   /// Binds the framebuffer for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Unbinds any bound framebuffer.
   static void unbind();

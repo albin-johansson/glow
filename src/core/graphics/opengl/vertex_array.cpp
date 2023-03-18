@@ -43,7 +43,7 @@ void VertexArray::dispose() noexcept
   }
 }
 
-void VertexArray::bind()
+void VertexArray::bind() const
 {
   glBindVertexArray(mID);
 }

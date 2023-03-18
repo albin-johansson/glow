@@ -20,7 +20,7 @@ class VertexArray final {
   auto operator=(VertexArray&& other) noexcept -> VertexArray&;
 
   /// Binds the VAO for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Unbinds any bound VAO.
   static void unbind();

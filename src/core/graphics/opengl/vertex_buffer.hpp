@@ -21,7 +21,7 @@ class VertexBuffer final {
   auto operator=(VertexBuffer&& other) noexcept -> VertexBuffer&;
 
   /// Binds the VBO for subsequent draw calls.
-  void bind();
+  void bind() const;
 
   /// Unbinds any bound VBO.
   static void unbind();

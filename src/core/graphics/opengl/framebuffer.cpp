@@ -69,7 +69,7 @@ void Framebuffer::dispose() noexcept
   }
 }
 
-void Framebuffer::bind()
+void Framebuffer::bind() const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, mID);
 }

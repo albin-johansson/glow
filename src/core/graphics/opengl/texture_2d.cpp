@@ -85,7 +85,7 @@ auto Texture2D::load_rgb_f32(const Path& path) -> Maybe<Texture2D>
   return texture;
 }
 
-void Texture2D::bind()
+void Texture2D::bind() const
 {
   glBindTexture(GL_TEXTURE_2D, mID);
   GRAVEL_GL_CHECK_ERRORS();

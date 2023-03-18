@@ -44,7 +44,7 @@ void UniformBuffer::dispose() noexcept
   }
 }
 
-void UniformBuffer::bind()
+void UniformBuffer::bind() const
 {
   glBindBuffer(GL_UNIFORM_BUFFER, mID);
   GRAVEL_GL_CHECK_ERRORS();
