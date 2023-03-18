@@ -19,6 +19,7 @@ target_include_directories(libgravel
                            ${PROJECT_SOURCE_DIR}
 
                            SYSTEM PUBLIC
+                           ${GRAVEL_LIB_DIR}
                            ${Stb_INCLUDE_DIR}
                            )
 

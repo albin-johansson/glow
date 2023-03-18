@@ -16,6 +16,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif ()
 
 set(GRAVEL_ASSET_DIR "${PROJECT_SOURCE_DIR}/assets")
+set(GRAVEL_LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
 
 include(cmake/gravel.cmake)
 
