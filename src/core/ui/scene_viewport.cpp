@@ -64,7 +64,7 @@ void show_generic_viewport_context_menu(const Scene& scene, Dispatcher& dispatch
                            &speed,
                            0,
                            10'000,
-                           "Speed: %.2f",
+                           "Speed: %.1f",
                            ImGuiSliderFlags_Logarithmic)) {
       dispatcher.enqueue<SetCameraSpeedEvent>(speed);
     }
@@ -79,12 +79,44 @@ void show_generic_viewport_context_menu(const Scene& scene, Dispatcher& dispatch
                            &sensitivity,
                            0.1f,
                            2.0f,
-                           "Sensitivity: %.2f")) {
+                           "Sensitivity: %.1f")) {
       dispatcher.enqueue<SetCameraSensitivityEvent>(sensitivity);
     }
 
     ImGui::EndPopup();
   }
+}
+
+void show_performance_overlay()
+{
+  const auto pos = ImGui::GetWindowPos();
+  const auto size = ImGui::GetWindowSize();
+
+  const auto padding = ImGui::GetStyle().FramePadding;
+  const ImVec2 next_pos {pos.x + size.x - padding.x, pos.y + padding.y};
+  const ImVec2 next_pivot {1.0f, 0.0f};
+
+  ImGui::SetNextWindowPos(next_pos, ImGuiCond_Always, next_pivot);
+  ImGui::SetNextWindowViewport(ImGui::GetWindowViewport()->ID);
+  ImGui::SetNextWindowBgAlpha(0.5f);
+
+  const auto window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+                            ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav |
+                            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove |
+                            ImGuiWindowFlags_NoFocusOnAppearing;
+
+  if (ImGui::Begin("##PerformanceOverlay", nullptr, window_flags)) {
+    const auto& io = ImGui::GetIO();
+
+    ImGui::SeparatorText("Performance");
+    ImGui::Text("FPS: %.1f", io.Framerate);
+    ImGui::Text("Frame: %.2f ms", io.DeltaTime * 1'000.0f);
+
+    ImGui::SeparatorText("UI");
+    ImGui::Text("Vertices: %i", io.MetricsRenderVertices);
+    ImGui::Text("Indices: %i", io.MetricsRenderIndices);
+  }
+  ImGui::End();
 }
 
 }  // namespace
@@ -130,6 +162,7 @@ void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispa
   ImGui::PopStyleVar();  // ImGuiStyleVar_WindowPadding
 
   show_generic_viewport_context_menu(scene, dispatcher);
+  show_performance_overlay();
 
   ImGui::End();
 }
