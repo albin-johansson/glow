@@ -6,9 +6,9 @@
 
 #include "common/debug/assert.hpp"
 #include "common/primitives.hpp"
+#include "graphics/camera.hpp"
 #include "graphics/environment.hpp"
 #include "graphics/rendering_options.hpp"
-#include "scene/camera.hpp"
 #include "scene/identifier.hpp"
 #include "scene/node.hpp"
 #include "scene/transform.hpp"
