@@ -135,19 +135,8 @@ void OpenGLBackend::render_scene(const Scene& scene,
     const auto view = to_view_matrix(camera, camera_transform);
 
     // Render the environment backdrop
-    if (mEnvTexture.has_value()) {
-      const auto& camera_position = scene.get<Transform>(camera_entity).position;
-      const auto& env_options = scene.get<EnvironmentOptions>();
-
-      auto& env_buffer = mRenderer.get_env_buffer();
-      env_buffer.brightness = env_options.brightness;
-      env_buffer.gamma = env_options.gamma;
-      env_buffer.use_gamma_correction = env_options.use_gamma_correction;
-      env_buffer.camera_pos = Vec4 {camera_position, 0};
-      env_buffer.inverse_proj_view = glm::inverse(projection * view);
-
-      mRenderer.render_environment(*mEnvTexture);
-    }
+    // TODO optimization: render environment last with depth test trickery
+    render_environment(scene, projection, view, camera_entity);
 
     // Render the scene objects
     glPolygonMode(GL_FRONT_AND_BACK,
@@ -157,6 +146,26 @@ void OpenGLBackend::render_scene(const Scene& scene,
 
     Framebuffer::unbind();
     GRAVEL_GL_CHECK_ERRORS();
+  }
+}
+
+void OpenGLBackend::render_environment(const Scene& scene,
+                                       const Mat4& projection,
+                                       const Mat4& view,
+                                       const Entity camera_entity)
+{
+  if (mEnvTexture.has_value()) {
+    const auto& camera_position = scene.get<Transform>(camera_entity).position;
+    const auto& env_options = scene.get<EnvironmentOptions>();
+
+    auto& env_buffer = mRenderer.get_env_buffer();
+    env_buffer.brightness = env_options.brightness;
+    env_buffer.gamma = env_options.gamma;
+    env_buffer.use_gamma_correction = env_options.use_gamma_correction;
+    env_buffer.camera_pos = Vec4 {camera_position, 0};
+    env_buffer.inverse_proj_view = glm::inverse(projection * view);
+
+    mRenderer.render_environment(*mEnvTexture);
   }
 }
 

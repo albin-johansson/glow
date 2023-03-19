@@ -57,6 +57,11 @@ class OpenGLBackend final : public Backend {
 
   void make_main_camera_node(Scene& scene);
 
+  void render_environment(const Scene& scene,
+                          const Mat4& projection,
+                          const Mat4& view,
+                          Entity camera_entity);
+
   void render_models(const Scene& scene,
                      const Mat4& projection,
                      const Mat4&,
