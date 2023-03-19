@@ -10,6 +10,10 @@
 namespace gravel {
 
 class DearImGui final {
+  inline static constexpr float kMinFontSize = 9;
+  inline static constexpr float kDefFontSize = 13;
+  inline static constexpr float kMaxFontSize = 37;
+
  public:
   GRAVEL_DELETE_COPY(DearImGui);
   GRAVEL_DELETE_MOVE(DearImGui);
@@ -20,8 +24,15 @@ class DearImGui final {
 
   void reload_fonts();
 
+  void increase_font_size();
+
+  void decrease_font_size();
+
+  void reset_font_size();
+
  private:
   Maybe<DearImGuiOpenGL> mGL;
+  float mFontSize {kDefFontSize};
 };
 
 }  // namespace gravel

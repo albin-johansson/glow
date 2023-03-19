@@ -1,5 +1,7 @@
 #include "dear_imgui.hpp"
 
+#include <algorithm>  // min, max
+
 #include <IconsFontAwesome6.h>
 #include <imgui.h>
 #include <spdlog/spdlog.h>
@@ -74,10 +76,8 @@ void DearImGui::reload_fonts()
 
   io.Fonts->Clear();
 
-  const float size = 13.0f;
-
   ImFontConfig default_config {};
-  default_config.SizePixels = size * framebuffer_scale.x;
+  default_config.SizePixels = mFontSize * framebuffer_scale.x;
   io.Fonts->AddFontDefault(&default_config);
 
   // The global scale is 1 on most platforms, and 0.5 on macOS
@@ -85,7 +85,7 @@ void DearImGui::reload_fonts()
 
   ImFontConfig fa_config {};
   fa_config.MergeMode = true;
-  fa_config.SizePixels = size * framebuffer_scale.x;
+  fa_config.SizePixels = mFontSize * framebuffer_scale.x;
   fa_config.GlyphMinAdvanceX = fa_config.SizePixels;
   fa_config.GlyphMaxAdvanceX = fa_config.GlyphMinAdvanceX;
   fa_config.GlyphOffset = {0, 2};
@@ -101,6 +101,28 @@ void DearImGui::reload_fonts()
   }
 
   ImGui::GetStyle().ScaleAllSizes(1.0f);
+}
+
+void DearImGui::increase_font_size()
+{
+  mFontSize += 2;
+  mFontSize = std::min(kMaxFontSize, mFontSize);
+
+  reload_fonts();
+}
+
+void DearImGui::decrease_font_size()
+{
+  mFontSize -= 2;
+  mFontSize = std::max(kMinFontSize, mFontSize);
+
+  reload_fonts();
+}
+
+void DearImGui::reset_font_size()
+{
+  mFontSize = kDefFontSize;
+  reload_fonts();
 }
 
 }  // namespace gravel

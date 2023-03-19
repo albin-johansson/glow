@@ -33,20 +33,17 @@ class Engine final {
   float64 mCounterFreq {};
   float64 mFixedDelta {};
   int32 mMaxTicksPerFrame {5};
-
   Unique<Backend> mBackend;
   Scene mScene;
   Dispatcher mDispatcher;
-
   Vec2i mViewportSize {};
   Vec2i mViewportResolution {};
-
   bool mRestoreLayout {true};
-
   bool mShowDemoWindow {false};
   bool mShowStyleEditor {false};
 
   void update(float32 dt);
+
   void update_camera_position(float32 dt);
 
   void render();
@@ -56,22 +53,37 @@ class Engine final {
   void on_quit(const QuitEvent&);
 
   void on_update_transform_translation(const UpdateTransformTranslationEvent& event);
+
   void on_update_transform_rotation(const UpdateTransformRotationEvent& event);
+
   void on_update_transform_scale(const UpdateTransformScaleEvent& event);
+
   void on_update_transform(const UpdateTransformEvent& event);
 
+  void on_increase_font_size(const IncreaseFontSizeEvent&);
+
+  void on_decrease_font_size(const DecreaseFontSizeEvent&);
+
+  void on_reset_font_size(const ResetFontSizeEvent&);
+
   void on_rotate_active_camera(const RotateActiveCameraEvent& event);
+
   void on_set_camera_speed(const SetCameraSpeedEvent& event);
+
   void on_set_camera_sensitivity(const SetCameraSensitivityEvent& event);
 
   void on_set_camera_fov(const SetCameraFovEvent& event);
+
   void on_set_camera_near_plane(const SetCameraNearPlaneEvent& event);
+
   void on_set_camera_far_plane(const SetCameraFarPlaneEvent& event);
+
   void on_set_camera_aspect_ratio(const SetCameraAspectRatioEvent& event);
 
   void on_restore_layout(const RestoreLayoutEvent&);
 
   void on_show_style_editor(const ShowStyleEditorEvent&);
+
   void on_show_demo_window(const ShowDemoWindowEvent&);
 
   void on_toggle_rendering_option(const ToggleRenderingOptionEvent& event);

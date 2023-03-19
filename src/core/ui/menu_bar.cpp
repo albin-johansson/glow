@@ -66,6 +66,20 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
         dispatcher.enqueue<ToggleRenderingOptionEvent>(RenderingOption::Blending);
       }
 
+      ImGui::Separator();
+
+      if (ImGui::MenuItem(ICON_FA_MAGNIFYING_GLASS_PLUS " Increase Font Size")) {
+        dispatcher.enqueue<IncreaseFontSizeEvent>();
+      }
+
+      if (ImGui::MenuItem(ICON_FA_MAGNIFYING_GLASS_MINUS " Decrease Font Size")) {
+        dispatcher.enqueue<DecreaseFontSizeEvent>();
+      }
+
+      if (ImGui::MenuItem(ICON_FA_FONT " Reset Font Size")) {
+        dispatcher.enqueue<ResetFontSizeEvent>();
+      }
+
       ImGui::EndMenu();
     }
 

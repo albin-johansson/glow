@@ -62,6 +62,10 @@ void Engine::register_events()
   mDispatcher.sink<UpdateTransformScaleEvent>().connect<&Engine::on_update_transform_scale>(this);
   mDispatcher.sink<UpdateTransformEvent>().connect<&Engine::on_update_transform>(this);
 
+  mDispatcher.sink<IncreaseFontSizeEvent>().connect<&Engine::on_increase_font_size>(this);
+  mDispatcher.sink<DecreaseFontSizeEvent>().connect<&Engine::on_decrease_font_size>(this);
+  mDispatcher.sink<ResetFontSizeEvent>().connect<&Engine::on_reset_font_size>(this);
+
   mDispatcher.sink<RotateActiveCameraEvent>().connect<&Engine::on_rotate_active_camera>(this);
   mDispatcher.sink<SetCameraSpeedEvent>().connect<&Engine::on_set_camera_speed>(this);
   mDispatcher.sink<SetCameraSensitivityEvent>().connect<&Engine::on_set_camera_sensitivity>(this);
@@ -243,6 +247,27 @@ void Engine::on_update_transform(const UpdateTransformEvent& event)
   transform.position = event.translation;
   transform.rotation = event.rotation;
   transform.scale = event.scale;
+}
+
+void Engine::on_increase_font_size(const IncreaseFontSizeEvent&)
+{
+  spdlog::trace("IncreaseFontSizeEvent");
+
+  mInitializer.get_imgui().increase_font_size();
+}
+
+void Engine::on_decrease_font_size(const DecreaseFontSizeEvent&)
+{
+  spdlog::trace("DecreaseFontSizeEvent");
+
+  mInitializer.get_imgui().decrease_font_size();
+}
+
+void Engine::on_reset_font_size(const ResetFontSizeEvent&)
+{
+  spdlog::trace("ResetFontSizeEvent");
+
+  mInitializer.get_imgui().reset_font_size();
 }
 
 void Engine::on_rotate_active_camera(const RotateActiveCameraEvent& event)

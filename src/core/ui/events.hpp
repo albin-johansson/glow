@@ -12,6 +12,10 @@ struct RestoreLayoutEvent final {};
 struct ShowStyleEditorEvent final {};
 struct ShowDemoWindowEvent final {};
 
+struct IncreaseFontSizeEvent final {};
+struct DecreaseFontSizeEvent final {};
+struct ResetFontSizeEvent final {};
+
 struct RotateActiveCameraEvent final {
   float32 yaw {};
   float32 pitch {};
