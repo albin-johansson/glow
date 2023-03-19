@@ -8,6 +8,7 @@
 #include "common/primitives.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/environment.hpp"
+#include "graphics/renderer_info.hpp"
 #include "graphics/rendering_options.hpp"
 #include "scene/identifier.hpp"
 #include "scene/node.hpp"
@@ -24,6 +25,7 @@ Scene::Scene()
   ctx.emplace<CameraOptions>();
   ctx.emplace<EnvironmentOptions>();
   ctx.emplace<GizmosOptions>();
+  ctx.emplace<RendererInfo>();
 
   auto& rendering_options = ctx.emplace<RenderingOptions>();
   rendering_options.options[RenderingOption::VSync];

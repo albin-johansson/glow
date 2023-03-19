@@ -13,6 +13,7 @@
 #include "graphics/opengl/model.hpp"
 #include "graphics/opengl/texture_cache.hpp"
 #include "graphics/opengl/util.hpp"
+#include "graphics/renderer_info.hpp"
 #include "graphics/rendering_options.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/scene.hpp"
@@ -51,6 +52,12 @@ void OpenGLBackend::on_init(Scene& scene)
       {RenderingOption::Wireframe, false},
       {RenderingOption::Blending, false},
   };
+
+  auto& renderer_info = scene.get<RendererInfo>();
+  renderer_info.api = "OpenGL 4.1.0 core";
+  renderer_info.renderer = get_renderer_name();
+  renderer_info.vendor = get_vendor_name();
+  renderer_info.version = get_version();
 
   make_main_camera_node(scene);
 

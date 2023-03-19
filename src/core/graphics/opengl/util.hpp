@@ -4,6 +4,7 @@
 
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
+#include "common/type/string.hpp"
 #include "graphics/buffer_usage.hpp"
 #include "graphics/shader_type.hpp"
 
@@ -24,6 +25,11 @@ void set_option(uint option, bool value);
 [[nodiscard]] auto get_bound_framebuffer() -> uint;
 [[nodiscard]] auto get_bound_texture() -> uint;
 [[nodiscard]] auto get_bound_program() -> uint;
+
+[[nodiscard]] auto get_renderer_name() -> String;
+[[nodiscard]] auto get_vendor_name() -> String;
+[[nodiscard]] auto get_version() -> String;
+[[nodiscard]] auto get_glsl_version() -> String;
 
 }  // namespace gravel::gl
 

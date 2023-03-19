@@ -1,5 +1,7 @@
 #include "util.hpp"
 
+#include <cstring>  // memcpy
+
 #include <fmt/format.h>
 #include <glad/glad.h>
 #include <magic_enum.hpp>
@@ -27,6 +29,33 @@ inline const HashMap<uint, const char*> kErrorMessages = {
   int id {};
   glGetIntegerv(name, &id);
   return static_cast<uint>(id);
+}
+
+[[nodiscard]] auto get_string_length(const GLubyte* str) -> usize
+{
+  const GLubyte* ptr = str;
+
+  while (*ptr != '\0') {
+    ++ptr;
+  }
+
+  return static_cast<usize>(ptr - str);
+}
+
+[[nodiscard]] auto to_string(const GLubyte* raw_str) -> String
+{
+  if (!raw_str) {
+    return String {};
+  }
+
+  const auto length = get_string_length(raw_str);
+
+  String result;
+  result.resize(length);
+
+  std::memcpy(result.data(), raw_str, length);
+
+  return result;
 }
 
 }  // namespace
@@ -131,6 +160,26 @@ auto get_bound_texture() -> uint
 auto get_bound_program() -> uint
 {
   return get_integer(GL_CURRENT_PROGRAM);
+}
+
+auto get_renderer_name() -> String
+{
+  return to_string(glGetString(GL_RENDERER));
+}
+
+auto get_vendor_name() -> String
+{
+  return to_string(glGetString(GL_VENDOR));
+}
+
+auto get_version() -> String
+{
+  return to_string(glGetString(GL_VERSION));
+}
+
+auto get_glsl_version() -> String
+{
+  return to_string(glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
 }  // namespace gravel::gl
