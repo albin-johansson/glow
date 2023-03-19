@@ -6,11 +6,32 @@
 
 #include "common/debug/assert.hpp"
 #include "common/primitives.hpp"
+#include "graphics/environment.hpp"
+#include "graphics/rendering_options.hpp"
+#include "scene/camera.hpp"
 #include "scene/identifier.hpp"
 #include "scene/node.hpp"
 #include "scene/transform.hpp"
+#include "ui/camera_options.hpp"
+#include "ui/gizmos.hpp"
 
 namespace gravel {
+
+Scene::Scene()
+{
+  auto& ctx = mRegistry.ctx();
+  ctx.emplace<CameraContext>();
+  ctx.emplace<CameraOptions>();
+  ctx.emplace<EnvironmentOptions>();
+  ctx.emplace<GizmosOptions>();
+
+  auto& rendering_options = ctx.emplace<RenderingOptions>();
+  rendering_options.options[RenderingOption::VSync];
+  rendering_options.options[RenderingOption::DepthTest];
+  rendering_options.options[RenderingOption::FaceCulling];
+  rendering_options.options[RenderingOption::Wireframe];
+  rendering_options.options[RenderingOption::Blending];
+}
 
 auto Scene::make_node(String name, const Entity parent) -> Entity
 {
@@ -44,6 +65,27 @@ auto Scene::make_node(const Entity parent) -> Entity
   name.name = fmt::format("Node {}", static_cast<uint32>(node_entity));
 
   return node_entity;
+}
+
+auto Scene::has_active_camera() const -> bool
+{
+  return get<CameraContext>().active_camera != kNullEntity;
+}
+
+auto Scene::get_active_camera() -> Pair<Entity, Camera&>
+{
+  const auto& camera_context = get<CameraContext>();
+  auto& camera = get<Camera>(camera_context.active_camera);
+
+  return {camera_context.active_camera, camera};
+}
+
+auto Scene::get_active_camera() const -> Pair<Entity, const Camera&>
+{
+  const auto& camera_context = get<CameraContext>();
+  const auto& camera = get<Camera>(camera_context.active_camera);
+
+  return {camera_context.active_camera, camera};
 }
 
 }  // namespace gravel

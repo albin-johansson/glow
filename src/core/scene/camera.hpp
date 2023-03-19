@@ -4,7 +4,6 @@
 #include "common/primitives.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
-#include "common/type/pair.hpp"
 
 namespace gravel {
 
@@ -49,13 +48,5 @@ void rotate_camera(const Camera& camera,
 /// \return a view matrix.
 [[nodiscard]] auto to_view_matrix(const Camera& camera, const Transform& transform)
     -> Mat4;
-
-/// Indicates whether a camera is active.
-[[nodiscard]] auto has_active_camera(const Registry& registry) -> bool;
-
-[[nodiscard]] auto get_active_camera(Registry& registry) -> Pair<Entity, Camera&>;
-
-[[nodiscard]] auto get_active_camera(const Registry& registry)
-    -> Pair<Entity, const Camera&>;
 
 }  // namespace gravel

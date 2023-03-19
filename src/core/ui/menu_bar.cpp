@@ -24,8 +24,7 @@ void show_file_menu(const Scene&, Dispatcher& dispatcher)
 
 void show_view_menu(const Scene& scene, Dispatcher& dispatcher)
 {
-  const auto& registry = scene.get_registry();
-  const auto& rendering_options = registry.ctx().get<RenderingOptions>();
+  const auto& rendering_options = scene.get<RenderingOptions>();
 
   if (ImGui::BeginMenu("View")) {
     if (ImGui::MenuItem(ICON_FA_ROTATE " Reset UI")) {
@@ -84,8 +83,7 @@ void show_view_menu(const Scene& scene, Dispatcher& dispatcher)
 
 void show_environment_menu(const Scene& scene, Dispatcher& dispatcher)
 {
-  const auto& registry = scene.get_registry();
-  const auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  const auto& env_options = scene.get<EnvironmentOptions>();
 
   if (ImGui::BeginMenu("Environment")) {
     if (ImGui::MenuItem(ICON_FA_FILE_IMAGE " Load Environment Image...")) {

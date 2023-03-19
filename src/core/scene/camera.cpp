@@ -35,24 +35,4 @@ auto to_view_matrix(const Camera& camera, const Transform& transform) -> Mat4
                      camera.up);
 }
 
-auto has_active_camera(const Registry& registry) -> bool
-{
-  const auto& camera_context = registry.ctx().get<CameraContext>();
-  return camera_context.active_camera != kNullEntity;
-}
-
-auto get_active_camera(Registry& registry) -> Pair<Entity, Camera&>
-{
-  const auto& camera_context = registry.ctx().get<CameraContext>();
-  return {camera_context.active_camera,
-          registry.get<Camera>(camera_context.active_camera)};
-}
-
-auto get_active_camera(const Registry& registry) -> Pair<Entity, const Camera&>
-{
-  const auto& camera_context = registry.ctx().get<CameraContext>();
-  return {camera_context.active_camera,
-          registry.get<Camera>(camera_context.active_camera)};
-}
-
 }  // namespace gravel

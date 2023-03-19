@@ -21,9 +21,8 @@ void show_generic_viewport_context_menu(const Scene& scene, Dispatcher& dispatch
   if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight)) {
     ImGui::SeparatorText(ICON_FA_UP_DOWN_LEFT_RIGHT " Transform Options");
 
-    const auto& registry = scene.get_registry();
-    const auto& gizmos_options = registry.ctx().get<GizmosOptions>();
-    const auto& camera_options = registry.ctx().get<CameraOptions>();
+    const auto& gizmos_options = scene.get<GizmosOptions>();
+    const auto& camera_options = scene.get<CameraOptions>();
 
     if (ImGui::MenuItem(ICON_FA_LOCATION_DOT " Translate",
                         nullptr,
@@ -109,12 +108,9 @@ void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispa
     if (!ImGuizmo::IsUsing() && ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
       const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);
 
-      const auto& registry = scene.get_registry();
-      const auto& camera_options = registry.ctx().get<CameraOptions>();
-
-      const auto dt = io.DeltaTime;
-      const auto yaw = camera_options.sensitivity * -mouse_delta.x * dt;
-      const auto pitch = camera_options.sensitivity * -mouse_delta.y * dt;
+      const auto& camera_options = scene.get<CameraOptions>();
+      const auto yaw = camera_options.sensitivity * -mouse_delta.x * io.DeltaTime;
+      const auto pitch = camera_options.sensitivity * -mouse_delta.y * io.DeltaTime;
       dispatcher.enqueue<RotateActiveCameraEvent>(yaw, pitch);
 
       ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);

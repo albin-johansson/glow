@@ -32,14 +32,14 @@ namespace {
   }
 }
 
-void show_transform_component(const Registry& registry,
+void show_transform_component(const Scene& scene,
                               const Transform& transform,
                               const Entity entity,
                               Dispatcher& dispatcher)
 {
   ImGui::SeparatorText(ICON_FA_UP_DOWN_LEFT_RIGHT " Transform");
 
-  const auto& transform_options = registry.get<TransformOptions>(entity);
+  const auto& transform_options = scene.get<TransformOptions>(entity);
 
   ImGui::BeginDisabled(!transform_options.use_position);
   if (const auto translation = show_drag_input("Position", transform.position)) {
@@ -64,7 +64,7 @@ void show_transform_component(const Registry& registry,
   ImGui::EndDisabled();
 }
 
-void show_camera_component(const Registry& registry,
+void show_camera_component(const Scene& scene,
                            const Camera& camera,
                            const Entity entity,
                            Dispatcher& dispatcher)
@@ -72,7 +72,7 @@ void show_camera_component(const Registry& registry,
   ImGui::SeparatorText(ICON_FA_CAMERA " Camera");
   ImGui::Text("Aspect ratio: %.2f", camera.aspect_ratio);
 
-  bool active_camera {entity == registry.ctx().get<CameraContext>().active_camera};
+  bool active_camera {entity == scene.get<CameraContext>().active_camera};
   if (ImGui::Checkbox("Active", &active_camera)) {
     // TODO only allow enabling cameras, not disabling them
   }
@@ -106,23 +106,21 @@ void show_scene_node_widget(const Scene& scene,
 
   ImGui::PushID(static_cast<int>(entity));
 
-  const auto& registry = scene.get_registry();
-
-  const auto& node = registry.get<Node>(entity);
-  const auto& identifier = registry.get<Identifier>(entity);
+  const auto& node = scene.get<Node>(entity);
+  const auto& identifier = scene.get<Identifier>(entity);
 
   if (ImGui::CollapsingHeader(identifier.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
     ImGui::Indent();
 
-    if (const auto* transform = registry.try_get<Transform>(entity)) {
-      show_transform_component(registry, *transform, entity, dispatcher);
+    if (const auto* transform = scene.find<Transform>(entity)) {
+      show_transform_component(scene, *transform, entity, dispatcher);
     }
 
-    if (const auto* camera = registry.try_get<Camera>(entity)) {
-      show_camera_component(registry, *camera, entity, dispatcher);
+    if (const auto* camera = scene.find<Camera>(entity)) {
+      show_camera_component(scene, *camera, entity, dispatcher);
     }
 
-    if (const auto* model = registry.try_get<gl::Model>(entity)) {
+    if (const auto* model = scene.find<gl::Model>(entity)) {
       ImGui::SeparatorText(ICON_FA_CUBES " Model (OpenGL)");
       ImGui::Text("Meshes: %zu", model->meshes.size());
     }

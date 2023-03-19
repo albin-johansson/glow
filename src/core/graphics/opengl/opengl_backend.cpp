@@ -8,6 +8,7 @@
 
 #include "common/debug/assert.hpp"
 #include "common/predef.hpp"
+#include "graphics/environment.hpp"
 #include "graphics/opengl/model.hpp"
 #include "graphics/opengl/texture_cache.hpp"
 #include "graphics/opengl/util.hpp"
@@ -40,15 +41,9 @@ void OpenGLBackend::stop()
 
 void OpenGLBackend::on_init(Scene& scene)
 {
-  auto& registry = scene.get_registry();
+  scene.add<TextureCache>();
 
-  auto& ctx = registry.ctx();
-  ctx.emplace<CameraContext>();
-  ctx.emplace<CameraOptions>();
-  ctx.emplace<TextureCache>();
-  ctx.emplace<GizmosOptions>();
-
-  auto& rendering_options = ctx.emplace<RenderingOptions>();
+  auto& rendering_options = scene.get<RenderingOptions>();
   rendering_options.options = {
       {RenderingOption::VSync, true},
       {RenderingOption::DepthTest, true},
@@ -64,22 +59,20 @@ void OpenGLBackend::on_init(Scene& scene)
 
 void OpenGLBackend::make_main_camera_node(Scene& scene)
 {
-  auto& registry = scene.get_registry();
-
   const auto camera_entity = scene.make_node("Main Camera");
 
-  auto& camera = registry.emplace<Camera>(camera_entity);
+  auto& camera = scene.add<Camera>(camera_entity);
   camera.up = Vec3 {0, 1, 0};
 
-  auto& transform = registry.get<Transform>(camera_entity);
+  auto& transform = scene.get<Transform>(camera_entity);
   transform.position = Vec3 {0, 0, 2};
   transform.rotation = Vec3 {0, 0, -1};
 
-  auto& transform_options = registry.get<TransformOptions>(camera_entity);
+  auto& transform_options = scene.get<TransformOptions>(camera_entity);
   transform_options.use_rotation = false;
   transform_options.use_scale = false;
 
-  auto& camera_context = registry.ctx().get<CameraContext>();
+  auto& camera_context = scene.get<CameraContext>();
   camera_context.active_camera = camera_entity;
 }
 
@@ -107,10 +100,8 @@ void OpenGLBackend::render_scene(const Scene& scene,
                                  const Vec2& framebuffer_size,
                                  Dispatcher& dispatcher)
 {
-  const auto& registry = scene.get_registry();
-
   // Reset options
-  const auto& rendering_options = registry.ctx().get<RenderingOptions>();
+  const auto& rendering_options = scene.get<RenderingOptions>();
   set_option(GL_DEPTH_TEST, rendering_options.test(RenderingOption::DepthTest));
   set_option(GL_CULL_FACE, rendering_options.test(RenderingOption::FaceCulling));
   set_option(GL_BLEND, rendering_options.test(RenderingOption::Blending));
@@ -125,9 +116,9 @@ void OpenGLBackend::render_scene(const Scene& scene,
 
   const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
 
-  if (has_active_camera(registry)) {
-    const auto& [camera_entity, camera] = get_active_camera(registry);
-    const auto& camera_transform = registry.get<Transform>(camera_entity);
+  if (scene.has_active_camera()) {
+    const auto& [camera_entity, camera] = scene.get_active_camera();
+    const auto& camera_transform = scene.get<Transform>(camera_entity);
 
     if (camera.aspect_ratio != aspect_ratio) {
       dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
@@ -138,8 +129,17 @@ void OpenGLBackend::render_scene(const Scene& scene,
 
     // Render the environment backdrop
     if (mEnvTexture.has_value()) {
-      const auto& camera_position = registry.get<Transform>(camera_entity).position;
-      mRenderer.render_environment(*mEnvTexture, projection, view, camera_position);
+      const auto& camera_position = scene.get<Transform>(camera_entity).position;
+      const auto& env_options = scene.get<EnvironmentOptions>();
+
+      auto& env_buffer = mRenderer.get_env_buffer();
+      env_buffer.brightness = env_options.brightness;
+      env_buffer.gamma = env_options.gamma;
+      env_buffer.use_gamma_correction = env_options.use_gamma_correction;
+      env_buffer.camera_pos = Vec4 {camera_position, 0};
+      env_buffer.inverse_proj_view = glm::inverse(projection * view);
+
+      mRenderer.render_environment(*mEnvTexture);
     }
 
     // Render the scene objects
@@ -160,14 +160,13 @@ void OpenGLBackend::render_models(const Scene& scene,
 {
   mRenderer.bind_shading_program();
 
-  const auto& registry = scene.get_registry();
-  const auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+  const auto& gizmos_options = scene.get<GizmosOptions>();
 
-  for (auto [entity, transform, model] : registry.view<Transform, Model>().each()) {
+  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
     const auto model_transform = transform.to_model_matrix();
 
     for (const auto& mesh : model.meshes) {
-      const auto& material = registry.get<Material>(mesh.material);
+      const auto& material = scene.get<Material>(mesh.material);
 
       const auto model_matrix = model_transform * mesh.transform;
       mRenderer.render_shaded_mesh(mesh, material, model_matrix, view, projection);

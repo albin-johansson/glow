@@ -159,12 +159,11 @@ void Engine::update_camera_position(const float32 dt)
 {
   const uint8* state = SDL_GetKeyboardState(nullptr);
 
-  auto& registry = mScene.get_registry();
-  const auto& camera_context = registry.ctx().get<CameraContext>();
-  const auto& camera_options = registry.ctx().get<CameraOptions>();
+  const auto& camera_context = mScene.get<CameraContext>();
+  const auto& camera_options = mScene.get<CameraOptions>();
 
-  const auto& camera = registry.get<Camera>(camera_context.active_camera);
-  auto& transform = registry.get<Transform>(camera_context.active_camera);
+  const auto& camera = mScene.get<Camera>(camera_context.active_camera);
+  auto& transform = mScene.get<Transform>(camera_context.active_camera);
 
   if (state[SDL_SCANCODE_W]) {
     transform.position += transform.rotation * camera_options.speed * dt;
@@ -227,7 +226,7 @@ void Engine::on_update_transform_translation(const UpdateTransformTranslationEve
 {
   spdlog::trace("UpdateTransformTranslationEvent");
 
-  auto& transform = mScene.get_registry().get<Transform>(event.transform_entity);
+  auto& transform = mScene.get<Transform>(event.transform_entity);
   transform.position = event.translation;
 }
 
@@ -235,7 +234,7 @@ void Engine::on_update_transform_rotation(const UpdateTransformRotationEvent& ev
 {
   spdlog::trace("UpdateTransformRotationEvent");
 
-  auto& transform = mScene.get_registry().get<Transform>(event.transform_entity);
+  auto& transform = mScene.get<Transform>(event.transform_entity);
   transform.rotation = event.rotation;
 }
 
@@ -243,7 +242,7 @@ void Engine::on_update_transform_scale(const UpdateTransformScaleEvent& event)
 {
   spdlog::trace("UpdateTransformScaleEvent");
 
-  auto& transform = mScene.get_registry().get<Transform>(event.transform_entity);
+  auto& transform = mScene.get<Transform>(event.transform_entity);
   transform.scale = event.scale;
 }
 
@@ -251,7 +250,7 @@ void Engine::on_update_transform(const UpdateTransformEvent& event)
 {
   spdlog::trace("UpdateTransformEvent");
 
-  auto& transform = mScene.get_registry().get<Transform>(event.transform_entity);
+  auto& transform = mScene.get<Transform>(event.transform_entity);
   transform.position = event.translation;
   transform.rotation = event.rotation;
   transform.scale = event.scale;
@@ -282,8 +281,7 @@ void Engine::on_set_gizmo_operation(const SetGizmoOperationEvent& event)
 {
   spdlog::trace("SetGizmoOperationEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+  auto& gizmos_options = mScene.get<GizmosOptions>();
   gizmos_options.operation = event.operation;
 }
 
@@ -291,8 +289,7 @@ void Engine::on_set_gizmo_mode(const SetGizmoModeEvent& event)
 {
   spdlog::trace("SetGizmoModeEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+  auto& gizmos_options = mScene.get<GizmosOptions>();
   gizmos_options.mode = event.mode;
 }
 
@@ -300,8 +297,7 @@ void Engine::on_set_environment_brightness(const SetEnvironmentBrightnessEvent& 
 {
   spdlog::trace("SetEnvironmentBrightnessEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  auto& env_options = mScene.get<EnvironmentOptions>();
   env_options.brightness = event.brightness;
 }
 
@@ -309,8 +305,7 @@ void Engine::on_set_environment_gamma(const SetEnvironmentGammaEvent& event)
 {
   spdlog::trace("SetEnvironmentGammaEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  auto& env_options = mScene.get<EnvironmentOptions>();
   env_options.gamma = event.gamma;
 }
 
@@ -319,8 +314,7 @@ void Engine::on_toggle_environment_gamma_correction(
 {
   spdlog::trace("ToggleEnvironmentGammaCorrectionEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  auto& env_options = mScene.get<EnvironmentOptions>();
   env_options.use_gamma_correction = !env_options.use_gamma_correction;
 }
 
@@ -328,10 +322,8 @@ void Engine::on_rotate_active_camera(const RotateActiveCameraEvent& event)
 {
   spdlog::trace("RotateCameraEvent");
 
-  auto& registry = mScene.get_registry();
-
-  auto [camera_entity, camera] = get_active_camera(registry);
-  auto& transform = registry.get<Transform>(camera_entity);
+  auto [camera_entity, camera] = mScene.get_active_camera();
+  auto& transform = mScene.get<Transform>(camera_entity);
 
   rotate_camera(camera, transform, event.yaw, event.pitch);
 }
@@ -340,25 +332,23 @@ void Engine::on_set_camera_speed(const SetCameraSpeedEvent& event)
 {
   spdlog::trace("SetCameraSpeedEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& options = registry.ctx().get<CameraOptions>();
-  options.speed = event.speed;
+  auto& camera_options = mScene.get<CameraOptions>();
+  camera_options.speed = event.speed;
 }
 
 void Engine::on_set_camera_sensitivity(const SetCameraSensitivityEvent& event)
 {
   spdlog::trace("SetCameraSensitivityEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& options = registry.ctx().get<CameraOptions>();
-  options.sensitivity = event.sensitivity;
+  auto& camera_options = mScene.get<CameraOptions>();
+  camera_options.sensitivity = event.sensitivity;
 }
 
 void Engine::on_set_camera_fov(const SetCameraFovEvent& event)
 {
   spdlog::trace("SetCameraFovEvent");
 
-  auto& camera = mScene.get_registry().get<Camera>(event.camera_entity);
+  auto& camera = mScene.get<Camera>(event.camera_entity);
   camera.fov = event.fov;
 }
 
@@ -366,7 +356,7 @@ void Engine::on_set_camera_near_plane(const SetCameraNearPlaneEvent& event)
 {
   spdlog::trace("SetCameraNearPlaneEvent");
 
-  auto& camera = mScene.get_registry().get<Camera>(event.camera_entity);
+  auto& camera = mScene.get<Camera>(event.camera_entity);
   camera.near_plane = event.near_plane;
 }
 
@@ -374,7 +364,7 @@ void Engine::on_set_camera_far_plane(const SetCameraFarPlaneEvent& event)
 {
   spdlog::trace("SetCameraFarPlaneEvent");
 
-  auto& camera = mScene.get_registry().get<Camera>(event.camera_entity);
+  auto& camera = mScene.get<Camera>(event.camera_entity);
   camera.far_plane = event.far_plane;
 }
 
@@ -382,7 +372,7 @@ void Engine::on_set_camera_aspect_ratio(const SetCameraAspectRatioEvent& event)
 {
   spdlog::trace("SetCameraAspectRatioEvent");
 
-  auto [camera_entity, camera] = get_active_camera(mScene.get_registry());
+  auto& camera = mScene.get<Camera>(event.camera_entity);
   camera.aspect_ratio = event.aspect_ratio;
 }
 
@@ -408,9 +398,7 @@ void Engine::on_toggle_rendering_option(const ToggleRenderingOptionEvent& event)
 {
   spdlog::trace("ToggleRenderingOptionEvent");
 
-  auto& registry = mScene.get_registry();
-  auto& rendering_options = registry.ctx().get<RenderingOptions>();
-
+  auto& rendering_options = mScene.get<RenderingOptions>();
   auto& value = rendering_options.options.at(event.option);
   value = !value;
 }
