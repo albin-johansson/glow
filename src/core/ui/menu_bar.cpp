@@ -103,17 +103,17 @@ void show_environment_menu(const Scene& scene, Dispatcher& dispatcher)
 
     ImGui::Separator();
 
-    if (ImGui::MenuItem(ICON_FA_CIRCLE_HALF_STROKE " Gamma Correction",
-                        nullptr,
-                        env_options.use_gamma_correction)) {
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted(ICON_FA_CIRCLE_HALF_STROKE " Gamma Correction");
+    ImGui::SameLine();
+
+    bool use_gamma_correction = env_options.use_gamma_correction;
+    if (ImGui::Checkbox("##GammaCorrection", &use_gamma_correction)) {
       dispatcher.enqueue<ToggleEnvironmentGammaCorrectionEvent>();
     }
 
-    ImGui::BeginDisabled(!env_options.use_gamma_correction);
-
-    ImGui::AlignTextToFramePadding();
-    ImGui::TextUnformatted(ICON_FA_CIRCLE_HALF_STROKE " Gamma");
     ImGui::SameLine();
+    ImGui::BeginDisabled(!env_options.use_gamma_correction);
 
     float gamma = env_options.gamma;
     if (ImGui::SliderFloat("##Gamma", &gamma, 1.0f, 4.0f)) {
