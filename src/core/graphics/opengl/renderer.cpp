@@ -117,16 +117,10 @@ void Renderer::unbind_shading_program()
   UniformBuffer::unbind_block(1);
 }
 
-void Renderer::render_environment(const Texture2D& texture,
-                                  const Mat4& projection,
-                                  const Mat4& view,
-                                  const Vec3& camera_position)
+void Renderer::render_environment(const Texture2D& texture)
 {
   glActiveTexture(GL_TEXTURE0);
   texture.bind();
-
-  mEnvBuffer.inverse_proj_view = glm::inverse(projection * view);
-  mEnvBuffer.camera_pos = Vec4 {camera_position, 0};
 
   mEnvUBO.bind();
   mEnvUBO.update_data(0, sizeof mEnvBuffer, &mEnvBuffer);

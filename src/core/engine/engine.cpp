@@ -10,6 +10,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/math.hpp"
 #include "engine/backend.hpp"
+#include "graphics/environment.hpp"
 #include "graphics/rendering_options.hpp"
 #include "scene/camera.hpp"
 #include "scene/transform.hpp"
@@ -68,6 +69,10 @@ void Engine::register_events()
 
   mDispatcher.sink<SetGizmoOperationEvent>().connect<&Engine::on_set_gizmo_operation>(this);
   mDispatcher.sink<SetGizmoModeEvent>().connect<&Engine::on_set_gizmo_mode>(this);
+
+  mDispatcher.sink<SetEnvironmentBrightnessEvent>().connect<&Engine::on_set_environment_brightness>(this);
+  mDispatcher.sink<SetEnvironmentGammaEvent>().connect<&Engine::on_set_environment_gamma>(this);
+  mDispatcher.sink<ToggleEnvironmentGammaCorrectionEvent>().connect<&Engine::on_toggle_environment_gamma_correction>(this);
 
   mDispatcher.sink<RotateActiveCameraEvent>().connect<&Engine::on_rotate_active_camera>(this);
   mDispatcher.sink<SetCameraSpeedEvent>().connect<&Engine::on_set_camera_speed>(this);
@@ -289,6 +294,34 @@ void Engine::on_set_gizmo_mode(const SetGizmoModeEvent& event)
   auto& registry = mScene.get_registry();
   auto& gizmos_options = registry.ctx().get<GizmosOptions>();
   gizmos_options.mode = event.mode;
+}
+
+void Engine::on_set_environment_brightness(const SetEnvironmentBrightnessEvent& event)
+{
+  spdlog::trace("SetEnvironmentBrightnessEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  env_options.brightness = event.brightness;
+}
+
+void Engine::on_set_environment_gamma(const SetEnvironmentGammaEvent& event)
+{
+  spdlog::trace("SetEnvironmentGammaEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  env_options.gamma = event.gamma;
+}
+
+void Engine::on_toggle_environment_gamma_correction(
+    const ToggleEnvironmentGammaCorrectionEvent&)
+{
+  spdlog::trace("ToggleEnvironmentGammaCorrectionEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& env_options = registry.ctx().get<EnvironmentOptions>();
+  env_options.use_gamma_correction = !env_options.use_gamma_correction;
 }
 
 void Engine::on_rotate_active_camera(const RotateActiveCameraEvent& event)

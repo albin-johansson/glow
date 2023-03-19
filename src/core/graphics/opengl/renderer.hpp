@@ -29,16 +29,15 @@ class Renderer final {
   void bind_shading_program();
   void unbind_shading_program();
 
-  void render_environment(const Texture2D& texture,
-                          const Mat4& projection,
-                          const Mat4& view,
-                          const Vec3& camera_position);
+  void render_environment(const Texture2D& texture);
 
   void render_shaded_mesh(const Mesh& mesh,
                           const Material& material,
                           const Mat4& model,
                           const Mat4& view,
                           const Mat4& projection);
+
+  [[nodiscard]] auto get_env_buffer() -> EnvironmentBuffer& { return mEnvBuffer; }
 
   [[nodiscard]] auto get_frame_duration() const -> Duration { return mFrameDuration; }
 

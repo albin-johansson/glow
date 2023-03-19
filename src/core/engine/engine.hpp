@@ -70,6 +70,11 @@ class Engine final {
 
   void on_set_gizmo_mode(const SetGizmoModeEvent& event);
 
+  void on_set_environment_brightness(const SetEnvironmentBrightnessEvent& event);
+  void on_set_environment_gamma(const SetEnvironmentGammaEvent& event);
+  void on_toggle_environment_gamma_correction(
+      const ToggleEnvironmentGammaCorrectionEvent&);
+
   void on_rotate_active_camera(const RotateActiveCameraEvent& event);
 
   void on_set_camera_speed(const SetCameraSpeedEvent& event);

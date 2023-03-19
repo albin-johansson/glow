@@ -25,6 +25,16 @@ struct SetGizmoModeEvent final {
   GizmoMode mode {};
 };
 
+struct SetEnvironmentBrightnessEvent final {
+  float32 brightness {};
+};
+
+struct SetEnvironmentGammaEvent final {
+  float32 gamma {};
+};
+
+struct ToggleEnvironmentGammaCorrectionEvent final {};
+
 struct RotateActiveCameraEvent final {
   float32 yaw {};
   float32 pitch {};
