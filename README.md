@@ -2,10 +2,42 @@
 
 A work in progress 3D graphics engine, developed for fun.
 
+## Purpose
+
+This project is developed for recreational and educational purposes.
+The goal is to be able to render nice looking scenes using modern graphics APIs, with a performant and readable code base.
+
+### What this project is not
+
+* A game engine
+* A 3D model editor
+
 ## Features
 
 * Written in C++23
-* Supports common 3D model file formats, such as `.dae`, `.fbx`, and `.obj`.
+* ECS architecture
+* Support for common 3D model file formats, such as `.dae`, `.fbx`, and `.obj`.
+* OpenGL 4.1.0 backend
+
+### Goals
+
+* Spotlights
+* Directional lights
+* Point lights
+* Shadow maps
+* Phong shading
+* Physically based shading
+* Automatic irradiance and reflection maps
+* Forward and deferred renderers
+* Transparent object support
+* View frustum culling
+* Fog
+* Screen-space ambient occlusion (SSAO)
+* Chromatic aberration
+* Physically based camera
+* Scene loader
+* Instanced rendering
+* Vulkan backend
 
 ## Build
 
