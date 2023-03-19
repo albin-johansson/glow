@@ -167,9 +167,12 @@ void OpenGLBackend::render_models(const Scene& scene,
 
     for (const auto& mesh : model.meshes) {
       const auto& material = scene.get<Material>(mesh.material);
-
       const auto model_matrix = model_transform * mesh.transform;
-      mRenderer.render_shaded_mesh(mesh, material, model_matrix, view, projection);
+
+      mRenderer.get_matrix_buffer().update(model_matrix, view, projection);
+      mRenderer.get_material_buffer().update(material);
+
+      mRenderer.render_shaded_mesh(mesh, material);
     }
 
     ImGuizmo::SetID(static_cast<int>(entity));

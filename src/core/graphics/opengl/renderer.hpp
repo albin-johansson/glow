@@ -31,13 +31,11 @@ class Renderer final {
 
   void render_environment(const Texture2D& texture);
 
-  void render_shaded_mesh(const Mesh& mesh,
-                          const Material& material,
-                          const Mat4& model,
-                          const Mat4& view,
-                          const Mat4& projection);
+  void render_shaded_mesh(const Mesh& mesh, const Material& material);
 
   [[nodiscard]] auto get_env_buffer() -> EnvironmentBuffer& { return mEnvBuffer; }
+  [[nodiscard]] auto get_matrix_buffer() -> MatrixBuffer& { return mMatrixBuffer; }
+  [[nodiscard]] auto get_material_buffer() -> MaterialBuffer& { return mMaterialBuffer; }
 
   [[nodiscard]] auto get_frame_duration() const -> Duration { return mFrameDuration; }
 

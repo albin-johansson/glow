@@ -136,16 +136,9 @@ void Renderer::render_environment(const Texture2D& texture)
   UniformBuffer::unbind_block(0);
 }
 
-void Renderer::render_shaded_mesh(const Mesh& mesh,
-                                  const Material& material,
-                                  const Mat4& model,
-                                  const Mat4& view,
-                                  const Mat4& projection)
+void Renderer::render_shaded_mesh(const Mesh& mesh, const Material& material)
 {
   GRAVEL_ASSERT(get_bound_program() == mShadingProgram.get_id());
-
-  mMatrixBuffer.update(model, view, projection);
-  mMaterialBuffer.update(material);
 
   mMatrixUBO.bind();
   mMatrixUBO.update_data(0, sizeof mMatrixBuffer, &mMatrixBuffer);
