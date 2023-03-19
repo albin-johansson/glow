@@ -40,10 +40,6 @@ class OpenGLBackend final : public Backend {
 
   void load_environment_texture(const Path& path);
 
-  void set_gizmo_mode(GizmoMode mode) override;
-
-  [[nodiscard]] auto get_gizmo_mode() const -> GizmoMode override;
-
   [[nodiscard]] auto get_primary_framebuffer_handle() -> void* override;
 
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
@@ -57,7 +53,6 @@ class OpenGLBackend final : public Backend {
   Renderer mRenderer;
   Maybe<Texture2D> mEnvTexture;
   Framebuffer mPrimaryFBO;
-  GizmoMode mGizmoMode {GizmoMode::Translate};
   bool mQuit {false};
 
   void make_main_camera_node(Scene& scene);

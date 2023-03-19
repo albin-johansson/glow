@@ -17,7 +17,7 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
   if (ImGui::BeginMainMenuBar()) {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem(ICON_FA_FILE_IMPORT " Load Model...")) {
-        dispatcher.enqueue<QuitEvent>();
+        // TODO
       }
 
       ImGui::Separator();

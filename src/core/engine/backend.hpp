@@ -6,7 +6,6 @@
 #include "common/primitives.hpp"
 #include "common/type/dispatcher.hpp"
 #include "common/type/math.hpp"
-#include "ui/gizmos.hpp"
 
 namespace gravel {
 
@@ -30,13 +29,9 @@ class Backend {
                             const Vec2& framebuffer_size,
                             Dispatcher& dispatcher) = 0;
 
-  virtual void set_gizmo_mode(GizmoMode mode) = 0;
-
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
 
   [[nodiscard]] virtual auto get_primary_framebuffer_handle() -> void* = 0;
-
-  [[nodiscard]] virtual auto get_gizmo_mode() const -> GizmoMode = 0;
 
   [[nodiscard]] virtual auto get_name() const -> const char* = 0;
 };

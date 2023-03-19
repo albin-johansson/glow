@@ -13,17 +13,32 @@
 namespace gravel {
 namespace {
 
-[[nodiscard]] auto convert_gizmo_mode(const GizmoMode mode) -> ImGuizmo::OPERATION
+[[nodiscard]] auto convert_gizmo_operation(const GizmoOperation operation)
+    -> ImGuizmo::OPERATION
 {
-  switch (mode) {
-    case GizmoMode::Translate:
+  switch (operation) {
+    case GizmoOperation::Translate:
       return ImGuizmo::TRANSLATE;
 
-    case GizmoMode::Rotate:
+    case GizmoOperation::Rotate:
       return ImGuizmo::ROTATE;
 
-    case GizmoMode::Scale:
+    case GizmoOperation::Scale:
       return ImGuizmo::SCALE;
+
+    default:
+      throw Error {"Invalid gizmo operation"};
+  }
+}
+
+[[nodiscard]] auto convert_gizmo_mode(const GizmoMode mode) -> ImGuizmo::MODE
+{
+  switch (mode) {
+    case GizmoMode::Local:
+      return ImGuizmo::LOCAL;
+
+    case GizmoMode::World:
+      return ImGuizmo::WORLD;
 
     default:
       throw Error {"Invalid gizmo mode"};
@@ -32,7 +47,7 @@ namespace {
 
 }  // namespace
 
-void show_model_control_gizmo(const GizmoMode mode,
+void show_model_control_gizmo(const GizmosOptions& options,
                               const Mat4& projection,
                               const Mat4& view,
                               const Entity entity,
@@ -47,8 +62,8 @@ void show_model_control_gizmo(const GizmoMode mode,
 
   if (ImGuizmo::Manipulate(glm::value_ptr(view),
                            glm::value_ptr(projection),
-                           convert_gizmo_mode(mode),
-                           ImGuizmo::WORLD,
+                           convert_gizmo_operation(options.operation),
+                           convert_gizmo_mode(options.mode),
                            transform_matrix)) {
     float translation[3] {};
     float rotation[3] {};

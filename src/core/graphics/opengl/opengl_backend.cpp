@@ -11,12 +11,14 @@
 #include "graphics/opengl/model.hpp"
 #include "graphics/opengl/texture_cache.hpp"
 #include "graphics/opengl/util.hpp"
+#include "graphics/rendering_options.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/camera.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
 #include "ui/camera_options.hpp"
 #include "ui/events.hpp"
+#include "ui/gizmos.hpp"
 #include "util/bits.hpp"
 
 namespace gravel::gl {
@@ -44,13 +46,16 @@ void OpenGLBackend::on_init(Scene& scene)
   ctx.emplace<CameraContext>();
   ctx.emplace<CameraOptions>();
   ctx.emplace<TextureCache>();
+  ctx.emplace<GizmosOptions>();
 
   auto& rendering_options = ctx.emplace<RenderingOptions>();
-  rendering_options.options[RenderingOption::VSync] = true;
-  rendering_options.options[RenderingOption::DepthTest] = true;
-  rendering_options.options[RenderingOption::FaceCulling] = true;
-  rendering_options.options[RenderingOption::Wireframe] = false;
-  rendering_options.options[RenderingOption::Blending] = false;
+  rendering_options.options = {
+      {RenderingOption::VSync, true},
+      {RenderingOption::DepthTest, true},
+      {RenderingOption::FaceCulling, true},
+      {RenderingOption::Wireframe, false},
+      {RenderingOption::Blending, false},
+  };
 
   make_main_camera_node(scene);
 
@@ -156,6 +161,8 @@ void OpenGLBackend::render_models(const Scene& scene,
   mRenderer.bind_shading_program();
 
   const auto& registry = scene.get_registry();
+  const auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+
   for (auto [entity, transform, model] : registry.view<Transform, Model>().each()) {
     const auto model_transform = transform.to_model_matrix();
 
@@ -167,22 +174,17 @@ void OpenGLBackend::render_models(const Scene& scene,
     }
 
     ImGuizmo::SetID(static_cast<int>(entity));
-    show_model_control_gizmo(mGizmoMode, projection, view, entity, transform, dispatcher);
+    show_model_control_gizmo(gizmos_options,
+                             projection,
+                             view,
+                             entity,
+                             transform,
+                             dispatcher);
   }
 
   GRAVEL_GL_CHECK_ERRORS();
 
   mRenderer.unbind_shading_program();
-}
-
-void OpenGLBackend::set_gizmo_mode(const GizmoMode mode)
-{
-  mGizmoMode = mode;
-}
-
-auto OpenGLBackend::get_gizmo_mode() const -> GizmoMode
-{
-  return mGizmoMode;
 }
 
 auto OpenGLBackend::get_primary_framebuffer_handle() -> void*

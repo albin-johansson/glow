@@ -66,6 +66,10 @@ class Engine final {
 
   void on_reset_font_size(const ResetFontSizeEvent&);
 
+  void on_set_gizmo_operation(const SetGizmoOperationEvent& event);
+
+  void on_set_gizmo_mode(const SetGizmoModeEvent& event);
+
   void on_rotate_active_camera(const RotateActiveCameraEvent& event);
 
   void on_set_camera_speed(const SetCameraSpeedEvent& event);

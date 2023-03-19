@@ -9,13 +9,24 @@ namespace gravel {
 
 GRAVEL_FORWARD_DECLARE_S(Transform);
 
-enum class GizmoMode {
+enum class GizmoOperation {
   Translate,
   Rotate,
   Scale
 };
 
-void show_model_control_gizmo(GizmoMode mode,
+enum class GizmoMode {
+  Local,
+  World
+};
+
+/// Context component for general gizmo settings.
+struct GizmosOptions final {
+  GizmoOperation operation {GizmoOperation::Translate};
+  GizmoMode mode {GizmoMode::Local};
+};
+
+void show_model_control_gizmo(const GizmosOptions& options,
                               const Mat4& projection,
                               const Mat4& view,
                               Entity entity,

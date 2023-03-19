@@ -4,6 +4,7 @@
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
 #include "graphics/rendering_options.hpp"
+#include "ui/gizmos.hpp"
 
 namespace gravel {
 
@@ -15,6 +16,14 @@ struct ShowDemoWindowEvent final {};
 struct IncreaseFontSizeEvent final {};
 struct DecreaseFontSizeEvent final {};
 struct ResetFontSizeEvent final {};
+
+struct SetGizmoOperationEvent final {
+  GizmoOperation operation {};
+};
+
+struct SetGizmoModeEvent final {
+  GizmoMode mode {};
+};
 
 struct RotateActiveCameraEvent final {
   float32 yaw {};

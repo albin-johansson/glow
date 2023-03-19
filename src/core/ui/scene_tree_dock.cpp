@@ -12,7 +12,6 @@
 #include "scene/node.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
-#include "ui/camera_options.hpp"
 #include "ui/events.hpp"
 
 namespace gravel {
@@ -96,25 +95,6 @@ void show_camera_component(const Registry& registry,
                          near_plane,
                          near_plane + 1'000'000.0f)) {
     dispatcher.enqueue<SetCameraFarPlaneEvent>(entity, far_plane);
-  }
-
-  ImGui::Spacing();
-
-  const auto& options = registry.ctx().get<CameraOptions>();
-
-  float speed = options.speed;
-  if (ImGui::SliderFloat("Speed",
-                         &speed,
-                         0,
-                         10'000,
-                         "%0.2f",
-                         ImGuiSliderFlags_Logarithmic)) {
-    dispatcher.enqueue<SetCameraSpeedEvent>(speed);
-  }
-
-  float sensitivity = options.sensitivity;
-  if (ImGui::SliderFloat("Sensitivity", &sensitivity, 0.1f, 2.0f)) {
-    dispatcher.enqueue<SetCameraSensitivityEvent>(sensitivity);
   }
 }
 

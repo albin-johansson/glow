@@ -1,5 +1,6 @@
 #include "scene_viewport.hpp"
 
+#include <IconsFontAwesome6.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -10,29 +11,77 @@
 #include "scene/scene.hpp"
 #include "ui/camera_options.hpp"
 #include "ui/events.hpp"
+#include "ui/gizmos.hpp"
 
 namespace gravel {
 namespace {
 
-void show_generic_viewport_context_menu(Backend& backend)
+void show_generic_viewport_context_menu(const Scene& scene, Dispatcher& dispatcher)
 {
   if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight)) {
-    ImGui::SeparatorText("Transform Mode");
+    ImGui::SeparatorText(ICON_FA_UP_DOWN_LEFT_RIGHT " Transform Options");
 
-    if (ImGui::MenuItem("Translate",
+    const auto& registry = scene.get_registry();
+    const auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+    const auto& camera_options = registry.ctx().get<CameraOptions>();
+
+    if (ImGui::MenuItem(ICON_FA_LOCATION_DOT " Translate",
                         nullptr,
-                        backend.get_gizmo_mode() == GizmoMode::Translate)) {
-      backend.set_gizmo_mode(GizmoMode::Translate);
+                        gizmos_options.operation == GizmoOperation::Translate)) {
+      dispatcher.enqueue<SetGizmoOperationEvent>(GizmoOperation::Translate);
     }
 
-    if (ImGui::MenuItem("Rotate",
+    if (ImGui::MenuItem(ICON_FA_ROTATE " Rotate",
                         nullptr,
-                        backend.get_gizmo_mode() == GizmoMode::Rotate)) {
-      backend.set_gizmo_mode(GizmoMode::Rotate);
+                        gizmos_options.operation == GizmoOperation::Rotate)) {
+      dispatcher.enqueue<SetGizmoOperationEvent>(GizmoOperation::Rotate);
     }
 
-    if (ImGui::MenuItem("Scale", nullptr, backend.get_gizmo_mode() == GizmoMode::Scale)) {
-      backend.set_gizmo_mode(GizmoMode::Scale);
+    if (ImGui::MenuItem(ICON_FA_UP_RIGHT_AND_DOWN_LEFT_FROM_CENTER " Scale",
+                        nullptr,
+                        gizmos_options.operation == GizmoOperation::Scale)) {
+      dispatcher.enqueue<SetGizmoOperationEvent>(GizmoOperation::Scale);
+    }
+
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted(ICON_FA_GLOBE " Mode");
+    ImGui::SameLine();
+
+    int mode_index = (gizmos_options.mode == GizmoMode::Local) ? 0 : 1;
+    if (ImGui::Combo("##Mode", &mode_index, "Local\0World\0\0")) {
+      dispatcher.enqueue<SetGizmoModeEvent>((mode_index == 0) ? GizmoMode::Local
+                                                              : GizmoMode::World);
+    }
+
+    ImGui::SeparatorText(ICON_FA_CAMERA " Camera Options");
+
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted(ICON_FA_PERSON_RUNNING);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(-FLT_MIN);
+
+    float speed = camera_options.speed;
+    if (ImGui::SliderFloat("##Speed",
+                           &speed,
+                           0,
+                           10'000,
+                           "Speed: %.2f",
+                           ImGuiSliderFlags_Logarithmic)) {
+      dispatcher.enqueue<SetCameraSpeedEvent>(speed);
+    }
+
+    ImGui::AlignTextToFramePadding();
+    ImGui::TextUnformatted(ICON_FA_COMPUTER_MOUSE);
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(-FLT_MIN);
+
+    float sensitivity = camera_options.sensitivity;
+    if (ImGui::SliderFloat("##Sensitivity",
+                           &sensitivity,
+                           0.1f,
+                           2.0f,
+                           "Sensitivity: %.2f")) {
+      dispatcher.enqueue<SetCameraSensitivityEvent>(sensitivity);
     }
 
     ImGui::EndPopup();
@@ -84,7 +133,7 @@ void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispa
 
   ImGui::PopStyleVar();  // ImGuiStyleVar_WindowPadding
 
-  show_generic_viewport_context_menu(backend);
+  show_generic_viewport_context_menu(scene, dispatcher);
 
   ImGui::End();
 }

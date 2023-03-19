@@ -66,6 +66,9 @@ void Engine::register_events()
   mDispatcher.sink<DecreaseFontSizeEvent>().connect<&Engine::on_decrease_font_size>(this);
   mDispatcher.sink<ResetFontSizeEvent>().connect<&Engine::on_reset_font_size>(this);
 
+  mDispatcher.sink<SetGizmoOperationEvent>().connect<&Engine::on_set_gizmo_operation>(this);
+  mDispatcher.sink<SetGizmoModeEvent>().connect<&Engine::on_set_gizmo_mode>(this);
+
   mDispatcher.sink<RotateActiveCameraEvent>().connect<&Engine::on_rotate_active_camera>(this);
   mDispatcher.sink<SetCameraSpeedEvent>().connect<&Engine::on_set_camera_speed>(this);
   mDispatcher.sink<SetCameraSensitivityEvent>().connect<&Engine::on_set_camera_sensitivity>(this);
@@ -268,6 +271,24 @@ void Engine::on_reset_font_size(const ResetFontSizeEvent&)
   spdlog::trace("ResetFontSizeEvent");
 
   mInitializer.get_imgui().reset_font_size();
+}
+
+void Engine::on_set_gizmo_operation(const SetGizmoOperationEvent& event)
+{
+  spdlog::trace("SetGizmoOperationEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+  gizmos_options.operation = event.operation;
+}
+
+void Engine::on_set_gizmo_mode(const SetGizmoModeEvent& event)
+{
+  spdlog::trace("SetGizmoModeEvent");
+
+  auto& registry = mScene.get_registry();
+  auto& gizmos_options = registry.ctx().get<GizmosOptions>();
+  gizmos_options.mode = event.mode;
 }
 
 void Engine::on_rotate_active_camera(const RotateActiveCameraEvent& event)
