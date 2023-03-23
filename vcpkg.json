@@ -26,13 +26,21 @@
       "features": [
         "sdl2-binding",
         "opengl3-binding",
-        "docking-experimental"
+        "docking-experimental",
+        "vulkan-binding"
       ]
     },
     "imguizmo",
     "magic-enum",
-    "sdl2",
+    {
+      "name": "sdl2",
+      "features": [
+        "vulkan"
+      ]
+    },
     "spdlog",
-    "stb"
+    "stb",
+    "vulkan",
+    "vulkan-memory-allocator"
   ]
 }
