@@ -29,8 +29,6 @@ class VulkanBackend final : public Backend {
 
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
-  [[nodiscard]] auto get_name() const -> const char* override { return "Vulkan 1.2"; }
-
  private:
   bool mQuit {false};
 };

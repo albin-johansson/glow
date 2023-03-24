@@ -32,8 +32,6 @@ class Backend {
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
 
   [[nodiscard]] virtual auto get_primary_framebuffer_handle() -> void* = 0;
-
-  [[nodiscard]] virtual auto get_name() const -> const char* = 0;
 };
 
 }  // namespace gravel

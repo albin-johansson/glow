@@ -44,11 +44,6 @@ class OpenGLBackend final : public Backend {
 
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
-  [[nodiscard]] auto get_name() const -> const char* override
-  {
-    return "OpenGL 4.1.0 core";
-  }
-
  private:
   Renderer mRenderer;
   Maybe<Texture2D> mEnvTexture;
