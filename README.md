@@ -71,3 +71,5 @@ See [vcpkg.json](vcpkg.json) for the full Vcpkg manifest file.
 * [SDL2](https://github.com/libsdl-org/SDL)
 * [spdlog](https://github.com/gabime/spdlog)
 * [stb](https://github.com/nothings/stb)
+* [Vulkan Memory Allocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) 
+* [volk](https://github.com/gnuradio/volk)
