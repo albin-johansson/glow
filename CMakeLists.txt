@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-  set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+  cmake_path(SET VCPKG_ROOT NORMALIZE $ENV{VCPKG_ROOT})
+  set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif ()
 
 project(gravel LANGUAGES CXX)
