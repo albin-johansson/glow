@@ -1,5 +1,7 @@
 # Gravel
 
+[![CI](https://github.com/albin-johansson/gravel/actions/workflows/ci.yml/badge.svg)](https://github.com/albin-johansson/gravel/actions/workflows/ci.yml)
+
 A work in progress 3D graphics engine, developed for fun.
 
 ## Purpose
