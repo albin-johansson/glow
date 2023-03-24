@@ -57,6 +57,10 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
     mGL.emplace(window);
   }
 
+  if (api == GraphicsApi::Vulkan) {
+    mVK.emplace(window);
+  }
+
   ImGui::StyleColorsDark();
   init_style(ImGui::GetStyle());
 }
@@ -64,6 +68,7 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
 DearImGui::~DearImGui()
 {
   mGL.reset();
+  mVK.reset();
   ImGui::DestroyContext();
 }
 
@@ -98,6 +103,10 @@ void DearImGui::reload_fonts()
 
   if (mGL) {
     mGL->recreate_font_textures();
+  }
+
+  if (mVK) {
+    // TODO mVK->recreate_font_textures(command_buffer);
   }
 
   ImGui::GetStyle().ScaleAllSizes(1.0f);

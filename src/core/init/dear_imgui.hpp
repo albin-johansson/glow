@@ -6,6 +6,7 @@
 #include "common/type/maybe.hpp"
 #include "graphics/graphics_api.hpp"
 #include "init/dear_imgui_opengl.hpp"
+#include "init/dear_imgui_vulkan.hpp"
 
 namespace gravel {
 
@@ -32,6 +33,7 @@ class DearImGui final {
 
  private:
   Maybe<DearImGuiOpenGL> mGL;
+  Maybe<DearImGuiVulkan> mVK;
   float mFontSize {kDefFontSize};
 };
 
