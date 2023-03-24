@@ -6,6 +6,8 @@
 #include "common/primitives.hpp"
 #include "common/type/dispatcher.hpp"
 #include "common/type/math.hpp"
+#include "common/type/memory.hpp"
+#include "graphics/graphics_api.hpp"
 
 namespace gravel {
 
@@ -33,5 +35,7 @@ class Backend {
 
   [[nodiscard]] virtual auto get_primary_framebuffer_handle() -> void* = 0;
 };
+
+[[nodiscard]] auto create_backend(SDL_Window* window, GraphicsApi api) -> Unique<Backend>;
 
 }  // namespace gravel

@@ -2,30 +2,34 @@
 #include <exception>  // set_terminate
 
 #include <SDL2/SDL.h>
+#include <magic_enum.hpp>
 #include <spdlog/spdlog.h>
 
 #include "common/debug/error.hpp"
+#include "engine/backend.hpp"
 #include "engine/engine.hpp"
-#include "graphics/opengl/opengl_backend.hpp"
 
-using namespace gravel;
+namespace grv = gravel;
 
 auto main(int, char*[]) -> int
 {
   try {
-    std::set_terminate(&on_terminate);
+    std::set_terminate(&grv::on_terminate);
 
     spdlog::set_pattern("%^[%L][%T.%f]%$ %v");
     spdlog::set_level(spdlog::level::trace);
     spdlog::flush_on(spdlog::level::critical);
 
-    Engine engine {GraphicsApi::OpenGL};
-    engine.set_backend(std::make_unique<gl::OpenGLBackend>(engine.get_window()));
+    const auto api = grv::GraphicsApi::OpenGL;
+    spdlog::info("Using {} backend", magic_enum::enum_name(api));
+
+    grv::Engine engine {api};
+    engine.set_backend(create_backend(engine.get_window(), api));
     engine.start();
 
     return EXIT_SUCCESS;
   }
-  catch (const Error& err) {
+  catch (const grv::Error& err) {
     spdlog::critical("Unhandled exception: {}\n{}", err.what(), err.trace());
     return EXIT_FAILURE;
   }
