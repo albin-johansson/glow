@@ -46,6 +46,7 @@ function(gravel_configure_compile_options target)
                              IMGUI_DISABLE_OBSOLETE_FUNCTIONS
                              NOMINMAX
                              SPDLOG_FMT_EXTERNAL
+                             VK_NO_PROTOTYPES
                              WIN32_LEAN_AND_MEAN
                              )
 endfunction()

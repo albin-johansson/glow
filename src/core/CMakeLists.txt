@@ -36,8 +36,8 @@ target_link_libraries(libgravel
                       magic_enum::magic_enum
                       OpenGL::GL
                       spdlog::spdlog
-                      $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
-                      Vulkan::Vulkan
+                      SDL2::SDL2
+                      volk::volk
                       unofficial::vulkan-memory-allocator::vulkan-memory-allocator
                       )
 

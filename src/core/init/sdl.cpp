@@ -3,9 +3,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <fmt/format.h>
+#include <volk.h>
 
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
+#include "util/bits.hpp"
 
 namespace gravel {
 namespace {
@@ -62,6 +64,14 @@ SDL::SDL(const GraphicsApi api)
   else if (mAPI == GraphicsApi::Vulkan) {
     if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {
       throw Error {fmt::format("Could not load Vulkan library: {}", SDL_GetError())};
+    }
+
+    if (auto* get_instance_proc_addr = SDL_Vulkan_GetVkGetInstanceProcAddr()) {
+      volkInitializeCustom(bitcast<PFN_vkGetInstanceProcAddr>(get_instance_proc_addr));
+    }
+    else {
+      throw Error {fmt::format("Could not load VkGetInstanceProcAddr function: {}",
+                               SDL_GetError())};
     }
   }
 }

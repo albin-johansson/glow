@@ -22,7 +22,7 @@ include(cmake/gravel.cmake)
 
 # System dependencies
 find_package(OpenGL REQUIRED)
-find_package(Vulkan REQUIRED)
+find_package(Vulkan REQUIRED) # Makes sure Vulkan is available, but we do not use the associated target directly
 
 # Vcpkg dependencies
 find_package(assimp CONFIG REQUIRED)
@@ -37,6 +37,7 @@ find_package(magic_enum CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Stb REQUIRED)
+find_package(volk CONFIG REQUIRED)
 find_package(unofficial-vulkan-memory-allocator CONFIG REQUIRED)
 
 add_subdirectory(src/core)
