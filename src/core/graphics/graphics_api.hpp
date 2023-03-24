@@ -3,7 +3,8 @@
 namespace gravel {
 
 enum class GraphicsApi {
-  OpenGL
+  OpenGL,
+  Vulkan
 };
 
 }  // namespace gravel

@@ -1,6 +1,7 @@
 #include "sdl.hpp"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 #include <fmt/format.h>
 
 #include "common/debug/error.hpp"
@@ -49,18 +50,27 @@ void set_hints_for_opengl()
 }  // namespace
 
 SDL::SDL(const GraphicsApi api)
+    : mAPI {api}
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-    throw Error {fmt::format("Failed to initialize SDL: {}", SDL_GetError())};
+    throw Error {fmt::format("Could not initialize SDL: {}", SDL_GetError())};
   }
 
-  if (api == GraphicsApi::OpenGL) {
+  if (mAPI == GraphicsApi::OpenGL) {
     set_hints_for_opengl();
+  }
+  else if (mAPI == GraphicsApi::Vulkan) {
+    if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {
+      throw Error {fmt::format("Could not load Vulkan library: {}", SDL_GetError())};
+    }
   }
 }
 
 SDL::~SDL()
 {
+  if (mAPI == GraphicsApi::Vulkan) {
+    SDL_Vulkan_UnloadLibrary();
+  }
   SDL_Quit();
 }
 

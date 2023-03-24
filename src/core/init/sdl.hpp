@@ -10,6 +10,9 @@ class SDL final {
   explicit SDL(GraphicsApi api);
 
   ~SDL();
+
+ private:
+  GraphicsApi mAPI {};
 };
 
 }  // namespace gravel

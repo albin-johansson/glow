@@ -28,6 +28,9 @@ struct ObjectDeleter final {
     case GraphicsApi::OpenGL:
       return base_flags | SDL_WINDOW_OPENGL;
 
+    case GraphicsApi::Vulkan:
+      return base_flags | SDL_WINDOW_VULKAN;
+
     default:
       throw Error {"Invalid graphics API"};
   }
