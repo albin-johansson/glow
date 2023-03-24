@@ -21,6 +21,7 @@ target_include_directories(libgravel
                            SYSTEM PUBLIC
                            ${GRAVEL_LIB_DIR}
                            ${Stb_INCLUDE_DIR}
+                           ${VULKAN_INCLUDE_DIR}
                            )
 
 target_link_libraries(libgravel
@@ -37,7 +38,7 @@ target_link_libraries(libgravel
                       OpenGL::GL
                       spdlog::spdlog
                       SDL2::SDL2
-                      volk::volk
+                      Vulkan::Vulkan
                       unofficial::vulkan-memory-allocator::vulkan-memory-allocator
                       )
 

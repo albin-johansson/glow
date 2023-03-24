@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <fmt/format.h>
-#include <volk.h>
+#include <vulkan/vulkan.h>
 
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
@@ -66,13 +66,6 @@ SDL::SDL(const GraphicsApi api)
       throw Error {fmt::format("Could not load Vulkan library: {}", SDL_GetError())};
     }
 
-    if (auto* get_instance_proc_addr = SDL_Vulkan_GetVkGetInstanceProcAddr()) {
-      volkInitializeCustom(bitcast<PFN_vkGetInstanceProcAddr>(get_instance_proc_addr));
-    }
-    else {
-      throw Error {fmt::format("Could not load VkGetInstanceProcAddr function: {}",
-                               SDL_GetError())};
-    }
   }
 }
 

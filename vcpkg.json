@@ -40,7 +40,7 @@
     },
     "spdlog",
     "stb",
-    "volk",
+    "vulkan",
     "vulkan-memory-allocator"
   ]
 }

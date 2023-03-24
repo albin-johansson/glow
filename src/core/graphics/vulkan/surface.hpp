@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include <volk.h>
+#include <vulkan/vulkan.h>
 
 #include "common/predef.hpp"
 
