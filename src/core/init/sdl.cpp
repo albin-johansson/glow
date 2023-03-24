@@ -3,11 +3,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
 #include <fmt/format.h>
-#include <vulkan/vulkan.h>
 
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
-#include "util/bits.hpp"
 
 namespace gravel {
 namespace {
@@ -65,7 +63,6 @@ SDL::SDL(const GraphicsApi api)
     if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {
       throw Error {fmt::format("Could not load Vulkan library: {}", SDL_GetError())};
     }
-
   }
 }
 
