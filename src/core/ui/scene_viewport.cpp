@@ -153,10 +153,9 @@ void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispa
                          Vec2 {framebuffer_size.x, framebuffer_size.y},
                          dispatcher);
 
-    ImGui::Image(backend.get_primary_framebuffer_handle(),
-                 ImGui::GetContentRegionAvail(),
-                 ImVec2 {0, 1},
-                 ImVec2 {1, 0});
+    if (auto* fbo = backend.get_primary_framebuffer_handle()) {
+      ImGui::Image(fbo, ImGui::GetContentRegionAvail(), ImVec2 {0, 1}, ImVec2 {1, 0});
+    }
   }
 
   ImGui::PopStyleVar();  // ImGuiStyleVar_WindowPadding
