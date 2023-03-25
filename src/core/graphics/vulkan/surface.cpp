@@ -5,7 +5,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel::vk {
+namespace gravel::vlk {
 
 Surface::Surface(SDL_Window* window, VkInstance instance)
     : mInstance {instance}
@@ -20,4 +20,4 @@ Surface::~Surface()
   vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
 }
 
-}  // namespace gravel::vk
+}  // namespace gravel::vlk

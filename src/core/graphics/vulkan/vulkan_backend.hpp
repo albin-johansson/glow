@@ -5,7 +5,7 @@
 
 #include "engine/backend.hpp"
 
-namespace gravel::vk {
+namespace gravel::vlk {
 
 class VulkanBackend final : public Backend {
  public:
@@ -33,4 +33,4 @@ class VulkanBackend final : public Backend {
   bool mQuit {false};
 };
 
-}  // namespace gravel::vk
+}  // namespace gravel::vlk

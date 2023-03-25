@@ -5,7 +5,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vk {
+namespace gravel::vlk {
 
 /// RAII wrapper for `VkSurfaceKHR`.
 class Surface final {
@@ -20,8 +20,8 @@ class Surface final {
   [[nodiscard]] auto get() -> VkSurfaceKHR { return mSurface; }
 
  private:
-  VkInstance mInstance {};
-  VkSurfaceKHR mSurface {};
+  VkInstance mInstance {VK_NULL_HANDLE};
+  VkSurfaceKHR mSurface {VK_NULL_HANDLE};
 };
 
-}  // namespace gravel::vk
+}  // namespace gravel::vlk

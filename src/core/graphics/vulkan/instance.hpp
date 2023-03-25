@@ -23,7 +23,7 @@ class Instance final {
   [[nodiscard]] auto get() -> VkInstance { return mInstance; }
 
  private:
-  VkInstance mInstance {};
+  VkInstance mInstance {VK_NULL_HANDLE};
 };
 
 /// Returns all available GPUs, regardless of their suitability.

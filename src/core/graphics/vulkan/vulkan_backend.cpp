@@ -1,5 +1,9 @@
 #include "vulkan_backend.hpp"
-namespace gravel::vk {
+
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_vulkan.h>
+
+namespace gravel::vlk {
 
 VulkanBackend::VulkanBackend(SDL_Window* window)
 {
@@ -42,4 +46,4 @@ auto VulkanBackend::get_primary_framebuffer_handle() -> void*
   return nullptr;
 }
 
-}  // namespace gravel::vk
+}  // namespace gravel::vlk
