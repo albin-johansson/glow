@@ -4,6 +4,7 @@
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 #include "common/type/string.hpp"
+#include "common/type/vector.hpp"
 
 namespace gravel {
 
@@ -16,5 +17,7 @@ enum class FileType {
     -> Maybe<IfStream>;
 
 [[nodiscard]] auto load_file_as_string(const Path& file) -> Maybe<String>;
+
+[[nodiscard]] auto load_binary_file(const Path& path) -> Maybe<Vector<char>>;
 
 }  // namespace gravel
