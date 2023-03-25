@@ -4,6 +4,13 @@
 #include <vulkan/vulkan.h>
 
 #include "engine/backend.hpp"
+#include "graphics/vulkan/allocator.hpp"
+#include "graphics/vulkan/device.hpp"
+#include "graphics/vulkan/instance.hpp"
+#include "graphics/vulkan/render_pass.hpp"
+#include "graphics/vulkan/shading_pipeline.hpp"
+#include "graphics/vulkan/surface.hpp"
+#include "graphics/vulkan/swapchain.hpp"
 
 namespace gravel::vlk {
 
@@ -30,6 +37,15 @@ class VulkanBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
+  Instance mInstance;
+  Surface mSurface;
+  VkPhysicalDevice mGPU {};
+  Device mDevice;
+  Swapchain mSwapchain;
+  RenderPass mRenderPass;
+  ShadingPipeline mShadingPipeline;
+  Allocator mAllocator;
+
   bool mQuit {false};
 
   void prepare_imgui_for_vulkan();
