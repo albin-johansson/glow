@@ -48,10 +48,10 @@ Instance::Instance(SDL_Window* window)
       .ppEnabledExtensionNames = extension_names.data(),
   };
 
-  if constexpr (GRAVEL_OS_MACOS) {
-    // Allow implementations that only provide a subset of the Vulkan spec, e.g. MoltenVK.
-    instance_create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-  }
+#if GRAVEL_OS_MACOS
+  // Allow implementations that only provide a subset of the Vulkan spec, e.g. MoltenVK.
+  instance_create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif  // GRAVEL_OS_MACOS
 
   if constexpr (GRAVEL_DEBUG_BUILD) {
     spdlog::debug("[VK] Enabling validation layers");
