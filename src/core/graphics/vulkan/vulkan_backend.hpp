@@ -31,6 +31,8 @@ class VulkanBackend final : public Backend {
 
  private:
   bool mQuit {false};
+
+  void prepare_imgui_for_vulkan();
 };
 
 }  // namespace gravel::vlk

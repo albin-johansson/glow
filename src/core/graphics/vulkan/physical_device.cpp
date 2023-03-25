@@ -151,9 +151,9 @@ auto get_queue_family_indices(VkPhysicalDevice gpu, VkSurfaceKHR surface)
   return indices;
 }
 
-auto get_swapchain_support(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> SwapChainSupport
+auto get_swapchain_support(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> SwapchainSupport
 {
-  SwapChainSupport support;
+  SwapchainSupport support;
 
   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(gpu, surface, &support.capabilities);
 

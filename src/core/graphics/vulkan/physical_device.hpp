@@ -13,7 +13,7 @@ struct QueueFamilyIndices final {
   Maybe<uint32> present_family;
 };
 
-struct SwapChainSupport final {
+struct SwapchainSupport final {
   VkSurfaceCapabilitiesKHR capabilities {};
   Vector<VkSurfaceFormatKHR> formats;
   Vector<VkPresentModeKHR> present_modes;
@@ -40,7 +40,7 @@ struct SwapChainSupport final {
 
 /// Returns information about the swapchain attributes for a given GPU and surface.
 [[nodiscard]] auto get_swapchain_support(VkPhysicalDevice gpu, VkSurfaceKHR surface)
-    -> SwapChainSupport;
+    -> SwapchainSupport;
 
 /// Returns a GPU that has been deemed suitable for use.
 [[nodiscard]] auto get_suitable_physical_device(VkInstance instance, VkSurfaceKHR surface)
