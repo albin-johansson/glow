@@ -4,7 +4,7 @@
 #include <limits>     // numeric_limits
 
 #include "common/debug/error.hpp"
-#include "common/primitives.hpp"
+#include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
@@ -155,11 +155,20 @@ Swapchain::Swapchain(SDL_Window* window,
 
 Swapchain::~Swapchain()
 {
+  destroy_framebuffers();
+
   for (VkImageView image_view : mImageViews) {
     vkDestroyImageView(mDevice, image_view, nullptr);
   }
 
   vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
+}
+
+void Swapchain::destroy_framebuffers()
+{
+  for (VkFramebuffer framebuffer : mFramebuffers) {
+    vkDestroyFramebuffer(mDevice, framebuffer, nullptr);
+  }
 }
 
 void Swapchain::create_image_views()
@@ -192,13 +201,44 @@ void Swapchain::create_image_views()
     };
 
     auto& image_view = mImageViews.at(index);
-    if (vkCreateImageView(mDevice, &image_view_create_info, nullptr, &image_view) !=
-        VK_SUCCESS) {
-      throw Error {"[VK] Could not create swapchain image view"};
-    }
+    GRAVEL_VK_CALL(vkCreateImageView(mDevice,  //
+                                     &image_view_create_info,
+                                     nullptr,
+                                     &image_view),
+                   "[VK] Could not create swapchain image view");
 
     ++index;
   }
+}
+
+void Swapchain::create_framebuffers(VkRenderPass render_pass)
+{
+  destroy_framebuffers();
+
+  mFramebuffers.clear();
+  mFramebuffers.reserve(mImageViews.size());
+
+  for (VkImageView image_view : mImageViews) {
+    VkFramebuffer framebuffer =
+        create_framebuffer(mDevice, render_pass, image_view, mImageExtent);
+    mFramebuffers.push_back(framebuffer);
+  }
+}
+
+void Swapchain::acquire_next_image(VkSemaphore semaphore)
+{
+  GRAVEL_VK_CALL(vkAcquireNextImageKHR(mDevice,
+                                       mSwapchain,
+                                       UINT64_MAX,
+                                       semaphore,
+                                       VK_NULL_HANDLE,
+                                       &mImageIndex),
+                 "[VK] Could not acquire next swapchain image");
+}
+
+auto Swapchain::get_current_framebuffer() -> VkFramebuffer
+{
+  return mFramebuffers.at(static_cast<usize>(mImageIndex));
 }
 
 }  // namespace gravel::vlk
