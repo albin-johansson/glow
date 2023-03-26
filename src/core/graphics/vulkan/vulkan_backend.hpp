@@ -18,6 +18,8 @@ class VulkanBackend final : public Backend {
  public:
   explicit VulkanBackend(SDL_Window* window);
 
+  ~VulkanBackend();
+
   void stop() override;
 
   void on_init(Scene& scene) override;

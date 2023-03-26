@@ -7,7 +7,10 @@
 
 #include "graphics/camera.hpp"
 #include "graphics/renderer_info.hpp"
+#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/physical_device.hpp"
+#include "graphics/vulkan/synchronization.hpp"
+#include "graphics/vulkan/util.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
 
@@ -18,15 +21,31 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
       mSurface {window, mInstance.get()},
       mGPU {get_suitable_physical_device(mInstance.get(), mSurface.get())},
       mDevice {mGPU, mSurface.get()},
+
       mSwapchain {window, mGPU, mDevice.get(), mSurface.get()},
       mRenderPass {mDevice.get(), mSwapchain.get_image_format()},
+
       mShadingPipeline {mDevice.get(), mRenderPass.get(), mSwapchain.get_image_extent()},
+
+      mCommandPool {create_command_pool(mDevice.get(), mGPU, mSurface.get())},
+      mCommandBuffer {create_command_buffer(mDevice.get(), mCommandPool)},
+
+      mImageAvailableSemaphore {create_semaphore(mDevice.get())},
+      mRenderFinishedSemaphore {create_semaphore(mDevice.get())},
+      mInFlightFence {create_signaled_fence(mDevice.get())},
+
       mAllocator {mInstance.get(), mGPU, mDevice.get()}
 {
-  // TODO create framebuffers
-  // TODO create command pool
-  // TODO create command buffer
-  // TODO create synchronization objects
+  mSwapchain.create_framebuffers(mRenderPass.get());
+}
+
+VulkanBackend::~VulkanBackend()
+{
+  vkDestroyFence(mDevice.get(), mInFlightFence, nullptr);
+  vkDestroySemaphore(mDevice.get(), mRenderFinishedSemaphore, nullptr);
+  vkDestroySemaphore(mDevice.get(), mImageAvailableSemaphore, nullptr);
+
+  vkDestroyCommandPool(mDevice.get(), mCommandPool, nullptr);
 }
 
 void VulkanBackend::stop()
