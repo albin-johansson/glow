@@ -1,6 +1,7 @@
 #include "window.hpp"
 
 #include <fmt/format.h>
+#include <magic_enum.hpp>
 
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
@@ -76,6 +77,9 @@ Window::Window(const GraphicsApi api)
   }
 
   use_win32_dark_title_bar(mWindow.get());
+
+  const auto title = fmt::format("Gravel [{}]", magic_enum::enum_name(api));
+  SDL_SetWindowTitle(mWindow.get(), title.c_str());
 }
 
 }  // namespace gravel
