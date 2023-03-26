@@ -103,7 +103,8 @@ void VulkanBackend::render_scene(const Scene& scene,
 
 auto VulkanBackend::get_primary_framebuffer_handle() -> void*
 {
-  return nullptr;
+  VkFramebuffer framebuffer = mSwapchain.get_current_framebuffer();
+  return static_cast<void*>(framebuffer);
 }
 
 }  // namespace gravel::vlk
