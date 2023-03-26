@@ -177,7 +177,7 @@ void Swapchain::create_image_views()
 
   usize index = 0;
   for (const auto& image : mImages) {
-    const VkImageViewCreateInfo image_view_create_info {
+    const VkImageViewCreateInfo create_info {
         .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 
         .image = image,
@@ -201,10 +201,7 @@ void Swapchain::create_image_views()
     };
 
     auto& image_view = mImageViews.at(index);
-    GRAVEL_VK_CALL(vkCreateImageView(mDevice,  //
-                                     &image_view_create_info,
-                                     nullptr,
-                                     &image_view),
+    GRAVEL_VK_CALL(vkCreateImageView(mDevice, &create_info, nullptr, &image_view),
                    "[VK] Could not create swapchain image view");
 
     ++index;
