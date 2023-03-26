@@ -92,4 +92,34 @@ RenderPass::~RenderPass()
   vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
 }
 
+void RenderPass::begin(VkCommandBuffer command_buffer,
+                       VkFramebuffer framebuffer,
+                       const VkExtent2D framebuffer_extent)
+{
+  const VkClearValue clear_color {
+      VkClearColorValue {
+          .float32 = {0.5f, 0.1f, 0.5f, 1.0f},
+      },
+  };
+
+  const VkRect2D render_area {
+      .offset = VkOffset2D {0, 0},
+      .extent = framebuffer_extent,
+  };
+
+  const VkRenderPassBeginInfo render_pass_begin_info {
+      .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+
+      .renderPass = mRenderPass,
+      .framebuffer = framebuffer,
+      .renderArea = render_area,
+      .clearValueCount = 1,
+      .pClearValues = &clear_color,
+  };
+
+  vkCmdBeginRenderPass(command_buffer,
+                       &render_pass_begin_info,
+                       VK_SUBPASS_CONTENTS_INLINE);
+}
+
 }  // namespace gravel::vlk

@@ -15,6 +15,10 @@ class RenderPass final {
 
   ~RenderPass();
 
+  void begin(VkCommandBuffer command_buffer,
+             VkFramebuffer framebuffer,
+             VkExtent2D framebuffer_extent);
+
   [[nodiscard]] auto get() -> VkRenderPass { return mRenderPass; }
 
  private:
