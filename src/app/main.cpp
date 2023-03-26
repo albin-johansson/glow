@@ -24,7 +24,7 @@ auto main(int, char*[]) -> int
     spdlog::info("Using {} backend", magic_enum::enum_name(api));
 
     grv::Engine engine {api};
-    engine.set_backend(create_backend(engine.get_window(), api));
+    engine.set_backend(grv::create_backend(engine.get_window(), api));
     engine.start();
 
     return EXIT_SUCCESS;
