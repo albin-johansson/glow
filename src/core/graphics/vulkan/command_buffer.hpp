@@ -15,4 +15,8 @@ void reset_command_buffer(VkCommandBuffer command_buffer);
 
 void begin_command_buffer(VkCommandBuffer command_buffer);
 
+void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent);
+
+void set_scissor(VkCommandBuffer command_buffer, VkOffset2D offset, VkExtent2D extent);
+
 }  // namespace gravel::vlk
