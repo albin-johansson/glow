@@ -7,6 +7,7 @@
 #include "common/type/array.hpp"
 #include "graphics/vertex.hpp"
 #include "graphics/vulkan/shader_module.hpp"
+#include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
@@ -57,12 +58,11 @@ void ShadingPipeline::create_descriptor_set_layout()
       .pBindings = descriptor_set_layout_bindings,
   };
 
-  if (vkCreateDescriptorSetLayout(mDevice,
-                                  &descriptor_set_layout_create_info,
-                                  nullptr,
-                                  &mDescriptorSetLayout) != VK_SUCCESS) {
-    throw Error {"[VK] Could not create descriptor set layout"};
-  }
+  GRAVEL_VK_CALL(vkCreateDescriptorSetLayout(mDevice,
+                                             &descriptor_set_layout_create_info,
+                                             nullptr,
+                                             &mDescriptorSetLayout),
+                 "[VK] Could not create descriptor set layout");
 }
 
 void ShadingPipeline::create_pipeline_layout()
@@ -79,10 +79,11 @@ void ShadingPipeline::create_pipeline_layout()
       .pPushConstantRanges = nullptr,
   };
 
-  if (vkCreatePipelineLayout(mDevice, &layout_create_info, nullptr, &mPipelineLayout) !=
-      VK_SUCCESS) {
-    throw Error {"[VK] Could not create shading pipeline layout"};
-  }
+  GRAVEL_VK_CALL(vkCreatePipelineLayout(mDevice,  //
+                                        &layout_create_info,
+                                        nullptr,
+                                        &mPipelineLayout),
+                 "[VK] Could not create shading pipeline layout");
 }
 
 void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
@@ -293,14 +294,13 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
   };
 
   // TODO investigate VkPipelineCache
-  if (vkCreateGraphicsPipelines(mDevice,
-                                VK_NULL_HANDLE,
-                                1,
-                                &graphics_pipeline_create_info,
-                                nullptr,
-                                &mPipeline) != VK_SUCCESS) {
-    throw Error {"[VK] Could not create shading pipeline"};
-  }
+  GRAVEL_VK_CALL(vkCreateGraphicsPipelines(mDevice,
+                                           VK_NULL_HANDLE,
+                                           1,
+                                           &graphics_pipeline_create_info,
+                                           nullptr,
+                                           &mPipeline),
+                 "[VK] Could not create shading pipeline");
 }
 
 ShadingPipeline::~ShadingPipeline()

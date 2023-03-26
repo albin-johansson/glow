@@ -1,6 +1,7 @@
 #include "render_pass.hpp"
 
 #include "common/debug/error.hpp"
+#include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
@@ -79,10 +80,11 @@ RenderPass::RenderPass(VkDevice device, const VkFormat swapchain_image_format)
       .pDependencies = subpass_dependencies,
   };
 
-  if (vkCreateRenderPass(mDevice, &render_pass_create_info, nullptr, &mRenderPass) !=
-      VK_SUCCESS) {
-    throw Error {"[VK] Could not create render pass"};
-  }
+  GRAVEL_VK_CALL(vkCreateRenderPass(mDevice,  //
+                                    &render_pass_create_info,
+                                    nullptr,
+                                    &mRenderPass),
+                 "[VK] Could not create render pass");
 }
 
 RenderPass::~RenderPass()

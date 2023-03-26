@@ -1,6 +1,7 @@
 #include "synchronization.hpp"
 
 #include "common/debug/error.hpp"
+#include "graphics/vulkan/util.hpp"
 
 namespace gravel::vlk {
 
@@ -13,10 +14,8 @@ auto create_semaphore(VkDevice device) -> VkSemaphore
   };
 
   VkSemaphore semaphore {VK_NULL_HANDLE};
-  if (vkCreateSemaphore(device, &semaphore_create_info, nullptr, &semaphore) !=
-      VK_SUCCESS) {
-    throw Error {"[VK] Could not create semaphore"};
-  }
+  GRAVEL_VK_CALL(vkCreateSemaphore(device, &semaphore_create_info, nullptr, &semaphore),
+                 "[VK] Could not create semaphore");
 
   return semaphore;
 }
@@ -30,9 +29,8 @@ auto create_signaled_fence(VkDevice device) -> VkFence
   };
 
   VkFence fence {VK_NULL_HANDLE};
-  if (vkCreateFence(device, &fence_create_info, nullptr, &fence) != VK_SUCCESS) {
-    throw Error {"[VK] Could not create fence"};
-  }
+  GRAVEL_VK_CALL(vkCreateFence(device, &fence_create_info, nullptr, &fence),
+                 "[VK] Could not create fence");
 
   return fence;
 }

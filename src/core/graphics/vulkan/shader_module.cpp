@@ -2,6 +2,7 @@
 
 #include "common/debug/error.hpp"
 #include "common/primitives.hpp"
+#include "graphics/vulkan/util.hpp"
 #include "io/files.hpp"
 
 namespace gravel::vlk {
@@ -20,10 +21,11 @@ ShaderModule::ShaderModule(VkDevice device, const Path& code_path)
       .pCode = reinterpret_cast<const uint32*>(code->data()),
   };
 
-  if (vkCreateShaderModule(mDevice, &shader_module_create_info, nullptr, &mModule) !=
-      VK_SUCCESS) {
-    throw Error {"[VK] Could not create shader module"};
-  }
+  GRAVEL_VK_CALL(vkCreateShaderModule(mDevice,  //
+                                      &shader_module_create_info,
+                                      nullptr,
+                                      &mModule),
+                 "[VK] Could not create shader module");
 }
 
 ShaderModule::~ShaderModule()

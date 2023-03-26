@@ -6,6 +6,7 @@
 #include "common/debug/error.hpp"
 #include "common/primitives.hpp"
 #include "graphics/vulkan/physical_device.hpp"
+#include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
@@ -142,10 +143,11 @@ Swapchain::Swapchain(SDL_Window* window,
   mImageExtent = swapchain_create_info.imageExtent;
   mImageFormat = swapchain_create_info.imageFormat;
 
-  if (vkCreateSwapchainKHR(device, &swapchain_create_info, nullptr, &mSwapchain) !=
-      VK_SUCCESS) {
-    throw Error {"[VK] Could not create swap chain"};
-  }
+  GRAVEL_VK_CALL(vkCreateSwapchainKHR(device,  //
+                                      &swapchain_create_info,
+                                      nullptr,
+                                      &mSwapchain),
+                 "[VK] Could not create swapchain");
 
   mImages = get_swapchain_images(device, mSwapchain);
   create_image_views();

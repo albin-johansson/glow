@@ -27,6 +27,7 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
   for (const auto queue_family_index : unique_queue_families) {
     queue_create_infos.push_back(VkDeviceQueueCreateInfo {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+
         .queueFamilyIndex = queue_family_index,
         .queueCount = 1,
         .pQueuePriorities = &priority,
@@ -37,12 +38,16 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
 
   VkDeviceCreateInfo device_create_info {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+
       .queueCreateInfoCount = static_cast<uint32>(queue_create_infos.size()),
       .pQueueCreateInfos = queue_create_infos.data(),
+
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
+
       .enabledExtensionCount = kRequiredDeviceExtensions.size(),
       .ppEnabledExtensionNames = kRequiredDeviceExtensions.data(),
+
       .pEnabledFeatures = &device_features,
   };
 
@@ -51,9 +56,8 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
     device_create_info.ppEnabledLayerNames = kValidationLayerNames.data();
   }
 
-  if (vkCreateDevice(gpu, &device_create_info, nullptr, &mDevice) != VK_SUCCESS) {
-    throw Error {"[VK] Could not create Vulkan device"};
-  }
+  GRAVEL_VK_CALL(vkCreateDevice(gpu, &device_create_info, nullptr, &mDevice),
+                 "[VK] Could not create logical device");
 
   vkGetDeviceQueue(mDevice, graphics_family_index, 0, &mGraphicsQueue);
   vkGetDeviceQueue(mDevice, present_family_index, 0, &mPresentQueue);

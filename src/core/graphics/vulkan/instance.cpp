@@ -36,15 +36,19 @@ Instance::Instance(SDL_Window* window)
 
   const VkApplicationInfo application_info {
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+
       .pApplicationName = "Gravel",
       .applicationVersion = VK_MAKE_VERSION(0, 1, 0),
+
       .pEngineName = "No Engine",
       .engineVersion = VK_MAKE_VERSION(0, 1, 0),
+
       .apiVersion = VK_API_VERSION_1_2,
   };
 
   VkInstanceCreateInfo instance_create_info {
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+
       .flags = 0,
       .pApplicationInfo = &application_info,
 
@@ -68,9 +72,8 @@ Instance::Instance(SDL_Window* window)
     instance_create_info.enabledLayerCount = kValidationLayerNames.size();
   }
 
-  if (vkCreateInstance(&instance_create_info, nullptr, &mInstance) != VK_SUCCESS) {
-    throw Error {"[VK] Could not create Vulkan instance"};
-  }
+  GRAVEL_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &mInstance),
+                 "[VK] Could not create instance");
 }
 
 Instance::~Instance()
