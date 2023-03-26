@@ -110,14 +110,52 @@ void VulkanBackend::on_event(const SDL_Event& event)
   }
 }
 
-void VulkanBackend::begin_frame() {}
+void VulkanBackend::begin_frame()
+{
+  // Wait until the previous frame has finished
+  wait_and_then_reset_fence(mDevice.get(), mInFlightFence);
 
-void VulkanBackend::end_frame() {}
+  // Acquire an image from the swapchain
+  mSwapchain.acquire_next_image(mImageAvailableSemaphore);
+
+  reset_command_buffer(mCommandBuffer);
+  begin_command_buffer(mCommandBuffer);
+}
+
+void VulkanBackend::end_frame()
+{
+  GRAVEL_VK_CALL(vkEndCommandBuffer(mCommandBuffer), "[VK] Could not end command buffer");
+
+  mDevice.submit_rendering_commands(mCommandBuffer,
+                                    mImageAvailableSemaphore,
+                                    mRenderFinishedSemaphore,
+                                    mInFlightFence);
+
+  mDevice.present_swapchain_image(mSwapchain.get(),
+                                  mSwapchain.get_image_index(),
+                                  mRenderFinishedSemaphore);
+}
 
 void VulkanBackend::render_scene(const Scene& scene,
                                  const Vec2& framebuffer_size,
                                  Dispatcher& dispatcher)
 {
+  // TODO resize swap chain images if necessary
+
+  const auto swapchain_image_extent = mSwapchain.get_image_extent();
+
+  mRenderPass.begin(mCommandBuffer,
+                    mSwapchain.get_current_framebuffer(),
+                    swapchain_image_extent);
+
+  vkCmdBindPipeline(mCommandBuffer,
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    mShadingPipeline.get());
+
+  set_viewport(mCommandBuffer, swapchain_image_extent);
+  set_scissor(mCommandBuffer, VkOffset2D {0, 0}, swapchain_image_extent);
+
+  vkCmdEndRenderPass(mCommandBuffer);
 }
 
 auto VulkanBackend::get_primary_framebuffer_handle() -> void*
