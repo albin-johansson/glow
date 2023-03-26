@@ -5,6 +5,13 @@
 
 namespace gravel::vlk {
 
+void wait_and_then_reset_fence(VkDevice device, VkFence fence)
+{
+  GRAVEL_VK_CALL(vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX),
+                 "[VK] Could not wait for fence");
+  GRAVEL_VK_CALL(vkResetFences(device, 1, &fence), "[VK] Could not reset fence");
+}
+
 auto create_semaphore(VkDevice device) -> VkSemaphore
 {
   const VkSemaphoreCreateInfo semaphore_create_info {
