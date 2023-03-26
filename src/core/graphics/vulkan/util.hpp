@@ -16,7 +16,7 @@ inline constexpr Array<const char*, 1> kValidationLayerNames {
 
 /// Names of the extensions that the Vulkan implementation must provide.
 /// TODO: use CTAD with the Array alias here when all compilers support it
-inline constexpr std::array kRequiredExtensions
+inline constexpr std::array kRequiredDeviceExtensions
 {
   VK_KHR_SWAPCHAIN_EXTENSION_NAME,
 #if GRAVEL_OS_MACOS

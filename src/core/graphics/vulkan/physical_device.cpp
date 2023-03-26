@@ -35,8 +35,8 @@ namespace {
 
 [[nodiscard]] auto has_required_extensions(VkPhysicalDevice gpu) -> bool
 {
-  HashSet<String> missing_extensions(kRequiredExtensions.begin(),
-                                     kRequiredExtensions.end());
+  HashSet<String> missing_extensions(kRequiredDeviceExtensions.begin(),
+                                     kRequiredDeviceExtensions.end());
 
   const auto available_extensions = get_extensions(gpu);
   for (const auto& extension : available_extensions) {

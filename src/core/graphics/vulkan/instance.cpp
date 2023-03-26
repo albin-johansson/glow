@@ -19,6 +19,10 @@ namespace {
   extensions.resize(extension_count);
   SDL_Vulkan_GetInstanceExtensions(window, &extension_count, extensions.data());
 
+#if GRAVEL_OS_MACOS
+  extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif  // GRAVEL_OS_MACOS
+
   return extensions;
 }
 
@@ -41,9 +45,12 @@ Instance::Instance(SDL_Window* window)
 
   VkInstanceCreateInfo instance_create_info {
       .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+      .flags = 0,
       .pApplicationInfo = &application_info,
+
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
+
       .enabledExtensionCount = static_cast<uint32>(extension_names.size()),
       .ppEnabledExtensionNames = extension_names.data(),
   };

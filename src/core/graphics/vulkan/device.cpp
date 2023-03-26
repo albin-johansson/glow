@@ -41,8 +41,8 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
       .pQueueCreateInfos = queue_create_infos.data(),
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
-      .enabledExtensionCount = kRequiredExtensions.size(),
-      .ppEnabledExtensionNames = kRequiredExtensions.data(),
+      .enabledExtensionCount = kRequiredDeviceExtensions.size(),
+      .ppEnabledExtensionNames = kRequiredDeviceExtensions.data(),
       .pEnabledFeatures = &device_features,
   };
 
