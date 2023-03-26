@@ -22,6 +22,8 @@ class VulkanBackend final : public Backend {
 
   void on_init(Scene& scene) override;
 
+  void on_quit() override;
+
   void on_event(const SDL_Event& event) override;
 
   void begin_frame() override;

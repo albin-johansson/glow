@@ -140,6 +140,8 @@ void Engine::start()
     render();
   }
 
+  mBackend->on_quit();
+
   SDL_HideWindow(mWindow);
 }
 

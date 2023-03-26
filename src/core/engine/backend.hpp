@@ -20,6 +20,7 @@ class Backend {
   virtual void stop() = 0;
 
   virtual void on_init([[maybe_unused]] Scene& scene) {}
+  virtual void on_quit() {}
 
   virtual void on_event(const SDL_Event& event) = 0;
 

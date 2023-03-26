@@ -70,6 +70,11 @@ void VulkanBackend::on_init(Scene& scene)
   camera_context.active_camera = camera_entity;
 }
 
+void VulkanBackend::on_quit()
+{
+  vkDeviceWaitIdle(mDevice.get());
+}
+
 void VulkanBackend::prepare_imgui_for_vulkan()
 {
   //  if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {
