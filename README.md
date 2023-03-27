@@ -20,30 +20,13 @@ The goal is to be able to render nice looking scenes using modern graphics APIs,
 * ECS architecture
 * Support for common 3D model file formats, such as `.dae`, `.fbx`, and `.obj`.
 * OpenGL 4.1.0 backend
-
-### Goals
-
-* Spotlights
-* Directional lights
-* Point lights
-* Shadow maps
-* Phong shading
-* Physically based shading
-* Automatic irradiance and reflection maps
-* Forward and deferred renderers
-* Transparent object support
-* View frustum culling
-* Fog
-* Screen-space ambient occlusion (SSAO)
-* Chromatic aberration
-* Physically based camera
-* Scene loader
-* Instanced rendering
-* Vulkan backend
+* Vulkan 1.2 backend
 
 ## Build
 
 This project uses [Vcpkg](https://github.com/microsoft/vcpkg) for dependency management.
+However, you will need to install the [Vulkan SDK](https://vulkan.lunarg.com/) to build the Vulkan backend.
+You can verify your Vulkan installation by checking the value of the `VULKAN_SDK` environment variable.
 Information on Vcpkg triplets can be found [here](https://github.com/microsoft/vcpkg/docs/users/triplets.md).
 
 ```
