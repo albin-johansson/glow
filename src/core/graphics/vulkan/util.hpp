@@ -27,6 +27,10 @@ inline constexpr std::array kRequiredDeviceExtensions {
 
 [[nodiscard]] auto stringify_result(VkResult result) -> StringView;
 
+[[nodiscard]] auto get_api_version(VkPhysicalDevice gpu) -> String;
+
+[[nodiscard]] auto get_driver_version(VkPhysicalDevice gpu) -> String;
+
 }  // namespace gravel::vlk
 
 #define GRAVEL_VK_CALL(Expr, ErrorMsg)                                                \
