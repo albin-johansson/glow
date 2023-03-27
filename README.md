@@ -59,6 +59,7 @@ Information on Vcpkg triplets can be found [here](https://github.com/microsoft/v
 
 See [vcpkg.json](vcpkg.json) for the full Vcpkg manifest file.
 
+* [argparse](https://github.com/p-ranav/argparse)
 * [assimp](https://github.com/assimp/assimp)
 * [Boost](https://www.boost.org/)
 * [entt](https://github.com/skypjack/entt)

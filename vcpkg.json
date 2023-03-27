@@ -8,6 +8,7 @@
   ],
   "builtin-baseline": "31a159c1cae2bf905299085d9ef01bdfea0ca7b8",
   "dependencies": [
+    "argparse",
     "assimp",
     "boost-assert",
     "boost-predef",

@@ -28,6 +28,7 @@ find_package(Vulkan REQUIRED)
 set(VULKAN_INCLUDE_DIR "$ENV{VULKAN_SDK}/include")
 
 # Vcpkg dependencies
+find_package(argparse CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(Boost REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
