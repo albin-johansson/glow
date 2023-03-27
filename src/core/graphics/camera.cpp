@@ -1,10 +1,32 @@
 #include "camera.hpp"
 
+#include <utility>  // move
+
 #include <glm/gtx/transform.hpp>
 
+#include "scene/scene.hpp"
 #include "scene/transform.hpp"
 
 namespace gravel {
+
+auto make_camera(Scene& scene, String name, const Vec3& position, const Vec3& direction)
+    -> Entity
+{
+  const auto camera_entity = scene.make_node(std::move(name));
+
+  auto& camera = scene.add<Camera>(camera_entity);
+  camera.up = Vec3 {0, 1, 0};
+
+  auto& transform = scene.get<Transform>(camera_entity);
+  transform.position = position;
+  transform.rotation = direction;
+
+  auto& transform_options = scene.get<TransformOptions>(camera_entity);
+  transform_options.use_rotation = false;
+  transform_options.use_scale = false;
+
+  return camera_entity;
+}
 
 void rotate_camera(const Camera& camera,
                    Transform& transform,

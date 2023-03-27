@@ -50,8 +50,6 @@ class OpenGLBackend final : public Backend {
   Framebuffer mPrimaryFBO;
   bool mQuit {false};
 
-  void make_main_camera_node(Scene& scene);
-
   void render_environment(const Scene& scene,
                           const Mat4& projection,
                           const Mat4& view,

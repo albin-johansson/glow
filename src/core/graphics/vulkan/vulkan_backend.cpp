@@ -77,18 +77,7 @@ void VulkanBackend::on_init(Scene& scene)
   renderer_info.vendor = "N/A";
   renderer_info.version = get_driver_version(mGPU);
 
-  const auto camera_entity = scene.make_node("Main Camera");
-
-  auto& camera = scene.add<Camera>(camera_entity);
-  camera.up = Vec3 {0, 1, 0};
-
-  auto& transform = scene.get<Transform>(camera_entity);
-  transform.position = Vec3 {0, 0, 2};
-  transform.rotation = Vec3 {0, 0, 1};
-
-  auto& transform_options = scene.get<TransformOptions>(camera_entity);
-  transform_options.use_rotation = false;
-  transform_options.use_scale = false;
+  const auto camera_entity = make_camera(scene, "Camera", Vec3 {0, 0, 2}, Vec3 {0, 0, 1});
 
   auto& camera_context = scene.get<CameraContext>();
   camera_context.active_camera = camera_entity;

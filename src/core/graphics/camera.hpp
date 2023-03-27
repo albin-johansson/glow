@@ -4,10 +4,12 @@
 #include "common/primitives.hpp"
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
+#include "common/type/string.hpp"
 
 namespace gravel {
 
 GRAVEL_FORWARD_DECLARE_S(Transform);
+GRAVEL_FORWARD_DECLARE_C(Scene);
 
 /// Context component for tracking the active camera.
 struct CameraContext final {
@@ -23,6 +25,9 @@ struct Camera final {
   float32 far_plane {100'000};          ///< Distance to frustum far plane.
   float32 aspect_ratio {16.0f / 9.0f};  ///< Far plane aspect ratio,
 };
+
+auto make_camera(Scene& scene, String name, const Vec3& position, const Vec3& direction)
+    -> Entity;
 
 /// Rotates a camera with the specified amount along the yaw and pitch axes.
 ///
