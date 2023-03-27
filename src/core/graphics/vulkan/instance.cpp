@@ -19,9 +19,9 @@ namespace {
   extensions.resize(extension_count);
   SDL_Vulkan_GetInstanceExtensions(window, &extension_count, extensions.data());
 
-#if GRAVEL_OS_MACOS
+#ifdef GRAVEL_USE_VULKAN_SUBSET
   extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-#endif  // GRAVEL_OS_MACOS
+#endif  // GRAVEL_USE_VULKAN_SUBSET
 
   return extensions;
 }
@@ -59,10 +59,10 @@ Instance::Instance(SDL_Window* window)
       .ppEnabledExtensionNames = extension_names.data(),
   };
 
-#if GRAVEL_OS_MACOS
+#ifdef GRAVEL_USE_VULKAN_SUBSET
   // Allow implementations that only provide a subset of the Vulkan spec, e.g. MoltenVK.
   instance_create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-#endif  // GRAVEL_OS_MACOS
+#endif  // GRAVEL_USE_VULKAN_SUBSET
 
   if constexpr (GRAVEL_DEBUG_BUILD) {
     spdlog::debug("[VK] Enabling validation layers");

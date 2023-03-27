@@ -48,6 +48,17 @@ function(gravel_configure_compile_options target)
                              SPDLOG_FMT_EXTERNAL
                              WIN32_LEAN_AND_MEAN
                              )
+
+  # The Intel macOS GitHub runners seemingly don't provide some of
+  # the required Vulkan subset definitions, so we condition on the
+  # presence of an Apple Silicon processor.
+  if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND
+      CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+    target_compile_definitions(${target}
+                               PRIVATE
+                               GRAVEL_USE_VULKAN_SUBSET
+                               )
+  endif ()
 endfunction()
 
 set(GRAVEL_STANDARD_CPP_HEADERS

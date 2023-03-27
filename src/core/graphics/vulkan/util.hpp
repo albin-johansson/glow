@@ -6,7 +6,6 @@
 #include <vulkan/vulkan.h>
 
 #include "common/debug/error.hpp"
-#include "common/predef.hpp"
 #include "common/type/array.hpp"
 #include "common/type/string.hpp"
 
@@ -19,12 +18,11 @@ inline constexpr Array<const char*, 1> kValidationLayerNames {
 
 /// Names of the extensions that the Vulkan implementation must provide.
 /// TODO: use CTAD with the Array alias here when all compilers support it
-inline constexpr std::array kRequiredDeviceExtensions
-{
-  VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-#if GRAVEL_OS_MACOS
-  "VK_KHR_portability_subset",
-#endif  // GRAVEL_OS_MACOS
+inline constexpr std::array kRequiredDeviceExtensions {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#ifdef GRAVEL_USE_VULKAN_SUBSET
+    "VK_KHR_portability_subset",
+#endif  // GRAVEL_USE_VULKAN_SUBSET
 };
 
 [[nodiscard]] auto stringify_result(VkResult result) -> StringView;
