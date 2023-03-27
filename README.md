@@ -55,6 +55,33 @@ Information on Vcpkg triplets can be found [here](https://github.com/microsoft/v
 > ninja
 ```
 
+## Usage
+
+```
+Usage: gravel [options]
+Options:
+   --api, -a        'OpenGL' or 'Vulkan', defaults to 'OpenGL' (optional)
+   --env, -e        Path to an environment texture to load at startup (optional)
+   --models, -m     Space-separated list of model file paths to load at startup (optional)
+   --log, -l        Verbosity of log output, valid values are within [0, 6], defaults to 4 (optional)
+```
+
+Some examples are provided below.
+
+```shell
+# Use default graphics API, and no initial environment texture or models
+> ./gravel
+
+# Use a specific graphics API 
+> ./gravel --api Vulkan
+
+# Disable all logging output
+> ./gravel --log 0
+
+# Load an environment texture and several models
+> ./gravel --env textures/env.hdr --models models/teapot.dae models/kettle.fbx
+```
+
 ## Dependencies
 
 See [vcpkg.json](vcpkg.json) for the full Vcpkg manifest file.
