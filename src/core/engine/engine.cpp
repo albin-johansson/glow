@@ -91,13 +91,20 @@ void Engine::register_events()
   // clang-format on
 }
 
-void Engine::start()
+void Engine::init()
 {
   if (!mBackend) {
     throw Error {"[Engine] Backend instance was not set"};
   }
 
   mBackend->on_init(mScene);
+}
+
+void Engine::start()
+{
+  if (!mBackend) {
+    throw Error {"[Engine] Backend instance was not set"};
+  }
 
   auto last_update = query_counter();
   Vec2 last_framebuffer_scale {};

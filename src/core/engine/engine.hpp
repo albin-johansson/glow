@@ -22,6 +22,8 @@ class Engine final {
  public:
   explicit Engine(GraphicsApi api);
 
+  void init();
+
   void start();
 
   void set_backend(Unique<Backend> backend);

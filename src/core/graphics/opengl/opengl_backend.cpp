@@ -198,7 +198,7 @@ void OpenGLBackend::load_model(Scene& scene, const Path& path)
   static int index = 0;
 
   const auto model_entity = scene.make_node(fmt::format("Model {}", index));
-  assign_model(scene.get_registry(), model_entity, path);
+  assign_model(scene, model_entity, path);
 
   ++index;
 }

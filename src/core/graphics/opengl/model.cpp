@@ -10,6 +10,7 @@
 #include "graphics/opengl/texture_cache.hpp"
 #include "io/model_loader.hpp"
 #include "io/texture_loader.hpp"
+#include "scene/scene.hpp"
 
 namespace gravel::gl {
 namespace {
@@ -34,14 +35,14 @@ namespace {
   return kNothing;
 }
 
-[[nodiscard]] auto create_material(Registry& registry,
+[[nodiscard]] auto create_material(Scene& scene,
                                    const MaterialData& material_data,
                                    const Path& model_dir) -> Entity
 {
-  auto& texture_cache = registry.ctx().get<TextureCache>();
+  auto& texture_cache = scene.get<TextureCache>();
 
-  const auto material_entity = registry.create();
-  auto& material = registry.emplace<Material>(material_entity);
+  const auto material_entity = scene.get_registry().create();
+  auto& material = scene.add<Material>(material_entity);
 
   if (material_data.diffuse_tex.has_value()) {
     material.diffuse_tex =
@@ -93,18 +94,17 @@ namespace {
 
 }  // namespace
 
-void assign_model(Registry& registry, const Entity entity, const Path& path)
+void assign_model(Scene& scene, const Entity entity, const Path& path)
 {
   if (const auto model_data = load_model_data(path)) {
-    auto& model = registry.emplace<Model>(entity);
+    auto& model = scene.add<Model>(entity);
     model.meshes.reserve(model_data->meshes.size());
 
     HashMap<usize, Entity> material_entities;
     material_entities.reserve(model_data->materials.size());
 
     for (const auto& [material_id, material_data] : model_data->materials) {
-      const auto material_entity =
-          create_material(registry, material_data, model_data->dir);
+      const auto material_entity = create_material(scene, material_data, model_data->dir);
       material_entities[material_id] = material_entity;
     }
 
