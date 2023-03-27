@@ -17,6 +17,8 @@ class ShadingPipeline final {
 
   ~ShadingPipeline();
 
+  [[nodiscard]] auto get() -> VkPipeline { return mPipeline; }
+
  private:
   VkDevice mDevice {VK_NULL_HANDLE};
   VkDescriptorSetLayout mDescriptorSetLayout {VK_NULL_HANDLE};

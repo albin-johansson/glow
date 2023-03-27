@@ -6,6 +6,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/array.hpp"
 #include "graphics/vertex.hpp"
+#include "graphics/vulkan/pipeline.hpp"
 #include "graphics/vulkan/shader_module.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
@@ -92,23 +93,12 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
   GRAVEL_ASSERT(mDescriptorSetLayout != VK_NULL_HANDLE);
   GRAVEL_ASSERT(mPipelineLayout != VK_NULL_HANDLE);
 
-  ShaderModule vertex_shader_module {mDevice, "assets/shaders/vk/shading.vert.spv"};
-  ShaderModule fragment_shader_module {mDevice, "assets/shaders/vk/shading.frag.spv"};
+  ShaderModule vertex_shader {mDevice, "assets/shaders/vk/shading.vert.spv"};
+  ShaderModule fragment_shader {mDevice, "assets/shaders/vk/shading.frag.spv"};
 
-  const VkPipelineShaderStageCreateInfo vertex_shader_stage_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-
-      .stage = VK_SHADER_STAGE_VERTEX_BIT,
-      .module = vertex_shader_module.get(),
-      .pName = "main",
-  };
-
-  const VkPipelineShaderStageCreateInfo fragment_shader_stage_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-
-      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-      .module = fragment_shader_module.get(),
-      .pName = "main",
+  const VkPipelineShaderStageCreateInfo shader_stages[] {
+      create_pipeline_shader_stage(VK_SHADER_STAGE_VERTEX_BIT, vertex_shader.get()),
+      create_pipeline_shader_stage(VK_SHADER_STAGE_FRAGMENT_BIT, fragment_shader.get()),
   };
 
   const VkDynamicState dynamic_states[] {
@@ -116,142 +106,34 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
       VK_DYNAMIC_STATE_SCISSOR,
   };
 
-  const VkPipelineDynamicStateCreateInfo dynamic_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+  const auto dynamic_state =
+      create_pipeline_dynamic_state(array_length(dynamic_states), dynamic_states);
 
-      .dynamicStateCount = array_length(dynamic_states),
-      .pDynamicStates = dynamic_states,
-  };
+  const auto vertex_binding_descriptions = create_vertex_binding_descriptions(0);
+  const auto vertex_attribute_descriptions = create_vertex_attribute_descriptions();
 
-  // This describes the size and rate of the per-vertex attributes
-  const VkVertexInputBindingDescription vertex_binding_descriptions[] {
-      VkVertexInputBindingDescription {
-          .binding = 0,
-          .stride = sizeof(Vertex),
-          .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
-      },
-  };
-
-  // This describes the individual vertex attributes
-  const VkVertexInputAttributeDescription vertex_attribute_descriptions[] {
-      // vec3 position
-      VkVertexInputAttributeDescription {
-          .location = 0,
-          .binding = 0,
-          .format = VK_FORMAT_R32G32B32_SFLOAT,
-          .offset = static_cast<uint32>(offsetof(Vertex, position)),
-      },
-      // vec3 normal
-      VkVertexInputAttributeDescription {
-          .location = 1,
-          .binding = 0,
-          .format = VK_FORMAT_R32G32B32_SFLOAT,
-          .offset = static_cast<uint32>(offsetof(Vertex, normal)),
-      },
-      // vec2 tex_coords
-      VkVertexInputAttributeDescription {
-          .location = 2,
-          .binding = 0,
-          .format = VK_FORMAT_R32G32_SFLOAT,
-          .offset = static_cast<uint32>(offsetof(Vertex, tex_coords)),
-      },
-  };
-
-  const VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info {
+  const VkPipelineVertexInputStateCreateInfo vertex_input_state {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 
-      .vertexBindingDescriptionCount = array_length(vertex_binding_descriptions),
-      .pVertexBindingDescriptions = vertex_binding_descriptions,
+      .pNext = nullptr,
+      .flags = 0,
 
-      .vertexAttributeDescriptionCount = array_length(vertex_attribute_descriptions),
-      .pVertexAttributeDescriptions = vertex_attribute_descriptions,
+      .vertexBindingDescriptionCount = vertex_binding_descriptions.size(),
+      .pVertexBindingDescriptions = vertex_binding_descriptions.data(),
+
+      .vertexAttributeDescriptionCount = vertex_attribute_descriptions.size(),
+      .pVertexAttributeDescriptions = vertex_attribute_descriptions.data(),
   };
 
-  const VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+  const auto input_assembly_state = create_pipeline_input_assembly_state();
+  const auto viewport_state = create_pipeline_viewport_state();
+  const auto rasterization_state =
+      create_pipeline_rasterization_state(VK_POLYGON_MODE_FILL);
+  const auto multisample_state = create_pipeline_multisample_state(VK_SAMPLE_COUNT_1_BIT);
+  const auto depth_stencil_state = create_pipeline_depth_stencil_state();
 
-      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-      .primitiveRestartEnable = VK_FALSE,
-  };
-
-  const VkViewport viewport {
-      .x = 0.0f,
-      .y = 0.0f,
-
-      .width = static_cast<float>(swapchain_extent.width),
-      .height = static_cast<float>(swapchain_extent.height),
-
-      .minDepth = 0.0f,
-      .maxDepth = 1.0f,
-  };
-
-  const VkRect2D scissor {
-      .offset = VkOffset2D {0, 0},
-      .extent = swapchain_extent,
-  };
-
-  const VkPipelineViewportStateCreateInfo viewport_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-
-      .viewportCount = 1,
-      .pViewports = &viewport,
-      .scissorCount = 1,
-      .pScissors = &scissor,
-  };
-
-  const VkPipelineRasterizationStateCreateInfo rasterization_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-
-      .depthClampEnable = VK_FALSE,
-      .rasterizerDiscardEnable = VK_FALSE,
-
-      .polygonMode = VK_POLYGON_MODE_FILL,
-      .cullMode = VK_CULL_MODE_BACK_BIT,
-      .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-
-      .depthBiasEnable = VK_FALSE,
-      .depthBiasConstantFactor = 0.0f,
-      .depthBiasClamp = 0.0f,
-      .depthBiasSlopeFactor = 0.0f,
-
-      .lineWidth = 1.0f,
-  };
-
-  const VkPipelineMultisampleStateCreateInfo multisample_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-
-      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .sampleShadingEnable = VK_FALSE,
-      .minSampleShading = 1.0f,
-      .pSampleMask = nullptr,
-      .alphaToCoverageEnable = VK_FALSE,
-      .alphaToOneEnable = VK_FALSE,
-  };
-
-  const VkPipelineDepthStencilStateCreateInfo depth_stencil_state_create_info {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-
-      .depthCompareOp = VK_COMPARE_OP_LESS,
-      .stencilTestEnable = VK_FALSE,
-      .front = VkStencilOpState {VK_STENCIL_OP_KEEP},
-      .minDepthBounds = 0.0f,
-      .maxDepthBounds = 1.0f,
-  };
-
-  const VkPipelineColorBlendAttachmentState color_blend_attachment_state {
-      .blendEnable = VK_FALSE,
-
-      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .colorBlendOp = VK_BLEND_OP_ADD,
-
-      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .alphaBlendOp = VK_BLEND_OP_ADD,
-
-      .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                        VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,
-  };
+  const auto color_blend_attachment_state =
+      create_pipeline_color_blend_attachment_state(false);
 
   const VkPipelineColorBlendStateCreateInfo color_blend_state_create_info {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
@@ -265,25 +147,20 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
       .blendConstants = {0.0f, 0.0f, 0.0f, 0.0f},
   };
 
-  const VkPipelineShaderStageCreateInfo shader_stage_create_infos[] {
-      vertex_shader_stage_create_info,
-      fragment_shader_stage_create_info,
-  };
-
   const VkGraphicsPipelineCreateInfo graphics_pipeline_create_info {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 
-      .stageCount = array_length(shader_stage_create_infos),
-      .pStages = shader_stage_create_infos,
+      .stageCount = array_length(shader_stages),
+      .pStages = shader_stages,
 
-      .pVertexInputState = &vertex_input_state_create_info,
-      .pInputAssemblyState = &input_assembly_state_create_info,
-      .pViewportState = &viewport_state_create_info,
-      .pRasterizationState = &rasterization_state_create_info,
-      .pMultisampleState = &multisample_state_create_info,
-      .pDepthStencilState = &depth_stencil_state_create_info,
+      .pVertexInputState = &vertex_input_state,
+      .pInputAssemblyState = &input_assembly_state,
+      .pViewportState = &viewport_state,
+      .pRasterizationState = &rasterization_state,
+      .pMultisampleState = &multisample_state,
+      .pDepthStencilState = &depth_stencil_state,
       .pColorBlendState = &color_blend_state_create_info,
-      .pDynamicState = &dynamic_state_create_info,
+      .pDynamicState = &dynamic_state,
 
       .layout = mPipelineLayout,
       .renderPass = render_pass,
