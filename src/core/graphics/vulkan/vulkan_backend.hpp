@@ -3,6 +3,9 @@
 #include <SDL2/SDL.h>
 #include <vulkan/vulkan.h>
 
+#include "common/predef.hpp"
+#include "common/primitives.hpp"
+#include "common/type/vector.hpp"
 #include "engine/backend.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/device.hpp"
@@ -14,11 +17,16 @@
 
 namespace gravel::vlk {
 
+inline constexpr usize kMaxFramesInFlight = 2;
+
 class VulkanBackend final : public Backend {
  public:
+  GRAVEL_DELETE_COPY(VulkanBackend);
+  GRAVEL_DELETE_MOVE(VulkanBackend);
+
   explicit VulkanBackend(SDL_Window* window);
 
-  ~VulkanBackend();
+  ~VulkanBackend() override;
 
   void stop() override;
 
@@ -47,13 +55,15 @@ class VulkanBackend final : public Backend {
   Device mDevice;
   Swapchain mSwapchain;
   RenderPass mRenderPass;
+  VkPipelineCache mPipelineCache {VK_NULL_HANDLE};
   ShadingPipeline mShadingPipeline;
   VkCommandPool mCommandPool {VK_NULL_HANDLE};
-  VkCommandBuffer mCommandBuffer {VK_NULL_HANDLE};
 
-  VkSemaphore mImageAvailableSemaphore {VK_NULL_HANDLE};
-  VkSemaphore mRenderFinishedSemaphore {VK_NULL_HANDLE};
-  VkFence mInFlightFence {VK_NULL_HANDLE};
+  Vector<VkCommandBuffer> mCommandBuffers;
+  Vector<VkSemaphore> mImageAvailableSemaphores;
+  Vector<VkSemaphore> mRenderFinishedSemaphores;
+  Vector<VkFence> mInFlightFences;
+  usize mFrameIndex {0};
 
   Allocator mAllocator;
 

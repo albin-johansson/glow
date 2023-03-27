@@ -1,10 +1,7 @@
 #include "shading_pipeline.hpp"
 
-#include <cstddef>  // offsetof
-
 #include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
-#include "common/type/array.hpp"
 #include "graphics/vertex.hpp"
 #include "graphics/vulkan/pipeline.hpp"
 #include "graphics/vulkan/shader_module.hpp"

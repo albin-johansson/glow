@@ -24,21 +24,25 @@ auto create_command_pool(VkDevice device, VkPhysicalDevice gpu, VkSurfaceKHR sur
   return command_pool;
 }
 
-auto create_command_buffer(VkDevice device, VkCommandPool command_pool) -> VkCommandBuffer
+auto create_command_buffers(VkDevice device,
+                            VkCommandPool command_pool,
+                            const uint32 count) -> Vector<VkCommandBuffer>
 {
   const VkCommandBufferAllocateInfo allocate_info {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
       .commandPool = command_pool,
       .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = 1,
+      .commandBufferCount = count,
   };
 
-  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
-  GRAVEL_VK_CALL(vkAllocateCommandBuffers(device, &allocate_info, &command_buffer),
-                 "[VK] Could not create command buffer");
+  Vector<VkCommandBuffer> command_buffers;
+  command_buffers.resize(count);
 
-  return command_buffer;
+  GRAVEL_VK_CALL(vkAllocateCommandBuffers(device, &allocate_info, command_buffers.data()),
+                 "[VK] Could not create command buffers");
+
+  return command_buffers;
 }
 
 void reset_command_buffer(VkCommandBuffer command_buffer)
