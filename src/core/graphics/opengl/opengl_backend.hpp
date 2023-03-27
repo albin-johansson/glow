@@ -38,7 +38,9 @@ class OpenGLBackend final : public Backend {
                     const Vec2& framebuffer_size,
                     Dispatcher& dispatcher) override;
 
-  void load_environment_texture(const Path& path);
+  void set_environment_texture(Scene& scene, const Path& path) override;
+
+  void load_model(Scene& scene, const Path& path) override;
 
   [[nodiscard]] auto get_primary_framebuffer_handle() -> void* override;
 

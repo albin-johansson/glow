@@ -7,6 +7,7 @@
 #include "common/type/dispatcher.hpp"
 #include "common/type/math.hpp"
 #include "common/type/memory.hpp"
+#include "common/type/path.hpp"
 #include "graphics/graphics_api.hpp"
 
 namespace gravel {
@@ -31,6 +32,10 @@ class Backend {
   virtual void render_scene(const Scene& scene,
                             const Vec2& framebuffer_size,
                             Dispatcher& dispatcher) = 0;
+
+  virtual void set_environment_texture(Scene& scene, const Path& path) = 0;
+
+  virtual void load_model(Scene& scene, const Path& path) = 0;
 
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
 

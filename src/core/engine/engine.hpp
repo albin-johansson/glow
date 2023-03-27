@@ -8,6 +8,7 @@
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
 #include "common/type/memory.hpp"
+#include "common/type/path.hpp"
 #include "engine/engine_initializer.hpp"
 #include "graphics/graphics_api.hpp"
 #include "scene/scene.hpp"
@@ -24,6 +25,10 @@ class Engine final {
   void start();
 
   void set_backend(Unique<Backend> backend);
+
+  void set_environment_texture(const Path& path);
+
+  void load_model(const Path& path);
 
   [[nodiscard]] auto get_window() -> SDL_Window* { return mWindow; }
 

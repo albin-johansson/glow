@@ -410,6 +410,16 @@ void Engine::set_backend(Unique<Backend> backend)
   mBackend = std::move(backend);
 }
 
+void Engine::set_environment_texture(const Path& path)
+{
+  mBackend->set_environment_texture(mScene, path);
+}
+
+void Engine::load_model(const Path& path)
+{
+  mBackend->load_model(mScene, path);
+}
+
 auto Engine::query_counter() const -> float64
 {
   return static_cast<float64>(SDL_GetPerformanceCounter()) / mCounterFreq;

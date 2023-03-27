@@ -1,5 +1,6 @@
 #include "opengl_backend.hpp"
 
+#include <fmt/format.h>
 #include <glad/glad.h>
 #include <imgui_impl_sdl2.h>
 
@@ -28,11 +29,6 @@ namespace gravel::gl {
 OpenGLBackend::OpenGLBackend(SDL_Window* window)
     : mRenderer {window}
 {
-}
-
-void OpenGLBackend::load_environment_texture(const Path& path)
-{
-  mEnvTexture = Texture2D::load_rgb_f32(path);
 }
 
 void OpenGLBackend::stop()
@@ -189,6 +185,22 @@ void OpenGLBackend::render_models(const Scene& scene,
   GRAVEL_GL_CHECK_ERRORS();
 
   mRenderer.unbind_shading_program();
+}
+
+void OpenGLBackend::set_environment_texture([[maybe_unused]] Scene& scene,
+                                            const Path& path)
+{
+  mEnvTexture = Texture2D::load_rgb_f32(path);
+}
+
+void OpenGLBackend::load_model(Scene& scene, const Path& path)
+{
+  static int index = 0;
+
+  const auto model_entity = scene.make_node(fmt::format("Model {}", index));
+  assign_model(scene.get_registry(), model_entity, path);
+
+  ++index;
 }
 
 auto OpenGLBackend::get_primary_framebuffer_handle() -> void*

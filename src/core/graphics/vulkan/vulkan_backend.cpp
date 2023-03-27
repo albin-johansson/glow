@@ -160,8 +160,19 @@ void VulkanBackend::render_scene(const Scene& scene,
 
   // TODO render models
 
-
   vkCmdEndRenderPass(command_buffer);
+}
+
+void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,
+                                            [[maybe_unused]] const Path& path)
+{
+  // TODO
+}
+
+void VulkanBackend::load_model([[maybe_unused]] Scene& scene,
+                               [[maybe_unused]] const Path& path)
+{
+  // TODO
 }
 
 auto VulkanBackend::get_primary_framebuffer_handle() -> void*
