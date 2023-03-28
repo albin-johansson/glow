@@ -62,14 +62,13 @@ class VulkanBackend final : public Backend {
   VkPipelineCache mPipelineCache {VK_NULL_HANDLE};
   ShadingPipeline mShadingPipeline;
   VkCommandPool mCommandPool {VK_NULL_HANDLE};
+  Allocator mAllocator;
 
   Vector<VkCommandBuffer> mCommandBuffers;
   Vector<VkSemaphore> mImageAvailableSemaphores;
   Vector<VkSemaphore> mRenderFinishedSemaphores;
   Vector<VkFence> mInFlightFences;
   usize mFrameIndex {0};
-
-  Allocator mAllocator;
 
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};

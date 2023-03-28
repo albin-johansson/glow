@@ -16,8 +16,15 @@ class Allocator final {
 
   ~Allocator();
 
+  [[nodiscard]] auto get() -> VmaAllocator { return mAllocator; }
+
  private:
   VmaAllocator mAllocator;
+};
+
+/// Context component for tracking the allocator to use when creating buffers, etc.
+struct AllocatorContext final {
+  VmaAllocator allocator {VK_NULL_HANDLE};
 };
 
 }  // namespace gravel::vlk

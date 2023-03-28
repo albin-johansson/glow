@@ -66,6 +66,9 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
+  auto& allocator_context = scene.add<AllocatorContext>();
+  allocator_context.allocator = mAllocator.get();
+
   prepare_imgui_for_vulkan();
 
   VkPhysicalDeviceProperties gpu_properties {};
