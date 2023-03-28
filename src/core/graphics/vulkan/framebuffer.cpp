@@ -26,7 +26,7 @@ auto create_framebuffer(VkDevice device,
       .layers = 1,
   };
 
-  VkFramebuffer framebuffer {VK_NULL_HANDLE};
+  VkFramebuffer framebuffer = VK_NULL_HANDLE;
   GRAVEL_VK_CALL(vkCreateFramebuffer(device, &create_info, nullptr, &framebuffer),
                  "[VK] Could not create framebuffer");
 

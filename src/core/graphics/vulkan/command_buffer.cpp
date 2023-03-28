@@ -17,7 +17,7 @@ auto create_command_pool(VkDevice device, VkPhysicalDevice gpu, VkSurfaceKHR sur
       .queueFamilyIndex = queue_family_indices.graphics_family.value(),
   };
 
-  VkCommandPool command_pool {VK_NULL_HANDLE};
+  VkCommandPool command_pool = VK_NULL_HANDLE;
   GRAVEL_VK_CALL(vkCreateCommandPool(device, &create_info, nullptr, &command_pool),
                  "[VK] Could not create command pool");
 

@@ -132,7 +132,7 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
   const auto color_blend_attachment_state =
       create_pipeline_color_blend_attachment_state(false);
 
-  const VkPipelineColorBlendStateCreateInfo color_blend_state_create_info {
+  const VkPipelineColorBlendStateCreateInfo color_blend_state {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 
       .logicOpEnable = VK_FALSE,
@@ -156,7 +156,7 @@ void ShadingPipeline::create_pipeline(VkRenderPass render_pass,
       .pRasterizationState = &rasterization_state,
       .pMultisampleState = &multisample_state,
       .pDepthStencilState = &depth_stencil_state,
-      .pColorBlendState = &color_blend_state_create_info,
+      .pColorBlendState = &color_blend_state,
       .pDynamicState = &dynamic_state,
 
       .layout = mPipelineLayout,

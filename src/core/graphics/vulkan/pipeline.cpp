@@ -17,7 +17,7 @@ auto create_pipeline_cache(VkDevice device) -> VkPipelineCache
       .pInitialData = nullptr,
   };
 
-  VkPipelineCache cache {VK_NULL_HANDLE};
+  VkPipelineCache cache = VK_NULL_HANDLE;
   GRAVEL_VK_CALL(vkCreatePipelineCache(device, &create_info, nullptr, &cache),
                  "[VK] Could not create pipeline cache");
 
