@@ -60,9 +60,6 @@ void OpenGLBackend::on_init(Scene& scene)
 
   auto& camera_context = scene.get<CameraContext>();
   camera_context.active_camera = camera_entity;
-
-
-
 }
 
 void OpenGLBackend::on_event(const SDL_Event& event)
@@ -74,9 +71,10 @@ void OpenGLBackend::on_event(const SDL_Event& event)
   }
 }
 
-void OpenGLBackend::begin_frame()
+auto OpenGLBackend::begin_frame() -> Result
 {
   mRenderer.begin_frame();
+  return kSuccess;
 }
 
 void OpenGLBackend::end_frame()

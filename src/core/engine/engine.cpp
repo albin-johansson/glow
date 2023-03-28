@@ -200,7 +200,10 @@ void Engine::update_camera_position(const float32 dt)
 
 void Engine::render()
 {
-  mBackend->begin_frame();
+  if (mBackend->begin_frame().failed()) {
+    spdlog::error("[Engine] Failed to begin frame");
+    return;
+  }
 
   update_dock_space(mRestoreLayout);
 

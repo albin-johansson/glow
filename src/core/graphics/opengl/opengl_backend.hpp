@@ -30,7 +30,7 @@ class OpenGLBackend final : public Backend {
 
   void on_event(const SDL_Event& event) override;
 
-  void begin_frame() override;
+  auto begin_frame() -> Result override;
 
   void end_frame() override;
 

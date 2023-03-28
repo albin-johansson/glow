@@ -104,7 +104,7 @@ void VulkanBackend::on_event(const SDL_Event& event)
   }
 }
 
-void VulkanBackend::begin_frame()
+auto VulkanBackend::begin_frame() -> Result
 {
   // Wait until the previous frame has finished
   wait_and_then_reset_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
@@ -115,6 +115,7 @@ void VulkanBackend::begin_frame()
   VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
   reset_command_buffer(command_buffer);
   begin_command_buffer(command_buffer);
+  return kSuccess;
 }
 
 void VulkanBackend::end_frame()

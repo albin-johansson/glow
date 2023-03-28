@@ -4,6 +4,7 @@
 
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
+#include "common/result.hpp"
 #include "common/type/dispatcher.hpp"
 #include "common/type/math.hpp"
 #include "common/type/memory.hpp"
@@ -25,7 +26,7 @@ class Backend {
 
   virtual void on_event(const SDL_Event& event) = 0;
 
-  virtual void begin_frame() = 0;
+  virtual auto begin_frame() -> Result = 0;
 
   virtual void end_frame() = 0;
 
