@@ -98,17 +98,21 @@ Instance::Instance(SDL_Window* window)
   GRAVEL_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &mInstance),
                  "[VK] Could not create instance");
 
-  mCreateDebugMessenger = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-      vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT"));
-  mDestroyDebugMessenger = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-      vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT"));
+  if constexpr (kDebugBuild) {
+    mCreateDebugMessenger = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+        vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT"));
+    mDestroyDebugMessenger = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+        vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT"));
 
-  create_debug_messenger();
+    create_debug_messenger();
+  }
 }
 
 Instance::~Instance()
 {
-  mDestroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
+  if constexpr (kDebugBuild) {
+    mDestroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
+  }
   vkDestroyInstance(mInstance, nullptr);
 }
 
