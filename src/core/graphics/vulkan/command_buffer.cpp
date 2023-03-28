@@ -52,17 +52,23 @@ void reset_command_buffer(VkCommandBuffer command_buffer)
                  "[VK] Could not reset command buffer");
 }
 
-void begin_command_buffer(VkCommandBuffer command_buffer)
+void begin_command_buffer(VkCommandBuffer command_buffer,
+                          const VkCommandBufferUsageFlags flags)
 {
   const VkCommandBufferBeginInfo command_buffer_begin_info {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
       .pNext = nullptr,
-      .flags = 0,
+      .flags = flags,
       .pInheritanceInfo = nullptr,
   };
 
   GRAVEL_VK_CALL(vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info),
                  "[VK] Could not begin command buffer");
+}
+
+void end_command_buffer(VkCommandBuffer command_buffer)
+{
+  GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
 }
 
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent)

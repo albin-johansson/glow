@@ -4,18 +4,21 @@
 #include <cstring>    // memcpy
 
 #include "common/debug/assert.hpp"
+#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/util.hpp"
 
 namespace gravel::vlk {
 
 Buffer::Buffer(VmaAllocator allocator,
                const uint64 size,
+               const VkBufferUsageFlags buffer_usage,
                const VkSharingMode sharing_mode,
-               const VkBufferUsageFlagBits buffer_usage,
+               const VkMemoryPropertyFlags memory_properties,
+               const VmaAllocationCreateFlags allocation_flags,
                const VmaMemoryUsage memory_usage)
     : mAllocator {allocator}
 {
-  const VkBufferCreateInfo buffer_create_info {
+  const VkBufferCreateInfo buffer_info {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
       .pNext = nullptr,
       .flags = 0,
@@ -29,10 +32,10 @@ Buffer::Buffer(VmaAllocator allocator,
       .pQueueFamilyIndices = nullptr,
   };
 
-  const VmaAllocationCreateInfo allocation_create_info {
-      .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
+  const VmaAllocationCreateInfo allocation_info {
+      .flags = allocation_flags,
       .usage = memory_usage,
-      .requiredFlags = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+      .requiredFlags = memory_properties,
       .memoryTypeBits = 0,
       .pool = nullptr,
       .pUserData = nullptr,
@@ -40,12 +43,42 @@ Buffer::Buffer(VmaAllocator allocator,
   };
 
   GRAVEL_VK_CALL(vmaCreateBuffer(mAllocator,
-                                 &buffer_create_info,
-                                 &allocation_create_info,
+                                 &buffer_info,
+                                 &allocation_info,
                                  &mBuffer,
                                  &mAllocation,
                                  nullptr),
                  "[VK] Could not create buffer");
+}
+
+auto Buffer::staging(VmaAllocator allocator,
+                     const uint64 size,
+                     const VkBufferUsageFlags buffer_usage,
+                     const VkSharingMode sharing_mode) -> Buffer
+{
+  const auto memory_properties =
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+  return Buffer {allocator,
+                 size,
+                 buffer_usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                 sharing_mode,
+                 memory_properties,
+                 VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
+                 VMA_MEMORY_USAGE_AUTO};
+}
+
+auto Buffer::gpu(VmaAllocator allocator,
+                 const uint64 size,
+                 const VkBufferUsageFlags buffer_usage,
+                 const VkSharingMode sharing_mode) -> Buffer
+{
+  return Buffer {allocator,
+                 size,
+                 buffer_usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                 sharing_mode,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 0,
+                 VMA_MEMORY_USAGE_CPU_TO_GPU};
 }
 
 Buffer::~Buffer()
@@ -110,6 +143,63 @@ auto Buffer::get_allocation_info() -> VmaAllocationInfo
   VmaAllocationInfo info {};
   vmaGetAllocationInfo(mAllocator, mAllocation, &info);
   return info;
+}
+
+void copy_buffer(VulkanContext& context,
+                 VkBuffer src_buffer,
+                 VkBuffer dst_buffer,
+                 const usize data_size)
+{
+  const auto command_buffers =
+      create_command_buffers(context.device, context.command_pool, 1);
+  VkCommandBuffer command_buffer = command_buffers.at(0);
+
+  begin_command_buffer(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+  const VkBufferCopy region {
+      .srcOffset = 0,
+      .dstOffset = 0,
+      .size = data_size,
+  };
+  vkCmdCopyBuffer(command_buffer, src_buffer, dst_buffer, 1, &region);
+
+  end_command_buffer(command_buffer);
+
+  const VkSubmitInfo submit_info {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .pNext = nullptr,
+
+      .waitSemaphoreCount = 0,
+      .pWaitSemaphores = nullptr,
+      .pWaitDstStageMask = nullptr,
+
+      .commandBufferCount = 1,
+      .pCommandBuffers = &command_buffer,
+
+      .signalSemaphoreCount = 0,
+      .pSignalSemaphores = nullptr,
+  };
+
+  GRAVEL_VK_CALL(vkQueueSubmit(context.graphics_queue, 1, &submit_info, VK_NULL_HANDLE),
+                 "[VK] Could not submit command buffer for buffer copy");
+  GRAVEL_VK_CALL(vkQueueWaitIdle(context.graphics_queue),
+                 "[VK] Could not wait for queue after buffer copy");
+
+  vkFreeCommandBuffers(context.device, context.command_pool, 1, &command_buffer);
+}
+
+auto create_buffer(VulkanContext& context,
+                   VkBufferUsageFlags usage,
+                   const void* data,
+                   const usize data_size) -> Buffer
+{
+  auto staging_buffer = Buffer::staging(context.allocator, data_size, usage);
+  staging_buffer.set_data(data, data_size);
+
+  auto buffer = Buffer::gpu(context.allocator, data_size, usage);
+  copy_buffer(context, staging_buffer.get(), buffer.get(), data_size);
+
+  return buffer;
 }
 
 }  // namespace gravel::vlk

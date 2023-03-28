@@ -8,6 +8,7 @@
 #include "graphics/camera.hpp"
 #include "graphics/renderer_info.hpp"
 #include "graphics/vulkan/command_buffer.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline.hpp"
 #include "graphics/vulkan/synchronization.hpp"
@@ -66,8 +67,13 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
-  auto& allocator_context = scene.add<AllocatorContext>();
-  allocator_context.allocator = mAllocator.get();
+  auto& vulkan_context = scene.add<VulkanContext>();
+  vulkan_context.gpu = mGPU;
+  vulkan_context.device = mDevice.get();
+  vulkan_context.graphics_queue = mDevice.get_graphics_queue();
+  vulkan_context.presentation_queue = mDevice.get_present_queue();
+  vulkan_context.command_pool = mCommandPool;
+  vulkan_context.allocator = mAllocator.get();
 
   prepare_imgui_for_vulkan();
 
@@ -146,7 +152,7 @@ void VulkanBackend::end_frame()
 
 
   vkCmdEndRenderPass(command_buffer);
-  GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
+  end_command_buffer(command_buffer);
 
   mDevice.submit_rendering_commands(command_buffer,
                                     mImageAvailableSemaphores.at(mFrameIndex),

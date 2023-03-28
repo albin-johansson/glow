@@ -17,7 +17,10 @@ namespace gravel::vlk {
 
 void reset_command_buffer(VkCommandBuffer command_buffer);
 
-void begin_command_buffer(VkCommandBuffer command_buffer);
+void begin_command_buffer(VkCommandBuffer command_buffer,
+                          VkCommandBufferUsageFlags flags = 0);
+
+void end_command_buffer(VkCommandBuffer command_buffer);
 
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent);
 
