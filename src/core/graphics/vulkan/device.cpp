@@ -97,9 +97,9 @@ void Device::submit_rendering_commands(VkCommandBuffer command_buffer,
                  "[VK] Could not submit command buffer to graphics queue");
 }
 
-void Device::present_swapchain_image(VkSwapchainKHR swapchain,
+auto Device::present_swapchain_image(VkSwapchainKHR swapchain,
                                      const uint32 swapchain_image_index,
-                                     VkSemaphore render_finished_semaphore)
+                                     VkSemaphore render_finished_semaphore) -> VkResult
 {
   const VkPresentInfoKHR present_info {
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
@@ -117,8 +117,7 @@ void Device::present_swapchain_image(VkSwapchainKHR swapchain,
       .pResults = nullptr,
   };
 
-  GRAVEL_VK_CALL(vkQueuePresentKHR(mPresentQueue, &present_info),
-                 "[VK] Could not present swapchain image");
+  return vkQueuePresentKHR(mPresentQueue, &present_info);
 }
 
 }  // namespace gravel::vlk

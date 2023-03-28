@@ -102,15 +102,34 @@ void VulkanBackend::on_event(const SDL_Event& event)
   if (event.type == SDL_QUIT) {
     mQuit = true;
   }
+  else if (event.type == SDL_WINDOWEVENT) {
+    if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
+        event.window.event == SDL_WINDOWEVENT_RESIZED) {
+      mResizedFramebuffer = true;
+    }
+  }
 }
 
 auto VulkanBackend::begin_frame() -> Result
 {
   // Wait until the previous frame has finished
-  wait_and_then_reset_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
+  wait_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
 
   // Acquire an image from the swapchain
-  mSwapchain.acquire_next_image(mImageAvailableSemaphores.at(mFrameIndex));
+  const auto acquire_image_result =
+      mSwapchain.acquire_next_image(mImageAvailableSemaphores.at(mFrameIndex));
+
+  if (acquire_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
+    mSwapchain.recreate(mRenderPass.get());
+    return kFailure;
+  }
+  else if (acquire_image_result != VK_SUCCESS &&
+           acquire_image_result != VK_SUBOPTIMAL_KHR) {
+    throw Error {"[VK] Could not acquire next swapchain image"};
+  }
+
+  // The fence is only reset when we submit useful work
+  reset_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
 
   VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
   reset_command_buffer(command_buffer);
@@ -121,20 +140,29 @@ auto VulkanBackend::begin_frame() -> Result
 void VulkanBackend::end_frame()
 {
   VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
+
+
+  vkCmdEndRenderPass(command_buffer);
   GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
 
-  VkSemaphore image_available_semaphore = mImageAvailableSemaphores.at(mFrameIndex);
-  VkSemaphore render_finished_semaphore = mRenderFinishedSemaphores.at(mFrameIndex);
-  VkFence in_flight_fence = mInFlightFences.at(mFrameIndex);
-
   mDevice.submit_rendering_commands(command_buffer,
-                                    image_available_semaphore,
-                                    render_finished_semaphore,
-                                    in_flight_fence);
+                                    mImageAvailableSemaphores.at(mFrameIndex),
+                                    mRenderFinishedSemaphores.at(mFrameIndex),
+                                    mInFlightFences.at(mFrameIndex));
 
-  mDevice.present_swapchain_image(mSwapchain.get(),
-                                  mSwapchain.get_image_index(),
-                                  render_finished_semaphore);
+  const auto present_result =
+      mDevice.present_swapchain_image(mSwapchain.get(),
+                                      mSwapchain.get_image_index(),
+                                      mRenderFinishedSemaphores.at(mFrameIndex));
+
+  if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
+      mResizedFramebuffer) {
+    mResizedFramebuffer = false;
+    mSwapchain.recreate(mRenderPass.get());
+  }
+  else if (present_result != VK_SUCCESS) {
+    throw Error {"[VK] Could not present swapchain image"};
+  }
 
   mFrameIndex = (mFrameIndex + 1) % kMaxFramesInFlight;
 }
@@ -161,7 +189,6 @@ void VulkanBackend::render_scene(const Scene& scene,
 
   // TODO render models
 
-  vkCmdEndRenderPass(command_buffer);
 }
 
 void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,

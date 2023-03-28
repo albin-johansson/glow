@@ -23,9 +23,9 @@ class Device final {
                                  VkFence in_flight_fence);
 
   /// Presents a swapchain image to the presentation queue.
-  void present_swapchain_image(VkSwapchainKHR swapchain,
+  auto present_swapchain_image(VkSwapchainKHR swapchain,
                                uint32 swapchain_image_index,
-                               VkSemaphore render_finished_semaphore);
+                               VkSemaphore render_finished_semaphore) -> VkResult;
 
   [[nodiscard]] auto get() -> VkDevice { return mDevice; }
   [[nodiscard]] auto get_graphics_queue() -> VkQueue { return mGraphicsQueue; }

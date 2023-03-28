@@ -21,9 +21,11 @@ class Swapchain final {
 
   ~Swapchain();
 
+  void recreate(VkRenderPass render_pass);
+
   void create_framebuffers(VkRenderPass render_pass);
 
-  void acquire_next_image(VkSemaphore semaphore);
+  auto acquire_next_image(VkSemaphore semaphore) -> VkResult;
 
   [[nodiscard]] auto get_current_framebuffer() -> VkFramebuffer;
 
@@ -33,7 +35,10 @@ class Swapchain final {
   [[nodiscard]] auto get_image_index() const -> uint32 { return mImageIndex; }
 
  private:
+  SDL_Window* mWindow {nullptr};
+  VkPhysicalDevice mGPU {VK_NULL_HANDLE};
   VkDevice mDevice {VK_NULL_HANDLE};
+  VkSurfaceKHR mSurface {VK_NULL_HANDLE};
   VkSwapchainKHR mSwapchain {VK_NULL_HANDLE};
   VkExtent2D mImageExtent {};
   VkFormat mImageFormat {};
@@ -43,7 +48,10 @@ class Swapchain final {
   uint32 mImageIndex {};
 
   void destroy_framebuffers();
+  void destroy_image_views();
+  void destroy_swapchain();
 
+  void create_swapchain();
   void create_image_views();
 };
 

@@ -4,8 +4,11 @@
 
 namespace gravel::vlk {
 
-/// Waits on a fence to get signaled, and subsequently reset it.
-void wait_and_then_reset_fence(VkDevice device, VkFence fence);
+/// Waits on a fence to get signaled.
+void wait_fence(VkDevice device, VkFence fence);
+
+/// Resets a fence.
+void reset_fence(VkDevice device, VkFence fence);
 
 /// Creates a binary semaphore, for GPU-side synchronization.
 [[nodiscard]] auto create_semaphore(VkDevice device) -> VkSemaphore;

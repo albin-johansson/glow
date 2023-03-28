@@ -72,6 +72,7 @@ class VulkanBackend final : public Backend {
   Allocator mAllocator;
 
   bool mQuit {false};
+  bool mResizedFramebuffer : 1 {false};
 
   void prepare_imgui_for_vulkan();
 };

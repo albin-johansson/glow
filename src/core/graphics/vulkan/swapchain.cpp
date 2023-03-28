@@ -3,6 +3,8 @@
 #include <algorithm>  // clamp, min
 #include <limits>     // numeric_limits
 
+#include <spdlog/spdlog.h>
+
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/physical_device.hpp"
@@ -84,84 +86,20 @@ Swapchain::Swapchain(SDL_Window* window,
                      VkPhysicalDevice gpu,
                      VkDevice device,
                      VkSurfaceKHR surface)
-    : mDevice {device}
+    : mWindow {window},
+      mGPU {gpu},
+      mDevice {device},
+      mSurface {surface}
 {
-  const auto queue_family_indices = get_queue_family_indices(gpu, surface);
-  const auto swapchain_support = get_swapchain_support(gpu, surface);
-
-  const uint32 queue_family_indices_arr[] = {
-      queue_family_indices.graphics_family.value(),
-      queue_family_indices.present_family.value(),
-  };
-
-  const auto surface_format = pick_swap_surface_format(swapchain_support.formats);
-  const auto present_mode = pick_swap_present_mode(swapchain_support.present_modes);
-
-  mImageFormat = surface_format.format;
-  mImageExtent = pick_swap_extent(window, swapchain_support.capabilities);
-
-  uint32 min_image_count = swapchain_support.capabilities.minImageCount + 1;
-  if (swapchain_support.capabilities.maxImageCount > 0) {
-    min_image_count =
-        std::min(min_image_count, swapchain_support.capabilities.maxImageCount);
-  }
-
-  VkSwapchainCreateInfoKHR swapchain_create_info {
-      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-
-      .surface = surface,
-      .minImageCount = min_image_count,
-
-      .imageFormat = mImageFormat,
-      .imageColorSpace = surface_format.colorSpace,
-      .imageExtent = mImageExtent,
-      .imageArrayLayers = 1,
-      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-
-      .preTransform = swapchain_support.capabilities.currentTransform,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-      .presentMode = present_mode,
-      .clipped = VK_TRUE,
-
-      .oldSwapchain = VK_NULL_HANDLE,
-  };
-
-  if (queue_family_indices.graphics_family != queue_family_indices.present_family) {
-    // In this case we opt for concurrent mode, so that images can be (easily) used across
-    // multiple queue families, since the graphics and present queues are distinct.
-    swapchain_create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-    swapchain_create_info.queueFamilyIndexCount = array_length(queue_family_indices_arr);
-    swapchain_create_info.pQueueFamilyIndices = queue_family_indices_arr;
-  }
-  else {
-    // Here we can safely opt for the exclusive mode, leading to the best performance.
-    swapchain_create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    swapchain_create_info.queueFamilyIndexCount = 0;
-    swapchain_create_info.pQueueFamilyIndices = nullptr;
-  }
-
-  mImageExtent = swapchain_create_info.imageExtent;
-  mImageFormat = swapchain_create_info.imageFormat;
-
-  GRAVEL_VK_CALL(vkCreateSwapchainKHR(device,  //
-                                      &swapchain_create_info,
-                                      nullptr,
-                                      &mSwapchain),
-                 "[VK] Could not create swapchain");
-
-  mImages = get_swapchain_images(device, mSwapchain);
+  create_swapchain();
   create_image_views();
 }
 
 Swapchain::~Swapchain()
 {
   destroy_framebuffers();
-
-  for (VkImageView image_view : mImageViews) {
-    vkDestroyImageView(mDevice, image_view, nullptr);
-  }
-
-  vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
+  destroy_image_views();
+  destroy_swapchain();
 }
 
 void Swapchain::destroy_framebuffers()
@@ -169,6 +107,20 @@ void Swapchain::destroy_framebuffers()
   for (VkFramebuffer framebuffer : mFramebuffers) {
     vkDestroyFramebuffer(mDevice, framebuffer, nullptr);
   }
+
+  mFramebuffers.clear();
+}
+
+void Swapchain::destroy_image_views()
+{
+  for (VkImageView image_view : mImageViews) {
+    vkDestroyImageView(mDevice, image_view, nullptr);
+  }
+}
+
+void Swapchain::destroy_swapchain()
+{
+  vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
 }
 
 void Swapchain::create_image_views()
@@ -208,9 +160,103 @@ void Swapchain::create_image_views()
   }
 }
 
+void Swapchain::recreate(VkRenderPass render_pass)
+{
+  spdlog::debug("[VK] Recreating swapchain");
+
+  int width = 0;
+  int height = 0;
+  SDL_GetWindowSizeInPixels(mWindow, &width, &height);
+
+  while (width == 0 || height == 0) {
+    SDL_GetWindowSizeInPixels(mWindow, &width, &height);
+    SDL_WaitEvent(nullptr);
+  }
+
+  // Avoid touching resources that may still be in use
+  vkDeviceWaitIdle(mDevice);
+
+  // Destroy existing resources
+  destroy_framebuffers();
+  destroy_image_views();
+  destroy_swapchain();
+
+  // Recreate the resources
+  create_swapchain();
+  create_image_views();
+  create_framebuffers(render_pass);
+}
+
+void Swapchain::create_swapchain()
+{
+  const auto queue_family_indices = get_queue_family_indices(mGPU, mSurface);
+  const auto swapchain_support = get_swapchain_support(mGPU, mSurface);
+
+  const uint32 queue_family_indices_arr[] = {
+      queue_family_indices.graphics_family.value(),
+      queue_family_indices.present_family.value(),
+  };
+
+  const auto surface_format = pick_swap_surface_format(swapchain_support.formats);
+  const auto present_mode = pick_swap_present_mode(swapchain_support.present_modes);
+
+  mImageFormat = surface_format.format;
+  mImageExtent = pick_swap_extent(mWindow, swapchain_support.capabilities);
+
+  uint32 min_image_count = swapchain_support.capabilities.minImageCount + 1;
+  if (swapchain_support.capabilities.maxImageCount > 0) {
+    min_image_count =
+        std::min(min_image_count, swapchain_support.capabilities.maxImageCount);
+  }
+
+  VkSwapchainCreateInfoKHR create_info {
+      .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+
+      .surface = mSurface,
+      .minImageCount = min_image_count,
+
+      .imageFormat = mImageFormat,
+      .imageColorSpace = surface_format.colorSpace,
+      .imageExtent = mImageExtent,
+      .imageArrayLayers = 1,
+      .imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+
+      .preTransform = swapchain_support.capabilities.currentTransform,
+      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .presentMode = present_mode,
+      .clipped = VK_TRUE,
+
+      .oldSwapchain = VK_NULL_HANDLE,
+  };
+
+  if (queue_family_indices.graphics_family != queue_family_indices.present_family) {
+    // In this case we opt for concurrent mode, so that images can be (easily) used across
+    // multiple queue families, since the graphics and present queues are distinct.
+    create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+    create_info.queueFamilyIndexCount = array_length(queue_family_indices_arr);
+    create_info.pQueueFamilyIndices = queue_family_indices_arr;
+  }
+  else {
+    // Here we can safely opt for the exclusive mode, leading to the best performance.
+    create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    create_info.queueFamilyIndexCount = 0;
+    create_info.pQueueFamilyIndices = nullptr;
+  }
+
+  mImageExtent = create_info.imageExtent;
+  mImageFormat = create_info.imageFormat;
+
+  GRAVEL_VK_CALL(vkCreateSwapchainKHR(mDevice, &create_info, nullptr, &mSwapchain),
+                 "[VK] Could not create swapchain");
+
+  mImages = get_swapchain_images(mDevice, mSwapchain);
+}
+
 void Swapchain::create_framebuffers(VkRenderPass render_pass)
 {
-  destroy_framebuffers();
+  if (!mFramebuffers.empty()) {
+    destroy_framebuffers();
+  }
 
   mFramebuffers.clear();
   mFramebuffers.reserve(mImageViews.size());
@@ -222,15 +268,14 @@ void Swapchain::create_framebuffers(VkRenderPass render_pass)
   }
 }
 
-void Swapchain::acquire_next_image(VkSemaphore semaphore)
+auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
 {
-  GRAVEL_VK_CALL(vkAcquireNextImageKHR(mDevice,
-                                       mSwapchain,
-                                       UINT64_MAX,
-                                       semaphore,
-                                       VK_NULL_HANDLE,
-                                       &mImageIndex),
-                 "[VK] Could not acquire next swapchain image");
+  return vkAcquireNextImageKHR(mDevice,
+                               mSwapchain,
+                               UINT64_MAX,
+                               semaphore,
+                               VK_NULL_HANDLE,
+                               &mImageIndex);
 }
 
 auto Swapchain::get_current_framebuffer() -> VkFramebuffer
