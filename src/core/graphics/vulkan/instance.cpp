@@ -37,13 +37,7 @@ auto VKAPI_ATTR debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT se
 {
   auto level = spdlog::level::debug;
 
-  if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) {
-    level = spdlog::level::debug;
-  }
-  else if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) {
-    level = spdlog::level::info;
-  }
-  else if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
+  if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
     level = spdlog::level::warn;
   }
   else if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
