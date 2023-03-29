@@ -71,6 +71,8 @@ void end_command_buffer(VkCommandBuffer command_buffer)
   GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
 }
 
+namespace cmd {
+
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent)
 {
   const VkViewport viewport {
@@ -97,4 +99,19 @@ void set_scissor(VkCommandBuffer command_buffer, VkOffset2D offset, VkExtent2D e
   vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 }
 
+void copy_buffer(VkCommandBuffer command_buffer,
+                 VkBuffer src,
+                 VkBuffer dst,
+                 const usize data_size)
+{
+  const VkBufferCopy region {
+      .srcOffset = 0,
+      .dstOffset = 0,
+      .size = data_size,
+  };
+
+  vkCmdCopyBuffer(command_buffer, src, dst, 1, &region);
+}
+
+}  // namespace cmd
 }  // namespace gravel::vlk

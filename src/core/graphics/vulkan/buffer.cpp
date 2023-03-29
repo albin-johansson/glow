@@ -155,14 +155,7 @@ void copy_buffer(VulkanContext& context,
   VkCommandBuffer command_buffer = command_buffers.at(0);
 
   begin_command_buffer(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-
-  const VkBufferCopy region {
-      .srcOffset = 0,
-      .dstOffset = 0,
-      .size = data_size,
-  };
-  vkCmdCopyBuffer(command_buffer, src_buffer, dst_buffer, 1, &region);
-
+  cmd::copy_buffer(command_buffer, src_buffer, dst_buffer, data_size);
   end_command_buffer(command_buffer);
 
   const VkSubmitInfo submit_info {

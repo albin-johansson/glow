@@ -193,8 +193,8 @@ void VulkanBackend::render_scene(const Scene& scene,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     mShadingPipeline.get());
 
-  set_viewport(command_buffer, swapchain_image_extent);
-  set_scissor(command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
+  cmd::set_viewport(command_buffer, swapchain_image_extent);
+  cmd::set_scissor(command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
   // TODO render models
 

@@ -22,8 +22,16 @@ void begin_command_buffer(VkCommandBuffer command_buffer,
 
 void end_command_buffer(VkCommandBuffer command_buffer);
 
+namespace cmd {
+
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent);
 
 void set_scissor(VkCommandBuffer command_buffer, VkOffset2D offset, VkExtent2D extent);
 
+void copy_buffer(VkCommandBuffer command_buffer,
+                 VkBuffer src,
+                 VkBuffer dst,
+                 usize data_size);
+
+}  // namespace cmd
 }  // namespace gravel::vlk
