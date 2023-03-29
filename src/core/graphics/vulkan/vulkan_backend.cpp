@@ -5,6 +5,7 @@
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
 
+#include "common/debug/assert.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/renderer_info.hpp"
 #include "graphics/vulkan/command_buffer.hpp"
@@ -17,11 +18,25 @@
 #include "scene/transform.hpp"
 
 namespace gravel::vlk {
+namespace {
+
+[[nodiscard]] auto select_gpu() -> VkPhysicalDevice
+{
+  GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
+  GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
+
+  VkPhysicalDevice gpu = get_suitable_physical_device(get_instance(), get_surface());
+  set_gpu(gpu);
+
+  return gpu;
+}
+
+}  // namespace
 
 VulkanBackend::VulkanBackend(SDL_Window* window)
     : mInstance {window},
       mSurface {window, mInstance.get()},
-      mGPU {get_suitable_physical_device(mInstance.get(), mSurface.get())},
+      mGPU {select_gpu()},
       mDevice {mGPU, mSurface.get()},
       mSwapchain {window, mGPU, mDevice.get(), mSurface.get()},
       mRenderPass {mDevice.get(), mSwapchain.get_image_format()},

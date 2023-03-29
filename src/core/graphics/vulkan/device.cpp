@@ -3,6 +3,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/set.hpp"
 #include "common/type/vector.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
 
@@ -58,9 +59,13 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
 
   GRAVEL_VK_CALL(vkCreateDevice(gpu, &device_create_info, nullptr, &mDevice),
                  "[VK] Could not create logical device");
+  set_device(mDevice);
 
   vkGetDeviceQueue(mDevice, graphics_family_index, 0, &mGraphicsQueue);
   vkGetDeviceQueue(mDevice, present_family_index, 0, &mPresentQueue);
+
+  set_graphics_queue(mGraphicsQueue);
+  set_presentation_queue(mPresentQueue);
 }
 
 Device::~Device()

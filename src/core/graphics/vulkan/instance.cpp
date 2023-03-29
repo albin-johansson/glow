@@ -5,6 +5,7 @@
 
 #include "common/debug/error.hpp"
 #include "common/primitives.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
 namespace gravel::vlk {
@@ -97,6 +98,7 @@ Instance::Instance(SDL_Window* window)
 
   GRAVEL_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &mInstance),
                  "[VK] Could not create instance");
+  set_instance(mInstance);
 
   if constexpr (kDebugBuild) {
     mCreateDebugMessenger = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
