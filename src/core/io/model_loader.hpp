@@ -39,7 +39,7 @@ struct MaterialData final {
 struct MeshData final {
   Mat4 transform {1.0f};
   Vector<Vertex> vertices;
-  Vector<uint> indices;
+  Vector<uint32> indices;
   usize material_id {};
 };
 

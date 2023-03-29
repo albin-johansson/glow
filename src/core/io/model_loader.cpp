@@ -137,7 +137,7 @@ namespace {
     const auto& face = mesh->mFaces[face_idx];
 
     for (uint index_idx = 0; index_idx < face.mNumIndices; ++index_idx) {
-      mesh_data.indices.push_back(face.mIndices[index_idx]);
+      mesh_data.indices.push_back(static_cast<uint32>(face.mIndices[index_idx]));
     }
   }
 
