@@ -81,6 +81,20 @@ auto Buffer::gpu(VmaAllocator allocator,
                  VMA_MEMORY_USAGE_CPU_TO_GPU};
 }
 
+auto Buffer::uniform(VmaAllocator allocator,
+                     const uint64 size,
+                     const VkSharingMode sharing_mode) -> Buffer
+{
+  return Buffer {
+      allocator,
+      size,
+      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+      sharing_mode,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+      VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+      VMA_MEMORY_USAGE_AUTO};
+}
+
 Buffer::~Buffer()
 {
   dispose();

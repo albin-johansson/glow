@@ -35,6 +35,12 @@ class Buffer final {
                                 VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE)
       -> Buffer;
 
+  /// Creates a uniform buffer that remains mapped for its entire lifetime.
+  [[nodiscard]] static auto uniform(
+      VmaAllocator allocator,
+      uint64 size,
+      VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE) -> Buffer;
+
   ~Buffer();
 
   Buffer(Buffer&& other) noexcept;
