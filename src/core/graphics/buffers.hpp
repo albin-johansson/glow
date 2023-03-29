@@ -1,12 +1,9 @@
 #pragma once
 
-#include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
 
-namespace gravel::gl {
-
-GRAVEL_FORWARD_DECLARE_S(Material);
+namespace gravel {
 
 /// This struct corresponds to a std140 layout uniform block.
 struct EnvironmentBuffer final {
@@ -23,8 +20,6 @@ struct MatrixBuffer final {
   Mat4 mv {};      ///< Model-view matrix.
   Mat4 mvp {};     ///< Model-view-projection matrix.
   Mat4 normal {};  ///< Normal matrix.
-
-  void update(const Mat4& model, const Mat4& view, const Mat4& projection);
 };
 
 /// This struct corresponds to a std140 layout uniform block.
@@ -37,8 +32,6 @@ struct MaterialBuffer final {
   int32 has_diffuse_tex {false};
   int32 has_specular_tex {false};
   int32 has_emission_tex {false};
-
-  void update(const Material& material);
 };
 
-}  // namespace gravel::gl
+}  // namespace gravel

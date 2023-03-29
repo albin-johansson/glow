@@ -165,8 +165,19 @@ void OpenGLBackend::render_models(const Scene& scene,
       const auto& material = scene.get<Material>(mesh.material);
       const auto model_matrix = model_transform * mesh.transform;
 
-      mRenderer.get_matrix_buffer().update(model_matrix, view, projection);
-      mRenderer.get_material_buffer().update(material);
+      auto& matrix_buffer = mRenderer.get_matrix_buffer();
+      matrix_buffer.m = model_matrix;
+      matrix_buffer.mv = view * matrix_buffer.m;
+      matrix_buffer.mvp = projection * matrix_buffer.mv;
+      matrix_buffer.normal = glm::inverse(glm::transpose(matrix_buffer.mv));
+
+      auto& material_buffer = mRenderer.get_material_buffer();
+      material_buffer.ambient = Vec4 {material.ambient, 0};
+      material_buffer.diffuse = Vec4 {material.diffuse, 0};
+      material_buffer.specular = Vec4 {material.specular, 0};
+      material_buffer.emission = Vec4 {material.emission, 0};
+      material_buffer.has_diffuse_tex = material.diffuse_tex.has_value();
+      material_buffer.has_specular_tex = material.specular_tex.has_value();
 
       mRenderer.render_shaded_mesh(mesh, material);
     }

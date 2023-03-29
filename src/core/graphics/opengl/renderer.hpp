@@ -5,7 +5,7 @@
 #include "common/predef.hpp"
 #include "common/type/chrono.hpp"
 #include "common/type/math.hpp"
-#include "graphics/opengl/buffers.hpp"
+#include "graphics/buffers.hpp"
 #include "graphics/opengl/program.hpp"
 #include "graphics/opengl/quad.hpp"
 #include "graphics/opengl/uniform_buffer.hpp"

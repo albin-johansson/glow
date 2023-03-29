@@ -10,7 +10,6 @@
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 #include "engine/backend.hpp"
-#include "graphics/opengl/buffers.hpp"
 #include "graphics/opengl/framebuffer.hpp"
 #include "graphics/opengl/program.hpp"
 #include "graphics/opengl/renderer.hpp"
