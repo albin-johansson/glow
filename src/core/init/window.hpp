@@ -22,4 +22,6 @@ class Window final {
   Unique<SDL_Window, WindowDeleter> mWindow;
 };
 
+[[nodiscard]] auto get_window() noexcept -> SDL_Window*;
+
 }  // namespace gravel

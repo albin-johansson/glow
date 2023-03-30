@@ -17,6 +17,8 @@
 namespace gravel {
 namespace {
 
+inline SDL_Window* gWindow = nullptr;
+
 struct ObjectDeleter final {
   void operator()(void* obj) noexcept { SDL_UnloadObject(obj); }
 };
@@ -62,6 +64,7 @@ void use_win32_dark_title_bar(SDL_Window* window)
 void WindowDeleter::operator()(SDL_Window* window) noexcept
 {
   SDL_DestroyWindow(window);
+  gWindow = nullptr;
 }
 
 Window::Window(const GraphicsApi api)
@@ -76,10 +79,16 @@ Window::Window(const GraphicsApi api)
     throw Error {fmt::format("Could not create window: {}", SDL_GetError())};
   }
 
+  gWindow = mWindow.get();
   use_win32_dark_title_bar(mWindow.get());
 
   const auto title = fmt::format("Gravel [{}]", magic_enum::enum_name(api));
   SDL_SetWindowTitle(mWindow.get(), title.c_str());
+}
+
+auto get_window() noexcept -> SDL_Window*
+{
+  return gWindow;
 }
 
 }  // namespace gravel
