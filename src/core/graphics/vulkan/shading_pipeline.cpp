@@ -28,8 +28,8 @@ ShadingPipeline::ShadingPipeline(VkRenderPass render_pass,
   mMaterialUBOs.reserve(kMaxFramesInFlight);
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
-    mMatrixUBOs.push_back(Buffer::uniform(get_allocator(), sizeof(MatrixBuffer)));
-    mMaterialUBOs.push_back(Buffer::uniform(get_allocator(), sizeof(MaterialBuffer)));
+    mMatrixUBOs.push_back(Buffer::uniform(sizeof(MatrixBuffer)));
+    mMaterialUBOs.push_back(Buffer::uniform(sizeof(MaterialBuffer)));
   }
 
   create_descriptor_set_layout();

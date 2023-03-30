@@ -13,8 +13,7 @@ class Buffer final {
  public:
   GRAVEL_DELETE_COPY(Buffer);
 
-  Buffer(VmaAllocator allocator,
-         uint64 size,
+  Buffer(uint64 size,
          VkBufferUsageFlags buffer_usage,
          VkSharingMode sharing_mode,
          VkMemoryPropertyFlags memory_properties,
@@ -23,23 +22,25 @@ class Buffer final {
 
   /// Creates a staging buffer.
   [[nodiscard]] static auto staging(
-      VmaAllocator allocator,
       uint64 size,
       VkBufferUsageFlags buffer_usage,
       VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE) -> Buffer;
 
   /// Creates a GPU buffer that has to be updated with a staging buffer.
-  [[nodiscard]] static auto gpu(VmaAllocator allocator,
-                                uint64 size,
+  [[nodiscard]] static auto gpu(uint64 size,
                                 VkBufferUsageFlags buffer_usage,
                                 VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE)
       -> Buffer;
 
   /// Creates a uniform buffer that remains mapped for its entire lifetime.
   [[nodiscard]] static auto uniform(
-      VmaAllocator allocator,
       uint64 size,
       VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE) -> Buffer;
+
+  /// Creates an efficient buffer with the provided data (using a staging buffer).
+  [[nodiscard]] static auto create(VkBufferUsageFlags usage,
+                                   const void* data,
+                                   usize data_size) -> Buffer;
 
   ~Buffer();
 
@@ -56,7 +57,6 @@ class Buffer final {
   [[nodiscard]] auto get() -> VkBuffer { return mBuffer; }
 
  private:
-  VmaAllocator mAllocator {VK_NULL_HANDLE};
   VkBuffer mBuffer {VK_NULL_HANDLE};
   VmaAllocation mAllocation {VK_NULL_HANDLE};
 
@@ -66,15 +66,6 @@ class Buffer final {
 };
 
 /// Copies a buffer into another using the buffer copy draw command.
-void copy_buffer(VulkanContext& context,
-                 VkBuffer src_buffer,
-                 VkBuffer dst_buffer,
-                 usize data_size);
-
-/// Creates an efficient buffer with the provided data (using a temporary staging buffer).
-[[nodiscard]] auto create_buffer(VulkanContext& context,
-                                 VkBufferUsageFlags usage,
-                                 const void* data,
-                                 usize data_size) -> Buffer;
+void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, usize data_size);
 
 }  // namespace gravel::vlk
