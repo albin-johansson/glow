@@ -6,6 +6,7 @@
 #include "common/type/path.hpp"
 #include "common/type/string.hpp"
 #include "common/type/vector.hpp"
+#include "graphics/graphics_api.hpp"
 #include "graphics/vertex.hpp"
 
 namespace gravel {
@@ -49,6 +50,15 @@ struct ModelData final {
   HashMap<usize, MaterialData> materials;
 };
 
-[[nodiscard]] auto load_model_data(const Path& path) -> Maybe<ModelData>;
+/// Attempts to load a 3D model file.
+///
+/// \details
+/// The specified graphics API is used to determine how to adjust the model data,
+/// e.g. OpenGL and Vulkan uses different coordinate systems and texture coordinates,
+/// which this function will take care of.
+///
+/// \param path file path to the model file.
+/// \param api the graphics API that will be used to render the model.
+[[nodiscard]] auto load_model_data(const Path& path, GraphicsApi api) -> Maybe<ModelData>;
 
 }  // namespace gravel

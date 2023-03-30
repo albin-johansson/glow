@@ -165,13 +165,18 @@ void process_node(ModelData& model, const aiScene* scene, const aiNode* node)
 
 }  // namespace
 
-auto load_model_data(const Path& path) -> Maybe<ModelData>
+auto load_model_data(const Path& path, const GraphicsApi api) -> Maybe<ModelData>
 {
   const auto start_time = Clock::now();
 
   Assimp::Importer importer;
-  const auto* scene =
-      importer.ReadFile(path.string(), aiProcessPreset_TargetRealtime_MaxQuality);
+
+  auto flags = aiProcessPreset_TargetRealtime_MaxQuality;
+  if (api == GraphicsApi::Vulkan) {
+    flags |= aiProcess_ConvertToLeftHanded;
+  }
+
+  const auto* scene = importer.ReadFile(path.string(), flags);
 
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) {
     spdlog::error("[IO] Could not read 3D object file: {}", importer.GetErrorString());
