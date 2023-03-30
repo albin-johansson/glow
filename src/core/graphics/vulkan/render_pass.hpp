@@ -6,12 +6,14 @@
 
 namespace gravel::vlk {
 
+GRAVEL_FORWARD_DECLARE_C(Framebuffer);
+
 class RenderPass final {
  public:
   GRAVEL_DELETE_COPY(RenderPass);
   GRAVEL_DELETE_MOVE(RenderPass);
 
-  RenderPass(VkDevice device, VkFormat swapchain_image_format);
+  explicit RenderPass(VkFormat swapchain_image_format);
 
   ~RenderPass();
 
@@ -22,7 +24,6 @@ class RenderPass final {
   [[nodiscard]] auto get() -> VkRenderPass { return mRenderPass; }
 
  private:
-  VkDevice mDevice {VK_NULL_HANDLE};
   VkRenderPass mRenderPass {VK_NULL_HANDLE};
 };
 

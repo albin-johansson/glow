@@ -38,10 +38,10 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
       mSurface {window},
       mGPU {select_gpu()},
       mAllocator {},
-      mRenderPass {mDevice.get(), mSwapchain.get_image_format()},
       mPipelineCache {create_pipeline_cache(mDevice.get())},
       mShadingPipeline {mDevice.get(), mRenderPass.get(), mSwapchain.get_image_extent()},
       mCommandPool {create_command_pool(mDevice.get(), mGPU, mSurface.get())},
+      mRenderPass {mSwapchain.get_image_format()},
 {
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {

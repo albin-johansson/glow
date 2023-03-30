@@ -1,13 +1,14 @@
 #include "render_pass.hpp"
 
 #include "common/debug/error.hpp"
+#include "graphics/vulkan/context.hpp"
+#include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
 
-RenderPass::RenderPass(VkDevice device, const VkFormat swapchain_image_format)
-    : mDevice {device}
+RenderPass::RenderPass(const VkFormat swapchain_image_format)
 {
   const VkAttachmentDescription attachment_descriptions[] {
       VkAttachmentDescription {
@@ -80,7 +81,7 @@ RenderPass::RenderPass(VkDevice device, const VkFormat swapchain_image_format)
       .pDependencies = subpass_dependencies,
   };
 
-  GRAVEL_VK_CALL(vkCreateRenderPass(mDevice,  //
+  GRAVEL_VK_CALL(vkCreateRenderPass(get_device(),  //
                                     &render_pass_create_info,
                                     nullptr,
                                     &mRenderPass),
@@ -89,7 +90,7 @@ RenderPass::RenderPass(VkDevice device, const VkFormat swapchain_image_format)
 
 RenderPass::~RenderPass()
 {
-  vkDestroyRenderPass(mDevice, mRenderPass, nullptr);
+  vkDestroyRenderPass(get_device(), mRenderPass, nullptr);
 }
 
 void RenderPass::begin(VkCommandBuffer command_buffer,
