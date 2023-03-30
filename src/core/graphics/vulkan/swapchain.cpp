@@ -6,9 +6,11 @@
 #include <spdlog/spdlog.h>
 
 #include "common/debug/error.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
+#include "init/window.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
@@ -43,8 +45,7 @@ namespace {
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-[[nodiscard]] auto pick_swap_extent(SDL_Window* window,
-                                    const VkSurfaceCapabilitiesKHR& capabilities)
+[[nodiscard]] auto pick_swap_extent(const VkSurfaceCapabilitiesKHR& capabilities)
     -> VkExtent2D
 {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32>::max()) {
@@ -53,7 +54,7 @@ namespace {
   else {
     int width {};
     int height {};
-    SDL_GetWindowSizeInPixels(window, &width, &height);
+    SDL_GetWindowSizeInPixels(get_window(), &width, &height);
 
     VkExtent2D extent;
     extent.width = std::clamp(static_cast<uint32>(width),
@@ -82,14 +83,7 @@ namespace {
 
 }  // namespace
 
-Swapchain::Swapchain(SDL_Window* window,
-                     VkPhysicalDevice gpu,
-                     VkDevice device,
-                     VkSurfaceKHR surface)
-    : mWindow {window},
-      mGPU {gpu},
-      mDevice {device},
-      mSurface {surface}
+Swapchain::Swapchain()
 {
   create_swapchain();
   create_image_views();
@@ -105,7 +99,7 @@ Swapchain::~Swapchain()
 void Swapchain::destroy_framebuffers()
 {
   for (VkFramebuffer framebuffer : mFramebuffers) {
-    vkDestroyFramebuffer(mDevice, framebuffer, nullptr);
+    vkDestroyFramebuffer(get_device(), framebuffer, nullptr);
   }
 
   mFramebuffers.clear();
@@ -114,13 +108,13 @@ void Swapchain::destroy_framebuffers()
 void Swapchain::destroy_image_views()
 {
   for (VkImageView image_view : mImageViews) {
-    vkDestroyImageView(mDevice, image_view, nullptr);
+    vkDestroyImageView(get_device(), image_view, nullptr);
   }
 }
 
 void Swapchain::destroy_swapchain()
 {
-  vkDestroySwapchainKHR(mDevice, mSwapchain, nullptr);
+  vkDestroySwapchainKHR(get_device(), mSwapchain, nullptr);
 }
 
 void Swapchain::create_image_views()
@@ -153,7 +147,7 @@ void Swapchain::create_image_views()
     };
 
     auto& image_view = mImageViews.at(index);
-    GRAVEL_VK_CALL(vkCreateImageView(mDevice, &create_info, nullptr, &image_view),
+    GRAVEL_VK_CALL(vkCreateImageView(get_device(), &create_info, nullptr, &image_view),
                    "[VK] Could not create swapchain image view");
 
     ++index;
@@ -166,15 +160,15 @@ void Swapchain::recreate(VkRenderPass render_pass)
 
   int width = 0;
   int height = 0;
-  SDL_GetWindowSizeInPixels(mWindow, &width, &height);
+  SDL_GetWindowSizeInPixels(get_window(), &width, &height);
 
   while (width == 0 || height == 0) {
-    SDL_GetWindowSizeInPixels(mWindow, &width, &height);
+    SDL_GetWindowSizeInPixels(get_window(), &width, &height);
     SDL_WaitEvent(nullptr);
   }
 
   // Avoid touching resources that may still be in use
-  vkDeviceWaitIdle(mDevice);
+  vkDeviceWaitIdle(get_device());
 
   // Destroy existing resources
   destroy_framebuffers();
@@ -189,8 +183,8 @@ void Swapchain::recreate(VkRenderPass render_pass)
 
 void Swapchain::create_swapchain()
 {
-  const auto queue_family_indices = get_queue_family_indices(mGPU, mSurface);
-  const auto swapchain_support = get_swapchain_support(mGPU, mSurface);
+  const auto queue_family_indices = get_queue_family_indices(get_gpu(), get_surface());
+  const auto swapchain_support = get_swapchain_support(get_gpu(), get_surface());
 
   const uint32 queue_family_indices_arr[] = {
       queue_family_indices.graphics_family.value(),
@@ -201,7 +195,7 @@ void Swapchain::create_swapchain()
   const auto present_mode = pick_swap_present_mode(swapchain_support.present_modes);
 
   mImageFormat = surface_format.format;
-  mImageExtent = pick_swap_extent(mWindow, swapchain_support.capabilities);
+  mImageExtent = pick_swap_extent(swapchain_support.capabilities);
 
   uint32 min_image_count = swapchain_support.capabilities.minImageCount + 1;
   if (swapchain_support.capabilities.maxImageCount > 0) {
@@ -212,7 +206,7 @@ void Swapchain::create_swapchain()
   VkSwapchainCreateInfoKHR create_info {
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
 
-      .surface = mSurface,
+      .surface = get_surface(),
       .minImageCount = min_image_count,
 
       .imageFormat = mImageFormat,
@@ -246,10 +240,10 @@ void Swapchain::create_swapchain()
   mImageExtent = create_info.imageExtent;
   mImageFormat = create_info.imageFormat;
 
-  GRAVEL_VK_CALL(vkCreateSwapchainKHR(mDevice, &create_info, nullptr, &mSwapchain),
+  GRAVEL_VK_CALL(vkCreateSwapchainKHR(get_device(), &create_info, nullptr, &mSwapchain),
                  "[VK] Could not create swapchain");
 
-  mImages = get_swapchain_images(mDevice, mSwapchain);
+  mImages = get_swapchain_images(get_device(), mSwapchain);
 }
 
 void Swapchain::create_framebuffers(VkRenderPass render_pass)
@@ -263,14 +257,14 @@ void Swapchain::create_framebuffers(VkRenderPass render_pass)
 
   for (VkImageView image_view : mImageViews) {
     VkFramebuffer framebuffer =
-        create_framebuffer(mDevice, render_pass, image_view, mImageExtent);
+        create_framebuffer(get_device(), render_pass, image_view, mImageExtent);
     mFramebuffers.push_back(framebuffer);
   }
 }
 
 auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
 {
-  return vkAcquireNextImageKHR(mDevice,
+  return vkAcquireNextImageKHR(get_device(),
                                mSwapchain,
                                UINT64_MAX,
                                semaphore,

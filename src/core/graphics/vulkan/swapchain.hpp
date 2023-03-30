@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <vulkan/vulkan.h>
 
 #include "common/predef.hpp"
@@ -14,10 +13,7 @@ class Swapchain final {
   GRAVEL_DELETE_COPY(Swapchain);
   GRAVEL_DELETE_MOVE(Swapchain);
 
-  Swapchain(SDL_Window* window,
-            VkPhysicalDevice gpu,
-            VkDevice device,
-            VkSurfaceKHR surface);
+  Swapchain();
 
   ~Swapchain();
 
@@ -35,10 +31,6 @@ class Swapchain final {
   [[nodiscard]] auto get_image_index() const -> uint32 { return mImageIndex; }
 
  private:
-  SDL_Window* mWindow {nullptr};
-  VkPhysicalDevice mGPU {VK_NULL_HANDLE};
-  VkDevice mDevice {VK_NULL_HANDLE};
-  VkSurfaceKHR mSurface {VK_NULL_HANDLE};
   VkSwapchainKHR mSwapchain {VK_NULL_HANDLE};
   VkExtent2D mImageExtent {};
   VkFormat mImageFormat {};
