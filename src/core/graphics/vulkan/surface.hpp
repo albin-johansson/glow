@@ -8,19 +8,19 @@
 namespace gravel::vlk {
 
 /// RAII wrapper for `VkSurfaceKHR`.
+/// The Vulkan instance must have been initialized before a surface may be created.
 class Surface final {
  public:
   GRAVEL_DELETE_COPY(Surface);
   GRAVEL_DELETE_MOVE(Surface);
 
-  Surface(SDL_Window* window, VkInstance instance);
+  explicit Surface(SDL_Window* window);
 
-  ~Surface();
+  ~Surface() noexcept;
 
   [[nodiscard]] auto get() -> VkSurfaceKHR { return mSurface; }
 
  private:
-  VkInstance mInstance {VK_NULL_HANDLE};
   VkSurfaceKHR mSurface {VK_NULL_HANDLE};
 };
 
