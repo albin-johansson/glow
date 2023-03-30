@@ -13,7 +13,6 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline.hpp"
-#include "graphics/vulkan/synchronization.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
