@@ -8,6 +8,7 @@
 #include "common/debug/assert.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/renderer_info.hpp"
+#include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"

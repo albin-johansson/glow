@@ -4,6 +4,7 @@
 #include <cstring>    // memcpy
 
 #include "common/debug/assert.hpp"
+#include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/util.hpp"
 
