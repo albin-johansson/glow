@@ -9,14 +9,22 @@
 #include "engine/backend.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/device.hpp"
+#include "graphics/vulkan/fence.hpp"
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/render_pass.hpp"
+#include "graphics/vulkan/semaphore.hpp"
 #include "graphics/vulkan/shading_pipeline.hpp"
 #include "graphics/vulkan/surface.hpp"
 #include "graphics/vulkan/swapchain.hpp"
 
 namespace gravel::vlk {
 
+struct FrameData final {
+  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
+  Semaphore image_available_semaphore;
+  Semaphore render_finished_semaphore;
+  Fence in_flight_fence {true};
+};
 
 class VulkanBackend final : public Backend {
  public:
@@ -24,8 +32,6 @@ class VulkanBackend final : public Backend {
   GRAVEL_DELETE_MOVE(VulkanBackend);
 
   explicit VulkanBackend(SDL_Window* window);
-
-  ~VulkanBackend() override;
 
   void stop() override;
 
@@ -64,10 +70,7 @@ class VulkanBackend final : public Backend {
   ShadingPipeline mShadingPipeline;
   VkCommandPool mCommandPool {VK_NULL_HANDLE};
 
-  Vector<VkCommandBuffer> mCommandBuffers;
-  Vector<VkSemaphore> mImageAvailableSemaphores;
-  Vector<VkSemaphore> mRenderFinishedSemaphores;
-  Vector<VkFence> mInFlightFences;
+  Vector<FrameData> mFrames;
   usize mFrameIndex {0};
 
   bool mQuit {false};

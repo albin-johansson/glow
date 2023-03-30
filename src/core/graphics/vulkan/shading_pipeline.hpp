@@ -17,6 +17,8 @@ class ShadingPipeline final {
 
   ~ShadingPipeline();
 
+  void bind(VkCommandBuffer command_buffer, usize frame_index);
+
   [[nodiscard]] auto get() -> VkPipeline { return mPipeline; }
 
  private:

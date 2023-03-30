@@ -182,6 +182,11 @@ ShadingPipeline::~ShadingPipeline()
   vkDestroyPipeline(mDevice, mPipeline, nullptr);
   vkDestroyPipelineLayout(mDevice, mPipelineLayout, nullptr);
   vkDestroyDescriptorSetLayout(mDevice, mDescriptorSetLayout, nullptr);
+
+void ShadingPipeline::bind(VkCommandBuffer command_buffer, const usize frame_index)
+{
+  vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mPipeline);
+}
 }
 
 }  // namespace gravel::vlk

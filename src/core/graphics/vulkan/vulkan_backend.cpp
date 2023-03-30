@@ -45,34 +45,13 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
       mShadingPipeline {mDevice.get(), mRenderPass.get(), mSwapchain.get_image_extent()},
       mCommandPool {create_command_pool(mDevice.get(), mGPU, mSurface.get())},
 {
-  mCommandBuffers =
-      create_command_buffers(mDevice.get(), mCommandPool, kMaxFramesInFlight);
-
-  mImageAvailableSemaphores.reserve(kMaxFramesInFlight);
-  mRenderFinishedSemaphores.reserve(kMaxFramesInFlight);
-  mInFlightFences.reserve(kMaxFramesInFlight);
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
-    mImageAvailableSemaphores.push_back(create_semaphore(mDevice.get()));
-    mRenderFinishedSemaphores.push_back(create_semaphore(mDevice.get()));
-    mInFlightFences.push_back(create_signaled_fence(mDevice.get()));
+    auto& frame_data = mFrames.emplace_back();
+    frame_data.command_buffer = mCommandPool.create_command_buffer();
   }
 
   mSwapchain.create_framebuffers(mRenderPass.get());
-}
-
-VulkanBackend::~VulkanBackend()
-{
-  VkDevice device = mDevice.get();
-
-  for (usize index = 0; index < kMaxFramesInFlight; ++index) {
-    vkDestroyFence(device, mInFlightFences.at(index), nullptr);
-    vkDestroySemaphore(device, mRenderFinishedSemaphores.at(index), nullptr);
-    vkDestroySemaphore(device, mImageAvailableSemaphores.at(index), nullptr);
-  }
-
-  vkDestroyCommandPool(device, mCommandPool, nullptr);
-  vkDestroyPipelineCache(device, mPipelineCache, nullptr);
 }
 
 void VulkanBackend::stop()
@@ -136,12 +115,14 @@ void VulkanBackend::on_event(const SDL_Event& event)
 
 auto VulkanBackend::begin_frame() -> Result
 {
+  auto& frame = mFrames.at(mFrameIndex);
+
   // Wait until the previous frame has finished
-  wait_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
+  frame.in_flight_fence.wait();
 
   // Acquire an image from the swapchain
   const auto acquire_image_result =
-      mSwapchain.acquire_next_image(mImageAvailableSemaphores.at(mFrameIndex));
+      mSwapchain.acquire_next_image(frame.image_available_semaphore.get());
 
   if (acquire_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
     mSwapchain.recreate(mRenderPass.get());
@@ -153,31 +134,32 @@ auto VulkanBackend::begin_frame() -> Result
   }
 
   // The fence is only reset when we submit useful work
-  reset_fence(mDevice.get(), mInFlightFences.at(mFrameIndex));
+  frame.in_flight_fence.reset();
 
-  VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
-  reset_command_buffer(command_buffer);
-  begin_command_buffer(command_buffer);
+  reset_command_buffer(frame.command_buffer);
+  begin_command_buffer(frame.command_buffer);
+
+
   return kSuccess;
 }
 
 void VulkanBackend::end_frame()
 {
-  VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
+  auto& frame = mFrames.at(mFrameIndex);
 
 
-  vkCmdEndRenderPass(command_buffer);
-  end_command_buffer(command_buffer);
+  vkCmdEndRenderPass(frame.command_buffer);
+  end_command_buffer(frame.command_buffer);
 
-  mDevice.submit_rendering_commands(command_buffer,
-                                    mImageAvailableSemaphores.at(mFrameIndex),
-                                    mRenderFinishedSemaphores.at(mFrameIndex),
-                                    mInFlightFences.at(mFrameIndex));
+  mDevice.submit_rendering_commands(frame.command_buffer,
+                                    frame.image_available_semaphore.get(),
+                                    frame.render_finished_semaphore.get(),
+                                    frame.in_flight_fence.get());
 
   const auto present_result =
       mDevice.present_swapchain_image(mSwapchain.get(),
                                       mSwapchain.get_image_index(),
-                                      mRenderFinishedSemaphores.at(mFrameIndex));
+                                      frame.render_finished_semaphore.get());
 
   if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
       mResizedFramebuffer) {
@@ -195,21 +177,20 @@ void VulkanBackend::render_scene(const Scene& scene,
                                  const Vec2& framebuffer_size,
                                  Dispatcher& dispatcher)
 {
+  auto& frame = mFrames.at(mFrameIndex);
+
   // TODO resize swap chain images if necessary
 
-  VkCommandBuffer command_buffer = mCommandBuffers.at(mFrameIndex);
   const auto swapchain_image_extent = mSwapchain.get_image_extent();
 
-  mRenderPass.begin(command_buffer,
+  mRenderPass.begin(frame.command_buffer,
                     mSwapchain.get_current_framebuffer(),
                     swapchain_image_extent);
 
-  vkCmdBindPipeline(command_buffer,
-                    VK_PIPELINE_BIND_POINT_GRAPHICS,
-                    mShadingPipeline.get());
+  mShadingPipeline.bind(frame.command_buffer, mFrameIndex);
 
-  cmd::set_viewport(command_buffer, swapchain_image_extent);
-  cmd::set_scissor(command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
+  cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
+  cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
   // TODO render models
 
