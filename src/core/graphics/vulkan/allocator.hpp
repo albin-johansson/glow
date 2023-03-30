@@ -7,14 +7,18 @@
 
 namespace gravel::vlk {
 
+/// Wrapper around the dedicated Vulkan memory allocator.
+///
+/// Note, the instance, physical device, and logical device must all have been initialized
+/// before creating an allocator.
 class Allocator final {
  public:
   GRAVEL_DELETE_COPY(Allocator);
   GRAVEL_DELETE_MOVE(Allocator);
 
-  Allocator(VkInstance instance, VkPhysicalDevice gpu, VkDevice device);
+  Allocator();
 
-  ~Allocator();
+  ~Allocator() noexcept;
 
   [[nodiscard]] auto get() -> VmaAllocator { return mAllocator; }
 

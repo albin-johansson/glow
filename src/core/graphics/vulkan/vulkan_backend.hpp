@@ -57,12 +57,13 @@ class VulkanBackend final : public Backend {
   Surface mSurface;
   VkPhysicalDevice mGPU {VK_NULL_HANDLE};
   Device mDevice;
+  Allocator mAllocator;
+
   Swapchain mSwapchain;
   RenderPass mRenderPass;
   VkPipelineCache mPipelineCache {VK_NULL_HANDLE};
   ShadingPipeline mShadingPipeline;
   VkCommandPool mCommandPool {VK_NULL_HANDLE};
-  Allocator mAllocator;
 
   Vector<VkCommandBuffer> mCommandBuffers;
   Vector<VkSemaphore> mImageAvailableSemaphores;
