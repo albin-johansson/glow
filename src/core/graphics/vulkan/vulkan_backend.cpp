@@ -8,8 +8,8 @@
 #include "common/debug/assert.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/renderer_info.hpp"
+#include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
-#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline.hpp"
@@ -37,11 +37,10 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
     : mInstance {},
       mSurface {window},
       mGPU {select_gpu()},
-      mAllocator {},
-      mPipelineCache {create_pipeline_cache(mDevice.get())},
-      mShadingPipeline {mDevice.get(), mRenderPass.get(), mSwapchain.get_image_extent()},
-      mCommandPool {create_command_pool(mDevice.get(), mGPU, mSurface.get())},
       mRenderPass {mSwapchain.get_image_format()},
+      mPipelineCache {},
+      mShadingPipeline {mRenderPass.get(), mSwapchain.get_image_extent()},
+      mCommandPool {}
 {
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
@@ -64,7 +63,7 @@ void VulkanBackend::on_init(Scene& scene)
   vulkan_context.device = mDevice.get();
   vulkan_context.graphics_queue = mDevice.get_graphics_queue();
   vulkan_context.presentation_queue = mDevice.get_present_queue();
-  vulkan_context.command_pool = mCommandPool;
+  vulkan_context.command_pool = mCommandPool.get();
   vulkan_context.allocator = mAllocator.get();
 
   prepare_imgui_for_vulkan();
@@ -182,7 +181,7 @@ void VulkanBackend::render_scene(const Scene& scene,
   const auto swapchain_image_extent = mSwapchain.get_image_extent();
 
   mRenderPass.begin(frame.command_buffer,
-                    mSwapchain.get_current_framebuffer(),
+                    mSwapchain.get_current_framebuffer().get(),
                     swapchain_image_extent);
 
   mShadingPipeline.bind(frame.command_buffer, mFrameIndex);

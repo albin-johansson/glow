@@ -8,9 +8,11 @@
 #include "common/type/vector.hpp"
 #include "engine/backend.hpp"
 #include "graphics/vulkan/allocator.hpp"
+#include "graphics/vulkan/cmd/command_pool.hpp"
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/fence.hpp"
 #include "graphics/vulkan/instance.hpp"
+#include "graphics/vulkan/pipeline/pipeline_cache.hpp"
 #include "graphics/vulkan/render_pass.hpp"
 #include "graphics/vulkan/semaphore.hpp"
 #include "graphics/vulkan/shading_pipeline.hpp"
@@ -66,9 +68,10 @@ class VulkanBackend final : public Backend {
 
   Swapchain mSwapchain;
   RenderPass mRenderPass;
-  VkPipelineCache mPipelineCache {VK_NULL_HANDLE};
+  PipelineCache mPipelineCache;
+
   ShadingPipeline mShadingPipeline;
-  VkCommandPool mCommandPool {VK_NULL_HANDLE};
+  CommandPool mCommandPool;
 
   Vector<FrameData> mFrames;
   usize mFrameIndex {0};

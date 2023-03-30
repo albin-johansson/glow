@@ -5,6 +5,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/framebuffer.hpp"
@@ -91,25 +92,7 @@ Swapchain::Swapchain()
 
 Swapchain::~Swapchain()
 {
-  destroy_framebuffers();
-  destroy_image_views();
   destroy_swapchain();
-}
-
-void Swapchain::destroy_framebuffers()
-{
-  for (VkFramebuffer framebuffer : mFramebuffers) {
-    vkDestroyFramebuffer(get_device(), framebuffer, nullptr);
-  }
-
-  mFramebuffers.clear();
-}
-
-void Swapchain::destroy_image_views()
-{
-  for (VkImageView image_view : mImageViews) {
-    vkDestroyImageView(get_device(), image_view, nullptr);
-  }
 }
 
 void Swapchain::destroy_swapchain()
@@ -119,38 +102,11 @@ void Swapchain::destroy_swapchain()
 
 void Swapchain::create_image_views()
 {
-  mImageViews.resize(mImages.size());
+  GRAVEL_ASSERT(mImageViews.empty());
+  mImageViews.reserve(mImages.size());
 
-  usize index = 0;
   for (const auto& image : mImages) {
-    const VkImageViewCreateInfo create_info {
-        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-
-        .image = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format = mImageFormat,
-        .components =
-            VkComponentMapping {
-                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
-            },
-        .subresourceRange =
-            VkImageSubresourceRange {
-                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                .baseMipLevel = 0,
-                .levelCount = 1,
-                .baseArrayLayer = 0,
-                .layerCount = 1,
-            },
-    };
-
-    auto& image_view = mImageViews.at(index);
-    GRAVEL_VK_CALL(vkCreateImageView(get_device(), &create_info, nullptr, &image_view),
-                   "[VK] Could not create swapchain image view");
-
-    ++index;
+    mImageViews.emplace_back(image, mImageFormat);
   }
 }
 
@@ -171,8 +127,8 @@ void Swapchain::recreate(VkRenderPass render_pass)
   vkDeviceWaitIdle(get_device());
 
   // Destroy existing resources
-  destroy_framebuffers();
-  destroy_image_views();
+  mFramebuffers.clear();
+  mImageViews.clear();
   destroy_swapchain();
 
   // Recreate the resources
@@ -248,17 +204,11 @@ void Swapchain::create_swapchain()
 
 void Swapchain::create_framebuffers(VkRenderPass render_pass)
 {
-  if (!mFramebuffers.empty()) {
-    destroy_framebuffers();
-  }
-
   mFramebuffers.clear();
   mFramebuffers.reserve(mImageViews.size());
 
-  for (VkImageView image_view : mImageViews) {
-    VkFramebuffer framebuffer =
-        create_framebuffer(get_device(), render_pass, image_view, mImageExtent);
-    mFramebuffers.push_back(framebuffer);
+  for (auto& image_view : mImageViews) {
+    mFramebuffers.emplace_back(render_pass, image_view.get(), mImageExtent);
   }
 }
 
@@ -272,7 +222,7 @@ auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
                                &mImageIndex);
 }
 
-auto Swapchain::get_current_framebuffer() -> VkFramebuffer
+auto Swapchain::get_current_framebuffer() -> Framebuffer&
 {
   return mFramebuffers.at(static_cast<usize>(mImageIndex));
 }

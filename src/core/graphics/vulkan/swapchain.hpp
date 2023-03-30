@@ -5,6 +5,8 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/vector.hpp"
+#include "graphics/vulkan/framebuffer.hpp"
+#include "graphics/vulkan/image_view.hpp"
 
 namespace gravel::vlk {
 
@@ -23,7 +25,7 @@ class Swapchain final {
 
   auto acquire_next_image(VkSemaphore semaphore) -> VkResult;
 
-  [[nodiscard]] auto get_current_framebuffer() -> VkFramebuffer;
+  [[nodiscard]] auto get_current_framebuffer() -> Framebuffer&;
 
   [[nodiscard]] auto get() -> VkSwapchainKHR { return mSwapchain; }
   [[nodiscard]] auto get_image_format() const -> VkFormat { return mImageFormat; }
@@ -35,12 +37,10 @@ class Swapchain final {
   VkExtent2D mImageExtent {};
   VkFormat mImageFormat {};
   Vector<VkImage> mImages;
-  Vector<VkImageView> mImageViews;
-  Vector<VkFramebuffer> mFramebuffers;
+  Vector<ImageView> mImageViews;
+  Vector<Framebuffer> mFramebuffers;
   uint32 mImageIndex {};
 
-  void destroy_framebuffers();
-  void destroy_image_views();
   void destroy_swapchain();
 
   void create_swapchain();
