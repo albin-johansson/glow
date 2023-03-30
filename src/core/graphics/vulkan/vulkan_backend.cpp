@@ -37,7 +37,6 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
     : mInstance {},
       mSurface {window},
       mGPU {select_gpu()},
-      mDevice {mGPU, mSurface.get()},
       mAllocator {},
       mRenderPass {mDevice.get(), mSwapchain.get_image_format()},
       mPipelineCache {create_pipeline_cache(mDevice.get())},

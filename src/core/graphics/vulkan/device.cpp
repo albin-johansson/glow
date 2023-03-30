@@ -1,5 +1,6 @@
 #include "device.hpp"
 
+#include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
 #include "common/type/set.hpp"
 #include "common/type/vector.hpp"
@@ -9,9 +10,12 @@
 
 namespace gravel::vlk {
 
-Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
+Device::Device()
 {
-  const auto queue_family_indices = get_queue_family_indices(gpu, surface);
+  GRAVEL_ASSERT(get_gpu() != VK_NULL_HANDLE);
+  GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
+
+  const auto queue_family_indices = get_queue_family_indices(get_gpu(), get_surface());
 
   const auto graphics_family_index = queue_family_indices.graphics_family.value();
   const auto present_family_index = queue_family_indices.present_family.value();
@@ -57,7 +61,7 @@ Device::Device(VkPhysicalDevice gpu, VkSurfaceKHR surface)
     device_create_info.ppEnabledLayerNames = kValidationLayerNames.data();
   }
 
-  GRAVEL_VK_CALL(vkCreateDevice(gpu, &device_create_info, nullptr, &mDevice),
+  GRAVEL_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &mDevice),
                  "[VK] Could not create logical device");
   set_device(mDevice);
 

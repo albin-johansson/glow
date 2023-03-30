@@ -12,7 +12,7 @@ class Device final {
   GRAVEL_DELETE_COPY(Device);
   GRAVEL_DELETE_MOVE(Device);
 
-  Device(VkPhysicalDevice gpu, VkSurfaceKHR surface);
+  Device();
 
   ~Device();
 
