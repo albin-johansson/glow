@@ -17,7 +17,6 @@
 
 namespace gravel::vlk {
 
-inline constexpr usize kMaxFramesInFlight = 2;
 
 class VulkanBackend final : public Backend {
  public:
