@@ -24,6 +24,7 @@ CommandPool::CommandPool()
 
   GRAVEL_VK_CALL(vkCreateCommandPool(get_device(), &create_info, nullptr, &mCommandPool),
                  "[VK] Could not create command pool");
+  set_command_pool(mCommandPool);
 }
 
 CommandPool::~CommandPool() noexcept
