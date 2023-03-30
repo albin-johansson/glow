@@ -7,10 +7,6 @@
 
 namespace gravel::vlk {
 
-[[nodiscard]] auto create_command_pool(VkDevice device,
-                                       VkPhysicalDevice gpu,
-                                       VkSurfaceKHR surface) -> VkCommandPool;
-
 [[nodiscard]] auto create_command_buffers(VkDevice device,
                                           VkCommandPool command_pool,
                                           uint32 count) -> Vector<VkCommandBuffer>;
