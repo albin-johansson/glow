@@ -7,6 +7,7 @@
 #include "common/primitives.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
+#include "init/window.hpp"
 
 namespace gravel::vlk {
 namespace {
@@ -31,7 +32,7 @@ namespace {
   return extensions;
 }
 
-auto VKAPI_ATTR debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+VKAPI_ATTR auto debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
                                        VkDebugUtilsMessageTypeFlagsEXT,
                                        const VkDebugUtilsMessengerCallbackDataEXT* data,
                                        void*) -> VkBool32
@@ -52,11 +53,11 @@ auto VKAPI_ATTR debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT se
 
 }  // namespace
 
-Instance::Instance(SDL_Window* window)
+Instance::Instance()
 {
   spdlog::debug("[VK] Creating Vulkan instance...");
 
-  const auto extension_names = get_instance_extension_names(window);
+  const auto extension_names = get_instance_extension_names(get_window());
 
   const VkApplicationInfo application_info {
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -110,7 +111,7 @@ Instance::Instance(SDL_Window* window)
   }
 }
 
-Instance::~Instance()
+Instance::~Instance() noexcept
 {
   if constexpr (kDebugBuild) {
     mDestroyDebugMessenger(mInstance, mDebugMessenger, nullptr);

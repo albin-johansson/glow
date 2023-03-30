@@ -15,10 +15,10 @@ class Instance final {
   GRAVEL_DELETE_MOVE(Instance);
 
   /// Initializes a Vulkan instance.
-  explicit Instance(SDL_Window* window);
+  Instance();
 
   /// Destroys the associated Vulkan instance.
-  ~Instance();
+  ~Instance() noexcept;
 
   [[nodiscard]] auto get() -> VkInstance { return mInstance; }
 

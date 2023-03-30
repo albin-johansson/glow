@@ -35,7 +35,7 @@ namespace {
 }  // namespace
 
 VulkanBackend::VulkanBackend(SDL_Window* window)
-    : mInstance {window},
+    : mInstance {},
       mSurface {window},
       mGPU {select_gpu()},
       mDevice {mGPU, mSurface.get()},
