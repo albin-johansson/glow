@@ -49,6 +49,10 @@ class Buffer final {
 
   void set_data(const void* data, usize data_size);
 
+  void bind_as_vertex_buffer(VkCommandBuffer command_buffer) const;
+
+  void bind_as_index_buffer(VkCommandBuffer command_buffer, VkIndexType type) const;
+
   [[nodiscard]] auto get() -> VkBuffer { return mBuffer; }
 
  private:

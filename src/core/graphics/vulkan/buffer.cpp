@@ -4,8 +4,8 @@
 #include <cstring>    // memcpy
 
 #include "common/debug/assert.hpp"
+#include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
-#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/util.hpp"
 
 namespace gravel::vlk {
@@ -151,6 +151,17 @@ void Buffer::set_data(const void* data, const usize data_size)
   std::memcpy(mapped_data, data, std::min(data_size, allocation_size));
 
   vmaUnmapMemory(mAllocator, mAllocation);
+}
+
+void Buffer::bind_as_vertex_buffer(VkCommandBuffer command_buffer) const
+{
+  const VkDeviceSize offset = 0;
+  vkCmdBindVertexBuffers(command_buffer, 0, 1, &mBuffer, &offset);
+}
+
+void Buffer::bind_as_index_buffer(VkCommandBuffer command_buffer, VkIndexType type) const
+{
+  vkCmdBindIndexBuffer(command_buffer, mBuffer, 0, type);
 }
 
 auto Buffer::get_allocation_info() -> VmaAllocationInfo
