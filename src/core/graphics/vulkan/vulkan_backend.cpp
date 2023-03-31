@@ -11,6 +11,7 @@
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/context.hpp"
+#include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline.hpp"
 #include "graphics/vulkan/util.hpp"
@@ -199,10 +200,14 @@ void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,
   // TODO
 }
 
-void VulkanBackend::load_model([[maybe_unused]] Scene& scene,
-                               [[maybe_unused]] const Path& path)
+void VulkanBackend::load_model(Scene& scene, const Path& path)
 {
-  // TODO
+  static int index = 0;
+
+  const auto model_entity = scene.make_node(fmt::format("Model {}", index));
+  assign_model(scene, model_entity, path);
+
+  ++index;
 }
 
 auto VulkanBackend::get_primary_framebuffer_handle() -> void*
