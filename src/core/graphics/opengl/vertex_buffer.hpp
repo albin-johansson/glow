@@ -2,7 +2,7 @@
 
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
-#include "graphics/buffer_usage.hpp"
+#include "graphics/opengl/buffer_usage.hpp"
 
 namespace gravel::gl {
 

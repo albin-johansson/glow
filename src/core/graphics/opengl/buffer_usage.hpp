@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gravel {
+namespace gravel::gl {
 
 /// Represents buffer usage optimization hints.
 enum class BufferUsage {
@@ -9,4 +9,4 @@ enum class BufferUsage {
   Stream    ///< Modified once, used at most a few times.
 };
 
-}  // namespace gravel
+}  // namespace gravel::gl

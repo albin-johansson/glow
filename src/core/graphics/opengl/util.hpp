@@ -5,7 +5,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/string.hpp"
-#include "graphics/buffer_usage.hpp"
+#include "graphics/opengl/buffer_usage.hpp"
 #include "graphics/shader_type.hpp"
 
 namespace gravel::gl {
