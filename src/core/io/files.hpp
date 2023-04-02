@@ -20,4 +20,9 @@ enum class FileType {
 
 [[nodiscard]] auto load_binary_file(const Path& path) -> Maybe<Vector<char>>;
 
+[[nodiscard]] auto create_file(const Path& path, FileType type = FileType::Text)
+    -> Maybe<OfStream>;
+
+[[nodiscard]] auto get_persistent_file_dir() -> const Path&;
+
 }  // namespace gravel
