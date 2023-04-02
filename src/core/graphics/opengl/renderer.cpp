@@ -93,7 +93,7 @@ void Renderer::end_frame()
 
 void Renderer::swap_buffers()
 {
-  if constexpr (kOnApple) {
+  if constexpr (kIsMacOS) {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
   }
 

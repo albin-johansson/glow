@@ -3,6 +3,22 @@
 #include <boost/config.hpp>
 #include <boost/predef/compiler.h>
 #include <boost/predef/os.h>
+#include <boost/version.hpp>
+
+#include "common/primitives.hpp"
+
+#define GRAVEL_VERSION_MAJOR 0
+#define GRAVEL_VERSION_MINOR 1
+#define GRAVEL_VERSION_PATCH 0
+
+// clang-format off
+#define GRAVEL_VERSION_STRING           \
+  BOOST_STRINGIZE(GRAVEL_VERSION_MAJOR) "." \
+  BOOST_STRINGIZE(GRAVEL_VERSION_MINOR) "." \
+  BOOST_STRINGIZE(GRAVEL_VERSION_PATCH)
+// clang-format on
+
+#define GRAVEL_VERSION BOOST_VERSION_NUMBER(0, 1, 0)
 
 #ifdef NDEBUG
 #define GRAVEL_DEBUG_BUILD 0
@@ -67,18 +83,13 @@
 
 namespace gravel {
 
-#if GRAVEL_DEBUG_BUILD
-inline constexpr bool kDebugBuild = true;
-inline constexpr bool kReleaseBuild = false;
-#else
-inline constexpr bool kDebugBuild = false;
-inline constexpr bool kReleaseBuild = true;
-#endif  // GRAVEL_DEBUG_BUILD
+inline constexpr uint32 kVersion = GRAVEL_VERSION;
 
-#ifdef __APPLE__
-inline constexpr bool kOnApple = true;
-#else
-inline constexpr bool kOnApple = false;
-#endif  // __APPLE__
+inline constexpr bool kDebugBuild = GRAVEL_DEBUG_BUILD;
+inline constexpr bool kReleaseBuild = GRAVEL_RELEASE_BUILD;
+
+inline constexpr bool kIsMacOS = GRAVEL_OS_MACOS;
+inline constexpr bool kIsWindows = GRAVEL_OS_WINDOWS;
+inline constexpr bool kIsLinux = GRAVEL_OS_LINUX;
 
 }  // namespace gravel

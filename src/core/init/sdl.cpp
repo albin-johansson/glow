@@ -22,7 +22,7 @@ void set_hints_for_opengl()
     context_flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
   }
 
-  if constexpr (kOnApple) {
+  if constexpr (kIsMacOS) {
     context_flags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
   }
 

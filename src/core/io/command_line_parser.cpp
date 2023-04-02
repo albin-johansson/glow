@@ -4,13 +4,12 @@
 
 #include <argparse/argparse.hpp>
 
+#include "common/predef.hpp"
 #include "common/type/map.hpp"
 #include "common/type/string.hpp"
 
 namespace gravel {
 namespace {
-
-inline constexpr const char* kVersion = "0.1.0";
 
 inline constexpr const char* kApiHelp = "graphics API that will be used";
 inline constexpr const char* kEnvHelp = "path to environment texture to load";
@@ -43,7 +42,9 @@ inline const HashMap<int, LogLevel> kLogLevels {
 
 auto parse_command_line_args(const int argc, char** argv) -> Maybe<CommandLineArgs>
 {
-  argparse::ArgumentParser parser {"gravel", kVersion, argparse::default_arguments::all};
+  argparse::ArgumentParser parser {"gravel",
+                                   GRAVEL_VERSION_STRING,
+                                   argparse::default_arguments::all};
 
   // clang-format off
   parser.add_argument("--api", "-a").nargs(1).default_value(kDefaultApi).help(kApiHelp);
