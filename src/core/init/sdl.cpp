@@ -56,6 +56,8 @@ SDL::SDL(const GraphicsApi api)
     throw Error {fmt::format("Could not initialize SDL: {}", SDL_GetError())};
   }
 
+  SDL_SetHint(SDL_HINT_APP_NAME, "Gravel");
+
   if (mAPI == GraphicsApi::OpenGL) {
     set_hints_for_opengl();
   }
