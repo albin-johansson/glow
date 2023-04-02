@@ -212,8 +212,11 @@ void VulkanBackend::load_model(Scene& scene, const Path& path)
 
 auto VulkanBackend::get_primary_framebuffer_handle() -> void*
 {
-  VkFramebuffer framebuffer = mSwapchain.get_current_framebuffer();
-  return static_cast<void*>(framebuffer);
+  // TODO need to use different render target framebuffer, not the actual one in swapchain
+  //  VkFramebuffer framebuffer = mSwapchain.get_current_framebuffer();
+  //  return static_cast<void*>(framebuffer);
+
+  return nullptr;
 }
 
 }  // namespace gravel::vlk
