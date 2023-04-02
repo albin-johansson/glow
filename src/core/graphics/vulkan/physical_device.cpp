@@ -60,6 +60,12 @@ namespace {
     return false;
   }
 
+  VkPhysicalDeviceFeatures features {};
+  vkGetPhysicalDeviceFeatures(gpu, &features);
+  if (!features.samplerAnisotropy) {
+    return false;
+  }
+
   const auto swap_chain_support = get_swapchain_support(gpu, surface);
   return !swap_chain_support.formats.empty() && !swap_chain_support.present_modes.empty();
 }
