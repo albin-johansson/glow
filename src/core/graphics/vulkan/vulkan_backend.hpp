@@ -7,6 +7,7 @@
 #include "common/primitives.hpp"
 #include "common/type/vector.hpp"
 #include "engine/backend.hpp"
+#include "graphics/buffers.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/cmd/command_pool.hpp"
 #include "graphics/vulkan/device.hpp"
@@ -14,6 +15,7 @@
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
 #include "graphics/vulkan/render_pass.hpp"
+#include "graphics/vulkan/sampler.hpp"
 #include "graphics/vulkan/semaphore.hpp"
 #include "graphics/vulkan/shading_pipeline.hpp"
 #include "graphics/vulkan/surface.hpp"
@@ -21,6 +23,7 @@
 
 namespace gravel::vlk {
 
+/// Stores resources required to allow for multiple frames in flight at the same time.
 struct FrameData final {
   VkCommandBuffer command_buffer {VK_NULL_HANDLE};
   Semaphore image_available_semaphore;
@@ -69,12 +72,16 @@ class VulkanBackend final : public Backend {
   Swapchain mSwapchain;
   RenderPass mRenderPass;
   PipelineCache mPipelineCache;
+  Sampler mSampler;
 
   ShadingPipeline mShadingPipeline;
   CommandPool mCommandPool;
 
   Vector<FrameData> mFrames;
   usize mFrameIndex {0};
+
+  MatrixBuffer mMatrixBuffer;
+  MaterialBuffer mMaterialBuffer;
 
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};

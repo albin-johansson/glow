@@ -7,8 +7,13 @@ namespace gravel::vlk {
 
 Sampler::Sampler()
 {
+  VkPhysicalDeviceFeatures device_features {};
+  vkGetPhysicalDeviceFeatures(get_gpu(), &device_features);
+
   VkPhysicalDeviceProperties device_properties {};
   vkGetPhysicalDeviceProperties(get_gpu(), &device_properties);
+
+  const VkSamplerAddressMode address_mode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
   const VkSamplerCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -19,13 +24,13 @@ Sampler::Sampler()
       .minFilter = VK_FILTER_LINEAR,
       .mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR,
 
-      .addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      .addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-      .addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+      .addressModeU = address_mode,
+      .addressModeV = address_mode,
+      .addressModeW = address_mode,
 
       .mipLodBias = 0.0f,
 
-      .anisotropyEnable = VK_TRUE,
+      .anisotropyEnable = device_features.samplerAnisotropy,
       .maxAnisotropy = device_properties.limits.maxSamplerAnisotropy,
 
       .compareEnable = VK_FALSE,
