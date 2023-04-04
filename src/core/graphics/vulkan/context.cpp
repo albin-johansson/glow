@@ -3,6 +3,8 @@
 namespace gravel::vlk {
 namespace {
 
+inline ExtensionFunctions gExtensionFunctions;
+
 inline VkInstance gInstance = VK_NULL_HANDLE;
 inline VkPhysicalDevice gGPU = VK_NULL_HANDLE;
 inline VkSurfaceKHR gSurface = VK_NULL_HANDLE;
@@ -13,6 +15,11 @@ inline VkCommandPool gCommandPool = VK_NULL_HANDLE;
 inline VmaAllocator gAllocator = VK_NULL_HANDLE;
 
 }  // namespace
+
+auto get_extension_functions() noexcept -> ExtensionFunctions&
+{
+  return gExtensionFunctions;
+}
 
 void set_instance(VkInstance instance) noexcept
 {

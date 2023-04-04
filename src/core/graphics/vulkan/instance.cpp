@@ -101,11 +101,15 @@ Instance::Instance()
                  "[VK] Could not create instance");
   set_instance(mInstance);
 
+  auto& functions = get_extension_functions();
+
   if constexpr (kDebugBuild) {
-    mCreateDebugMessenger = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-        vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT"));
-    mDestroyDebugMessenger = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-        vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT"));
+    functions.vkCreateDebugUtilsMessengerEXT =
+        reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
+            vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT"));
+    functions.vkDestroyDebugUtilsMessengerEXT =
+        reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
+            vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT"));
 
     create_debug_messenger();
   }
@@ -113,9 +117,12 @@ Instance::Instance()
 
 Instance::~Instance() noexcept
 {
+  auto& functions = get_extension_functions();
+
   if constexpr (kDebugBuild) {
-    mDestroyDebugMessenger(mInstance, mDebugMessenger, nullptr);
+    functions.vkDestroyDebugUtilsMessengerEXT(mInstance, mDebugMessenger, nullptr);
   }
+
   vkDestroyInstance(mInstance, nullptr);
 }
 
@@ -139,10 +146,11 @@ void Instance::create_debug_messenger()
       .pUserData = nullptr,
   };
 
-  GRAVEL_VK_CALL(mCreateDebugMessenger(mInstance,
-                                       &debug_messenger_create_info,
-                                       nullptr,
-                                       &mDebugMessenger),
+  auto& functions = get_extension_functions();
+  GRAVEL_VK_CALL(functions.vkCreateDebugUtilsMessengerEXT(mInstance,
+                                                          &debug_messenger_create_info,
+                                                          nullptr,
+                                                          &mDebugMessenger),
                  "[VK] Could not create debug messenger");
 }
 

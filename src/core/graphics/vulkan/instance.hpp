@@ -25,8 +25,6 @@ class Instance final {
  private:
   VkInstance mInstance {VK_NULL_HANDLE};
   VkDebugUtilsMessengerEXT mDebugMessenger {VK_NULL_HANDLE};
-  PFN_vkCreateDebugUtilsMessengerEXT mCreateDebugMessenger {VK_NULL_HANDLE};
-  PFN_vkDestroyDebugUtilsMessengerEXT mDestroyDebugMessenger {VK_NULL_HANDLE};
 
   void create_debug_messenger();
 };

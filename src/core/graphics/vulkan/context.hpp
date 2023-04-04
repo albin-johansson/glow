@@ -15,6 +15,14 @@ struct [[deprecated]] VulkanContext final {
   VmaAllocator allocator {VK_NULL_HANDLE};
 };
 
+/// Stores extension function pointers.
+struct ExtensionFunctions final {
+  PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT {};
+  PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT {};
+};
+
+[[nodiscard]] auto get_extension_functions() noexcept -> ExtensionFunctions&;
+
 void set_instance(VkInstance instance) noexcept;
 void set_surface(VkSurfaceKHR surface) noexcept;
 void set_gpu(VkPhysicalDevice gpu) noexcept;
