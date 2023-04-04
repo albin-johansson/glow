@@ -17,8 +17,8 @@ namespace gravel::vlk {
 
 /// Vulkan material component.
 struct Material final {
-  // TODO diffuse texture
-  // TODO specular texture
+  VkImageView diffuse_tex {VK_NULL_HANDLE};
+  VkImageView specular_tex {VK_NULL_HANDLE};
   Vec3 ambient {};
   Vec3 diffuse {};
   Vec3 specular {};

@@ -1,10 +1,40 @@
 #include "model.hpp"
 
+#include <utility>  // move
+
+#include <spdlog/spdlog.h>
+
+#include "graphics/vulkan/image.hpp"
+#include "graphics/vulkan/image_cache.hpp"
+#include "graphics/vulkan/image_view.hpp"
 #include "io/model_loader.hpp"
 #include "scene/scene.hpp"
 
 namespace gravel::vlk {
 namespace {
+
+[[nodiscard]] auto load_image_if_missing(Maybe<Path> path, ImageCache& cache)
+    -> VkImageView
+{
+  if (path.has_value() && !cache.images.contains(*path)) {
+    const auto image_format = VK_FORMAT_R8G8B8A8_SRGB;
+
+    if (auto image = load_image_2d(*path, image_format, VK_IMAGE_USAGE_SAMPLED_BIT)) {
+      ImageView view {image->get(), image_format, VK_IMAGE_VIEW_TYPE_2D};
+      VkImageView result = view.get();
+
+      cache.views.try_emplace(image->get(), std::move(view));
+      cache.images.try_emplace(*path, std::move(*image));
+
+      return result;
+    }
+    else {
+      spdlog::error("[VK] Failed to load model texture");
+    }
+  }
+
+  return VK_NULL_HANDLE;
+}
 
 [[nodiscard]] auto create_material(Scene& scene,
                                    const MaterialData& material_data,
@@ -13,12 +43,14 @@ namespace {
   const auto material_entity = scene.get_registry().create();
   auto& material = scene.add<Material>(material_entity);
 
-  if (material_data.diffuse_tex.has_value()) {
-    // TODO load diffuse texture
+  auto& cache = scene.get<ImageCache>();
+
+  if (VkImageView diffuse = load_image_if_missing(material_data.diffuse_tex, cache)) {
+    material.diffuse_tex = diffuse;
   }
 
-  if (material_data.specular_tex.has_value()) {
-    // TODO load specular texture
+  if (VkImageView specular = load_image_if_missing(material_data.specular_tex, cache)) {
+    material.specular_tex = specular;
   }
 
   material.ambient = material_data.ambient;
