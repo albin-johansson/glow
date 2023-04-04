@@ -35,6 +35,7 @@ Buffer::Buffer(const uint64 size,
       .flags = allocation_flags,
       .usage = memory_usage,
       .requiredFlags = memory_properties,
+      .preferredFlags = 0,
       .memoryTypeBits = 0,
       .pool = nullptr,
       .pUserData = nullptr,
@@ -54,14 +55,13 @@ auto Buffer::staging(const uint64 size,
                      const VkBufferUsageFlags buffer_usage,
                      const VkSharingMode sharing_mode) -> Buffer
 {
-  const auto memory_properties =
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-  return Buffer {size,
-                 buffer_usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                 sharing_mode,
-                 memory_properties,
-                 VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
-                 VMA_MEMORY_USAGE_AUTO};
+  return Buffer {
+      size,
+      buffer_usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+      sharing_mode,
+      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+      VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
+      VMA_MEMORY_USAGE_AUTO_PREFER_HOST};
 }
 
 auto Buffer::gpu(const uint64 size,
@@ -84,7 +84,7 @@ auto Buffer::uniform(const uint64 size, const VkSharingMode sharing_mode) -> Buf
       sharing_mode,
       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
       VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
-      VMA_MEMORY_USAGE_AUTO};
+      VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE};
 }
 
 auto Buffer::create(const VkBufferUsageFlags usage,
