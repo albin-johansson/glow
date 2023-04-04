@@ -1,9 +1,27 @@
 #include "command_buffer.hpp"
 
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
 
 namespace gravel::vlk {
+
+auto create_command_buffer(VkDevice device, VkCommandPool command_pool) -> VkCommandBuffer
+{
+  const VkCommandBufferAllocateInfo allocate_info {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .commandPool = command_pool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1,
+  };
+
+  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
+  GRAVEL_VK_CALL(vkAllocateCommandBuffers(device, &allocate_info, &command_buffer),
+                 "[VK] Could not create command buffer");
+
+  return command_buffer;
+}
 
 auto create_command_buffers(VkDevice device,
                             VkCommandPool command_pool,
@@ -50,6 +68,33 @@ void begin_command_buffer(VkCommandBuffer command_buffer,
 void end_command_buffer(VkCommandBuffer command_buffer)
 {
   GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
+}
+
+auto record_one_time_commands() -> VkCommandBuffer
+{
+  VkCommandBuffer cmd_buffer = create_command_buffer(get_device(), get_command_pool());
+  begin_command_buffer(cmd_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+  return cmd_buffer;
+}
+
+void execute_one_time_commands(VkCommandBuffer cmd_buffer)
+{
+  end_command_buffer(cmd_buffer);
+
+  const VkSubmitInfo submit_info {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .commandBufferCount = 1,
+      .pCommandBuffers = &cmd_buffer,
+  };
+
+  VkQueue graphics_queue = get_graphics_queue();
+  GRAVEL_VK_CALL(vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE),
+                 "[VK] Could not submit work to queue");
+  GRAVEL_VK_CALL(vkQueueWaitIdle(graphics_queue),
+                 "[VK] Could not wait for graphics queue");
+
+  vkFreeCommandBuffers(get_device(), get_command_pool(), 1, &cmd_buffer);
 }
 
 }  // namespace gravel::vlk
