@@ -11,6 +11,7 @@
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/context.hpp"
+#include "graphics/vulkan/image_cache.hpp"
 #include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline.hpp"
@@ -66,6 +67,8 @@ void VulkanBackend::on_init(Scene& scene)
   vulkan_context.presentation_queue = mDevice.get_present_queue();
   vulkan_context.command_pool = mCommandPool.get();
   vulkan_context.allocator = mAllocator.get();
+
+  scene.add<ImageCache>();
 
   prepare_imgui_for_vulkan();
 
