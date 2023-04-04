@@ -5,13 +5,15 @@
 
 namespace gravel::vlk {
 
-ImageView::ImageView(VkImage image, const VkFormat image_format)
+ImageView::ImageView(VkImage image,
+                     const VkFormat image_format,
+                     const VkImageViewType type)
 {
   const VkImageViewCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 
       .image = image,
-      .viewType = VK_IMAGE_VIEW_TYPE_2D,
+      .viewType = type,
       .format = image_format,
       .components =
           VkComponentMapping {

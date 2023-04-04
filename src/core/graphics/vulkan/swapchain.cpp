@@ -105,8 +105,8 @@ void Swapchain::create_image_views()
   GRAVEL_ASSERT(mImageViews.empty());
   mImageViews.reserve(mImages.size());
 
-  for (const auto& image : mImages) {
-    mImageViews.emplace_back(image, mImageFormat);
+  for (VkImage image : mImages) {
+    mImageViews.emplace_back(image, mImageFormat, VK_IMAGE_VIEW_TYPE_2D);
   }
 }
 
