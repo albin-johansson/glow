@@ -84,8 +84,17 @@ void execute_one_time_commands(VkCommandBuffer cmd_buffer)
 
   const VkSubmitInfo submit_info {
       .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .pNext = nullptr,
+
+      .waitSemaphoreCount = 0,
+      .pWaitSemaphores = nullptr,
+      .pWaitDstStageMask = nullptr,
+
       .commandBufferCount = 1,
       .pCommandBuffers = &cmd_buffer,
+
+      .signalSemaphoreCount = 0,
+      .pSignalSemaphores = nullptr,
   };
 
   VkQueue graphics_queue = get_graphics_queue();
@@ -95,6 +104,13 @@ void execute_one_time_commands(VkCommandBuffer cmd_buffer)
                  "[VK] Could not wait for graphics queue");
 
   vkFreeCommandBuffers(get_device(), get_command_pool(), 1, &cmd_buffer);
+}
+
+void execute_immediately(const std::function<void(VkCommandBuffer)>& func)
+{
+  VkCommandBuffer cmd_buffer = record_one_time_commands();
+  func(cmd_buffer);
+  execute_one_time_commands(cmd_buffer);
 }
 
 }  // namespace gravel::vlk

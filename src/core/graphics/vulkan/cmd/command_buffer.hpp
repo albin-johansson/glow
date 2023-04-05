@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>  // function
+
 #include <vulkan/vulkan.h>
 
 #include "common/primitives.hpp"
@@ -24,5 +26,8 @@ void end_command_buffer(VkCommandBuffer command_buffer);
 [[nodiscard]] auto record_one_time_commands() -> VkCommandBuffer;
 
 void execute_one_time_commands(VkCommandBuffer cmd_buffer);
+
+/// Records a one time command buffer, and executes it (and waits for it to complete).
+void execute_immediately(const std::function<void(VkCommandBuffer)>& func);
 
 }  // namespace gravel::vlk

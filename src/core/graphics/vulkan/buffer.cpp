@@ -172,37 +172,9 @@ auto Buffer::get_allocation_info() -> VmaAllocationInfo
 
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, const usize data_size)
 {
-  VkCommandPool command_pool = get_command_pool();
-
-  const auto command_buffers = create_command_buffers(get_device(), command_pool, 1);
-  VkCommandBuffer command_buffer = command_buffers.at(0);
-
-  begin_command_buffer(command_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-  cmd::copy_buffer(command_buffer, src_buffer, dst_buffer, data_size);
-  end_command_buffer(command_buffer);
-
-  const VkSubmitInfo submit_info {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .pNext = nullptr,
-
-      .waitSemaphoreCount = 0,
-      .pWaitSemaphores = nullptr,
-      .pWaitDstStageMask = nullptr,
-
-      .commandBufferCount = 1,
-      .pCommandBuffers = &command_buffer,
-
-      .signalSemaphoreCount = 0,
-      .pSignalSemaphores = nullptr,
-  };
-
-  VkQueue graphics_queue = get_graphics_queue();
-  GRAVEL_VK_CALL(vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE),
-                 "[VK] Could not submit command buffer for buffer copy");
-  GRAVEL_VK_CALL(vkQueueWaitIdle(graphics_queue),
-                 "[VK] Could not wait for queue after buffer copy");
-
-  vkFreeCommandBuffers(get_device(), command_pool, 1, &command_buffer);
+  execute_immediately([=](VkCommandBuffer cmd_buffer) {
+    cmd::copy_buffer(cmd_buffer, src_buffer, dst_buffer, data_size);
+  });
 }
 
 }  // namespace gravel::vlk

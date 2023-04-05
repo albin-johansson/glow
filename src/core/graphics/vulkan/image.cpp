@@ -167,37 +167,34 @@ auto Image::operator=(Image&& other) noexcept -> Image&
   return *this;
 }
 
-void Image::change_layout(VkImageLayout new_layout)
+void Image::change_layout(const VkImageLayout new_layout)
 {
-  VkCommandBuffer cmd_buffer = record_one_time_commands();
-  transition_image_layout(cmd_buffer, mImage, mLayout, new_layout);
-  execute_one_time_commands(cmd_buffer);
-
-  mLayout = new_layout;
+  execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
+    transition_image_layout(cmd_buffer, mImage, mLayout, new_layout);
+    mLayout = new_layout;
+  });
 }
 
 void Image::copy_from_buffer(VkBuffer buffer)
 {
-  VkCommandBuffer cmd_buffer = record_one_time_commands();
+  execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
+    const VkBufferImageCopy region {
+        .bufferOffset = 0,
+        .bufferRowLength = 0,
+        .bufferImageHeight = 0,
+        .imageSubresource =
+            VkImageSubresourceLayers {
+                .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                .mipLevel = 0,
+                .baseArrayLayer = 0,
+                .layerCount = 1,
+            },
+        .imageOffset = VkOffset3D {0, 0, 0},
+        .imageExtent = mExtent,
+    };
 
-  const VkBufferImageCopy region {
-      .bufferOffset = 0,
-      .bufferRowLength = 0,
-      .bufferImageHeight = 0,
-      .imageSubresource =
-          VkImageSubresourceLayers {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .mipLevel = 0,
-              .baseArrayLayer = 0,
-              .layerCount = 1,
-          },
-      .imageOffset = VkOffset3D {0, 0, 0},
-      .imageExtent = mExtent,
-  };
-
-  vkCmdCopyBufferToImage(cmd_buffer, buffer, mImage, mLayout, 1, &region);
-
-  execute_one_time_commands(cmd_buffer);
+    vkCmdCopyBufferToImage(cmd_buffer, buffer, mImage, mLayout, 1, &region);
+  });
 }
 
 auto load_image_2d(const Path& path, VkFormat format, VkImageUsageFlags usage)
