@@ -111,8 +111,8 @@ void OpenGLBackend::render_scene(const Scene& scene,
       dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
     }
 
-    const auto projection = to_projection_matrix(camera);
-    const auto view = to_view_matrix(camera, camera_transform);
+    const auto projection = to_projection_matrix(camera, GraphicsApi::OpenGL);
+    const auto view = to_view_matrix(camera, camera_transform, GraphicsApi::OpenGL);
 
     // Render the environment backdrop
     // TODO optimization: render environment last with depth test trickery

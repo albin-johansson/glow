@@ -42,19 +42,38 @@ void rotate_camera(const Camera& camera,
   transform.rotation = Vec3 {pitch_matrix * yaw_matrix * Vec4 {transform.rotation, 0}};
 }
 
-auto to_projection_matrix(const Camera& camera) -> Mat4
+auto to_projection_matrix(const Camera& camera, const GraphicsApi api) -> Mat4
 {
-  return glm::perspective(glm::radians(camera.fov),
-                          camera.aspect_ratio,
-                          camera.near_plane,
-                          camera.far_plane);
+  if (api == GraphicsApi::Vulkan) {
+    auto projection = glm::perspectiveLH(glm::radians(camera.fov),
+                                         camera.aspect_ratio,
+                                         camera.near_plane,
+                                         camera.far_plane);
+    projection[1][1] *= -1.0f;
+    return projection;
+  }
+  else {
+    return glm::perspective(glm::radians(camera.fov),
+                            camera.aspect_ratio,
+                            camera.near_plane,
+                            camera.far_plane);
+  }
 }
 
-auto to_view_matrix(const Camera& camera, const Transform& transform) -> Mat4
+auto to_view_matrix(const Camera& camera,
+                    const Transform& transform,
+                    const GraphicsApi api) -> Mat4
 {
-  return glm::lookAt(transform.position,
-                     transform.position + transform.rotation,
-                     camera.up);
+  if (api == GraphicsApi::Vulkan) {
+    return glm::lookAtLH(transform.position,
+                         transform.position + transform.rotation,
+                         camera.up);
+  }
+  else {
+    return glm::lookAt(transform.position,
+                       transform.position + transform.rotation,
+                       camera.up);
+  }
 }
 
 }  // namespace gravel

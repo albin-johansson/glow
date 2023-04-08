@@ -5,6 +5,7 @@
 #include "common/type/ecs.hpp"
 #include "common/type/math.hpp"
 #include "common/type/string.hpp"
+#include "graphics/graphics_api.hpp"
 
 namespace gravel {
 
@@ -43,15 +44,18 @@ void rotate_camera(const Camera& camera,
 /// Creates a projection matrix based on a camera.
 ///
 /// \param camera the camera component.
+/// \param api the graphics API to adjust the matrix for.
 /// \return a projection matrix.
-[[nodiscard]] auto to_projection_matrix(const Camera& camera) -> Mat4;
+[[nodiscard]] auto to_projection_matrix(const Camera& camera, GraphicsApi api) -> Mat4;
 
 /// Creates a view matrix based on a camera.
 ///
 /// \param camera the camera component.
 /// \param transform the transform component associated with the camera.
+/// \param api the graphics API to adjust the matrix for.
 /// \return a view matrix.
-[[nodiscard]] auto to_view_matrix(const Camera& camera, const Transform& transform)
-    -> Mat4;
+[[nodiscard]] auto to_view_matrix(const Camera& camera,
+                                  const Transform& transform,
+                                  GraphicsApi api) -> Mat4;
 
 }  // namespace gravel
