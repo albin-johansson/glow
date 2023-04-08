@@ -60,7 +60,8 @@ auto create_pipeline_dynamic_state(const uint32 state_count, const VkDynamicStat
   return dynamic_states;
 }
 
-auto create_pipeline_rasterization_state(const VkPolygonMode polygon_mode)
+auto create_pipeline_rasterization_state(const VkPolygonMode polygon_mode,
+                                         const VkCullModeFlags cull_mode)
     -> VkPipelineRasterizationStateCreateInfo
 {
   const VkPipelineRasterizationStateCreateInfo rasterization_state {
@@ -73,7 +74,7 @@ auto create_pipeline_rasterization_state(const VkPolygonMode polygon_mode)
       .rasterizerDiscardEnable = VK_FALSE,
 
       .polygonMode = polygon_mode,
-      .cullMode = VK_CULL_MODE_BACK_BIT,
+      .cullMode = cull_mode,
       .frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
 
       .depthBiasEnable = VK_FALSE,
@@ -125,7 +126,8 @@ auto create_pipeline_viewport_state() -> VkPipelineViewportStateCreateInfo
   return viewport_state;
 }
 
-auto create_pipeline_input_assembly_state() -> VkPipelineInputAssemblyStateCreateInfo
+auto create_pipeline_input_assembly_state(const VkPrimitiveTopology topology)
+    -> VkPipelineInputAssemblyStateCreateInfo
 {
   const VkPipelineInputAssemblyStateCreateInfo input_assembly_state {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
@@ -133,7 +135,7 @@ auto create_pipeline_input_assembly_state() -> VkPipelineInputAssemblyStateCreat
       .pNext = nullptr,
       .flags = 0,
 
-      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+      .topology = topology,
       .primitiveRestartEnable = VK_FALSE,
   };
 
@@ -176,19 +178,22 @@ auto create_pipeline_depth_stencil_state() -> VkPipelineDepthStencilStateCreateI
   return depth_stencil_state;
 }
 
-auto create_pipeline_color_blend_attachment_state(const bool enabled)
+auto create_pipeline_color_blend_attachment_state(const bool enabled,
+                                                  const VkBlendOp op,
+                                                  const VkBlendFactor src_factor,
+                                                  const VkBlendFactor dst_factor)
     -> VkPipelineColorBlendAttachmentState
 {
   const VkPipelineColorBlendAttachmentState color_blend_attachment_state {
       .blendEnable = enabled ? VK_TRUE : VK_FALSE,
 
-      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .colorBlendOp = VK_BLEND_OP_ADD,
+      .srcColorBlendFactor = src_factor,
+      .dstColorBlendFactor = dst_factor,
+      .colorBlendOp = op,
 
-      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,
-      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,
-      .alphaBlendOp = VK_BLEND_OP_ADD,
+      .srcAlphaBlendFactor = src_factor,
+      .dstAlphaBlendFactor = dst_factor,
+      .alphaBlendOp = op,
 
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
                         VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT,

@@ -17,7 +17,8 @@ namespace gravel::vlk {
                                                  const VkDynamicState* states)
     -> VkPipelineDynamicStateCreateInfo;
 
-[[nodiscard]] auto create_pipeline_rasterization_state(VkPolygonMode polygon_mode)
+[[nodiscard]] auto create_pipeline_rasterization_state(VkPolygonMode polygon_mode,
+                                                       VkCullModeFlags cull_mode)
     -> VkPipelineRasterizationStateCreateInfo;
 
 [[nodiscard]] auto create_pipeline_multisample_state(VkSampleCountFlagBits samples)
@@ -25,13 +26,16 @@ namespace gravel::vlk {
 
 [[nodiscard]] auto create_pipeline_viewport_state() -> VkPipelineViewportStateCreateInfo;
 
-[[nodiscard]] auto create_pipeline_input_assembly_state()
+[[nodiscard]] auto create_pipeline_input_assembly_state(VkPrimitiveTopology topology)
     -> VkPipelineInputAssemblyStateCreateInfo;
 
 [[nodiscard]] auto create_pipeline_depth_stencil_state()
     -> VkPipelineDepthStencilStateCreateInfo;
 
-[[nodiscard]] auto create_pipeline_color_blend_attachment_state(bool enabled)
+[[nodiscard]] auto create_pipeline_color_blend_attachment_state(bool enabled,
+                                                                VkBlendOp op,
+                                                                VkBlendFactor src_factor,
+                                                                VkBlendFactor dst_factor)
     -> VkPipelineColorBlendAttachmentState;
 
 /// Returns an array of vertex binding descriptions for the usual Vertex type.
