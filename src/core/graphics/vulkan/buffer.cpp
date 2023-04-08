@@ -12,7 +12,6 @@ namespace gravel::vlk {
 
 Buffer::Buffer(const uint64 size,
                const VkBufferUsageFlags buffer_usage,
-               const VkSharingMode sharing_mode,
                const VkMemoryPropertyFlags memory_properties,
                const VmaAllocationCreateFlags allocation_flags,
                const VmaMemoryUsage memory_usage)
@@ -25,7 +24,7 @@ Buffer::Buffer(const uint64 size,
       .size = size,
 
       .usage = buffer_usage,
-      .sharingMode = sharing_mode,
+      .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 
       .queueFamilyIndexCount = 0,
       .pQueueFamilyIndices = nullptr,
@@ -51,37 +50,30 @@ Buffer::Buffer(const uint64 size,
                  "[VK] Could not create buffer");
 }
 
-auto Buffer::staging(const uint64 size,
-                     const VkBufferUsageFlags buffer_usage,
-                     const VkSharingMode sharing_mode) -> Buffer
+auto Buffer::staging(const uint64 size, const VkBufferUsageFlags buffer_usage) -> Buffer
 {
   return Buffer {
       size,
       buffer_usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-      sharing_mode,
       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
       VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT,
       VMA_MEMORY_USAGE_AUTO_PREFER_HOST};
 }
 
-auto Buffer::gpu(const uint64 size,
-                 const VkBufferUsageFlags buffer_usage,
-                 const VkSharingMode sharing_mode) -> Buffer
+auto Buffer::gpu(const uint64 size, const VkBufferUsageFlags buffer_usage) -> Buffer
 {
   return Buffer {size,
                  buffer_usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                 sharing_mode,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                  0,
                  VMA_MEMORY_USAGE_CPU_TO_GPU};
 }
 
-auto Buffer::uniform(const uint64 size, const VkSharingMode sharing_mode) -> Buffer
+auto Buffer::uniform(const uint64 size) -> Buffer
 {
   return Buffer {
       size,
       VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-      sharing_mode,
       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
       VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT | VMA_ALLOCATION_CREATE_MAPPED_BIT,
       VMA_MEMORY_USAGE_AUTO_PREFER_DEVICE};

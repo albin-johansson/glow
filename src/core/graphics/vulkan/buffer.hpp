@@ -15,27 +15,19 @@ class Buffer final {
 
   Buffer(uint64 size,
          VkBufferUsageFlags buffer_usage,
-         VkSharingMode sharing_mode,
          VkMemoryPropertyFlags memory_properties,
          VmaAllocationCreateFlags allocation_flags,
          VmaMemoryUsage memory_usage);
 
   /// Creates a staging buffer.
-  [[nodiscard]] static auto staging(
-      uint64 size,
-      VkBufferUsageFlags buffer_usage,
-      VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE) -> Buffer;
-
-  /// Creates a GPU buffer that has to be updated with a staging buffer.
-  [[nodiscard]] static auto gpu(uint64 size,
-                                VkBufferUsageFlags buffer_usage,
-                                VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE)
+  [[nodiscard]] static auto staging(uint64 size, VkBufferUsageFlags buffer_usage)
       -> Buffer;
 
+  /// Creates a GPU buffer that has to be updated with a staging buffer.
+  [[nodiscard]] static auto gpu(uint64 size, VkBufferUsageFlags buffer_usage) -> Buffer;
+
   /// Creates a uniform buffer that remains mapped for its entire lifetime.
-  [[nodiscard]] static auto uniform(
-      uint64 size,
-      VkSharingMode sharing_mode = VK_SHARING_MODE_EXCLUSIVE) -> Buffer;
+  [[nodiscard]] static auto uniform(uint64 size) -> Buffer;
 
   /// Creates an efficient buffer with the provided data (using a staging buffer).
   [[nodiscard]] static auto create(VkBufferUsageFlags usage,
