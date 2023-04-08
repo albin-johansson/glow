@@ -9,6 +9,8 @@
 #include "engine/backend.hpp"
 #include "graphics/buffers.hpp"
 #include "graphics/vulkan/allocator.hpp"
+#include "graphics/vulkan/buffer.hpp"
+#include "graphics/vulkan/buffers.hpp"
 #include "graphics/vulkan/cmd/command_pool.hpp"
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/fence.hpp"
