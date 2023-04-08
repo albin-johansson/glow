@@ -148,19 +148,16 @@ void VulkanBackend::end_frame()
 {
   auto& frame = mFrames.at(mFrameIndex);
 
-
-  vkCmdEndRenderPass(frame.command_buffer);
   end_command_buffer(frame.command_buffer);
 
-  mDevice.submit_rendering_commands(frame.command_buffer,
-                                    frame.image_available_semaphore.get(),
-                                    frame.render_finished_semaphore.get(),
-                                    frame.in_flight_fence.get());
+  mDevice.submit(frame.command_buffer,
+                 frame.image_available_semaphore.get(),
+                 frame.render_finished_semaphore.get(),
+                 frame.in_flight_fence.get());
 
-  const auto present_result =
-      mDevice.present_swapchain_image(mSwapchain.get(),
-                                      mSwapchain.get_image_index(),
-                                      frame.render_finished_semaphore.get());
+  const auto present_result = mDevice.present(mSwapchain.get(),
+                                              mSwapchain.get_image_index(),
+                                              frame.render_finished_semaphore.get());
 
   if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
       mResizedFramebuffer) {
@@ -195,6 +192,7 @@ void VulkanBackend::render_scene(const Scene& scene,
 
   // TODO render models
 
+  vkCmdEndRenderPass(frame.command_buffer);
 }
 
 void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,

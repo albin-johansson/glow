@@ -78,10 +78,10 @@ Device::~Device()
   vkDestroyDevice(mDevice, nullptr);
 }
 
-void Device::submit_rendering_commands(VkCommandBuffer command_buffer,
-                                       VkSemaphore image_available_semaphore,
-                                       VkSemaphore render_finished_semaphore,
-                                       VkFence in_flight_fence)
+void Device::submit(VkCommandBuffer cmd_buffer,
+                    VkSemaphore image_available_semaphore,
+                    VkSemaphore render_finished_semaphore,
+                    VkFence in_flight_fence)
 {
   const VkPipelineStageFlags wait_dst_stage_mask =
       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -96,7 +96,7 @@ void Device::submit_rendering_commands(VkCommandBuffer command_buffer,
       .pWaitDstStageMask = &wait_dst_stage_mask,
 
       .commandBufferCount = 1,
-      .pCommandBuffers = &command_buffer,
+      .pCommandBuffers = &cmd_buffer,
 
       // Signal the render_finished_semaphore after command buffer execution
       .signalSemaphoreCount = 1,
@@ -107,9 +107,9 @@ void Device::submit_rendering_commands(VkCommandBuffer command_buffer,
                  "[VK] Could not submit command buffer to graphics queue");
 }
 
-auto Device::present_swapchain_image(VkSwapchainKHR swapchain,
-                                     const uint32 swapchain_image_index,
-                                     VkSemaphore render_finished_semaphore) -> VkResult
+auto Device::present(VkSwapchainKHR swapchain,
+                     uint32 swapchain_image_index,
+                     VkSemaphore render_finished_semaphore) -> VkResult
 {
   const VkPresentInfoKHR present_info {
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
