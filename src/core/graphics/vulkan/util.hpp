@@ -6,12 +6,18 @@
 #include <vulkan/vulkan.h>
 
 #include "common/debug/error.hpp"
+#include "common/primitives.hpp"
 #include "common/type/array.hpp"
 #include "common/type/string.hpp"
 
 namespace gravel::vlk {
 
 inline constexpr usize kMaxFramesInFlight = 2;
+
+inline constexpr uint32 kGlobalDescriptorSet = 0;
+inline constexpr uint32 kMaterialDescriptorSet = 1;
+
+inline constexpr uint32 kDescriptorSetCount = 2;
 
 /// Names of the validations layers we use.
 inline constexpr Array<const char*, 1> kValidationLayerNames {

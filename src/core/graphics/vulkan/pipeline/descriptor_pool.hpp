@@ -19,6 +19,8 @@ class DescriptorPool final {
 
   auto operator=(DescriptorPool&& other) noexcept -> DescriptorPool&;
 
+  [[nodiscard]] auto allocate(VkDescriptorSetLayout layout) -> VkDescriptorSet;
+
   [[nodiscard]] auto get() -> VkDescriptorPool { return mPool; }
 
  private:

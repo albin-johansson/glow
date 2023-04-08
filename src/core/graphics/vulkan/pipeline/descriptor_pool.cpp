@@ -3,7 +3,6 @@
 #include "common/debug/assert.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
-#include "util/arrays.hpp"
 
 namespace gravel::vlk {
 
@@ -18,7 +17,7 @@ DescriptorPool::DescriptorPool(const VkDescriptorPoolSize* pool_sizes,
       .pNext = nullptr,
       .flags = 0,
 
-      .maxSets = kMaxFramesInFlight,
+      .maxSets = kDescriptorSetCount,
 
       .poolSizeCount = pool_size_count,
       .pPoolSizes = pool_sizes,
@@ -56,6 +55,23 @@ auto DescriptorPool::operator=(DescriptorPool&& other) noexcept -> DescriptorPoo
   }
 
   return *this;
+}
+
+auto DescriptorPool::allocate(VkDescriptorSetLayout layout) -> VkDescriptorSet
+{
+  const VkDescriptorSetAllocateInfo allocate_info {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .descriptorPool = mPool,
+      .descriptorSetCount = 1,
+      .pSetLayouts = &layout,
+  };
+
+  VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkAllocateDescriptorSets(get_device(), &allocate_info, &descriptor_set),
+                 "[VK] Could not allocate descriptor set");
+
+  return descriptor_set;
 }
 
 }  // namespace gravel::vlk
