@@ -1,9 +1,13 @@
 #include "vulkan_backend.hpp"
 
-#include <SDL2/SDL_vulkan.h>
 #include <fmt/format.h>
+#include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
+#include <spdlog/spdlog.h>
+
+// This comment prevents moving the following include before <imgui.h>
+#include <ImGuizmo.h>
 
 #include "common/debug/assert.hpp"
 #include "graphics/camera.hpp"
@@ -36,18 +40,15 @@ namespace {
 }  // namespace
 
 VulkanBackend::VulkanBackend(SDL_Window* window)
-    : mInstance {},
-      mSurface {window},
+    : mSurface {window},
       mGPU {select_gpu()},
       mRenderPass {mSwapchain.get_image_format()},
-      mPipelineCache {},
       mShadingPipeline {mRenderPass.get(), mSwapchain.get_image_extent()},
-      mCommandPool {}
 {
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
-    auto& frame_data = mFrames.emplace_back();
-    frame_data.command_buffer = mCommandPool.create_command_buffer();
+    auto& frame = mFrames.emplace_back();
+    frame.command_buffer = mCommandPool.create_command_buffer();
   }
 
   mSwapchain.create_framebuffers(mRenderPass.get());
@@ -75,13 +76,25 @@ void VulkanBackend::on_init(Scene& scene)
   VkPhysicalDeviceProperties gpu_properties {};
   vkGetPhysicalDeviceProperties(mGPU, &gpu_properties);
 
+  spdlog::debug("[VK] Max push constant size: {}",
+                gpu_properties.limits.maxPushConstantsSize);
+  spdlog::debug("[VK] Max sampler anisotropy: {}",
+                gpu_properties.limits.maxSamplerAnisotropy);
+  spdlog::debug("[VK] Max bound descriptor sets: {}",
+                gpu_properties.limits.maxBoundDescriptorSets);
+  spdlog::debug("[VK] Max memory allocation count: {}",
+                gpu_properties.limits.maxMemoryAllocationCount);
+  spdlog::debug("[VK] Max uniform buffer range: {}",
+                gpu_properties.limits.maxUniformBufferRange);
+
   auto& renderer_info = scene.get<RendererInfo>();
   renderer_info.api = get_api_version(mGPU);
   renderer_info.renderer = gpu_properties.deviceName;
   renderer_info.vendor = "N/A";
   renderer_info.version = get_driver_version(mGPU);
 
-  const auto camera_entity = make_camera(scene, "Camera", Vec3 {0, 0, 2}, Vec3 {0, 0, 1});
+  const auto camera_entity =
+      make_camera(scene, "Camera", Vec3 {0, 2, -5}, Vec3 {0, 0, 1});
 
   auto& camera_context = scene.get<CameraContext>();
   camera_context.active_camera = camera_entity;
@@ -190,7 +203,11 @@ void VulkanBackend::render_scene(const Scene& scene,
   cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
   cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
-  // TODO render models
+  // Update the static (frame persistent) matrices
+  mStaticMatrices.proj = to_projection_matrix(camera, GraphicsApi::Vulkan);
+  mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
+  mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view_proj;
+  frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
 
   vkCmdEndRenderPass(frame.command_buffer);
 }

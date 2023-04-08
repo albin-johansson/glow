@@ -31,6 +31,7 @@ struct FrameData final {
   Semaphore image_available_semaphore;
   Semaphore render_finished_semaphore;
   Fence in_flight_fence {true};
+  Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
 };
 
 class VulkanBackend final : public Backend {
@@ -82,8 +83,9 @@ class VulkanBackend final : public Backend {
   Vector<FrameData> mFrames;
   usize mFrameIndex {0};
 
-  MatrixBuffer mMatrixBuffer;
   MaterialBuffer mMaterialBuffer;
+  StaticMatrices mStaticMatrices;
+  DynamicMatrices mDynamicMatrices;
 
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};
