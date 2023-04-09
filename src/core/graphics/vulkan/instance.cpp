@@ -1,5 +1,7 @@
 #include "instance.hpp"
 
+#include <exception>  // terminate
+
 #include <SDL2/SDL_vulkan.h>
 #include <spdlog/spdlog.h>
 
@@ -48,6 +50,10 @@ VKAPI_ATTR auto debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT se
   }
 
   spdlog::log(level, "[Vulkan] {}", data->pMessage);
+
+  if (severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) {
+    std::terminate();
+  }
 
   return VK_FALSE;
 }
