@@ -11,6 +11,8 @@ namespace gravel::vlk {
 auto DescriptorSetLayoutBuilder::reset() -> Self&
 {
   mBindings.clear();
+  mUsePushDescriptors = false;
+
   return *this;
 }
 
@@ -30,13 +32,24 @@ auto DescriptorSetLayoutBuilder::descriptor(const uint32 binding,
   return *this;
 }
 
+auto DescriptorSetLayoutBuilder::use_push_descriptors() -> Self&
+{
+  mUsePushDescriptors = true;
+  return *this;
+}
+
 auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
 {
+  VkDescriptorSetLayoutCreateFlags flags = 0;
+  if (mUsePushDescriptors) {
+    flags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
+  }
+
   const VkDescriptorSetLayoutCreateInfo info {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 
       .pNext = nullptr,
-      .flags = 0,
+      .flags = flags,
 
       .bindingCount = static_cast<uint32>(mBindings.size()),
       .pBindings = mBindings.data(),

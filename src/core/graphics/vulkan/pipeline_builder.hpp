@@ -21,10 +21,13 @@ class DescriptorSetLayoutBuilder final {
                   VkShaderStageFlags stages,
                   uint32 count = 1) -> Self&;
 
+  auto use_push_descriptors() -> Self&;
+
   [[nodiscard]] auto build() const -> VkDescriptorSetLayout;
 
  private:
   Vector<VkDescriptorSetLayoutBinding> mBindings;
+  bool mUsePushDescriptors : 1 {false};
 };
 
 class PipelineLayoutBuilder final {

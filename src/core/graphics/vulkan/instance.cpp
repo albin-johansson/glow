@@ -8,6 +8,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "init/window.hpp"
+#include "util/arrays.hpp"
 
 namespace gravel::vlk {
 namespace {
@@ -49,6 +50,12 @@ VKAPI_ATTR auto debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT se
   spdlog::log(level, "[Vulkan] {}", data->pMessage);
 
   return VK_FALSE;
+}
+
+template <typename T>
+void load_function(VkInstance instance, T& func, const char* name)
+{
+  func = reinterpret_cast<T>(vkGetInstanceProcAddr(instance, name));
 }
 
 }  // namespace
@@ -93,8 +100,8 @@ Instance::Instance()
     spdlog::debug("[VK] Enabling validation layers");
 
     // Enable validation layers in debug builds
-    instance_create_info.ppEnabledLayerNames = kValidationLayerNames.data();
-    instance_create_info.enabledLayerCount = kValidationLayerNames.size();
+    instance_create_info.ppEnabledLayerNames = kValidationLayerNames;
+    instance_create_info.enabledLayerCount = array_length(kValidationLayerNames);
   }
 
   GRAVEL_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &mInstance),
@@ -104,15 +111,22 @@ Instance::Instance()
   auto& functions = get_extension_functions();
 
   if constexpr (kDebugBuild) {
-    functions.vkCreateDebugUtilsMessengerEXT =
-        reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
-            vkGetInstanceProcAddr(mInstance, "vkCreateDebugUtilsMessengerEXT"));
-    functions.vkDestroyDebugUtilsMessengerEXT =
-        reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
-            vkGetInstanceProcAddr(mInstance, "vkDestroyDebugUtilsMessengerEXT"));
+    load_function(mInstance,
+                  functions.vkCreateDebugUtilsMessengerEXT,
+                  "vkCreateDebugUtilsMessengerEXT");
+    load_function(mInstance,
+                  functions.vkDestroyDebugUtilsMessengerEXT,
+                  "vkDestroyDebugUtilsMessengerEXT");
 
     create_debug_messenger();
   }
+
+  load_function(mInstance,
+                functions.vkCmdPushDescriptorSetKHR,
+                "vkCmdPushDescriptorSetKHR");
+  load_function(mInstance,
+                functions.vkCmdPushDescriptorSetWithTemplateKHR,
+                "vkCmdPushDescriptorSetWithTemplateKHR");
 }
 
 Instance::~Instance() noexcept

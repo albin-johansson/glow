@@ -7,7 +7,6 @@
 
 #include "common/debug/error.hpp"
 #include "common/primitives.hpp"
-#include "common/type/array.hpp"
 #include "common/type/string.hpp"
 
 namespace gravel::vlk {
@@ -20,14 +19,14 @@ inline constexpr uint32 kMaterialDescriptorSet = 1;
 inline constexpr uint32 kDescriptorSetCount = 2;
 
 /// Names of the validations layers we use.
-inline constexpr Array<const char*, 1> kValidationLayerNames {
+inline constexpr const char* kValidationLayerNames[] {
     "VK_LAYER_KHRONOS_validation",
 };
 
 /// Names of the extensions that the Vulkan implementation must provide.
-/// TODO: use CTAD with the Array alias here when all compilers support it
-inline constexpr std::array kRequiredDeviceExtensions {
+inline constexpr const char* kRequiredDeviceExtensions[] {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME,
     VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
 
 #ifdef GRAVEL_USE_VULKAN_SUBSET

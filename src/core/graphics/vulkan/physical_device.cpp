@@ -1,6 +1,7 @@
 #include "physical_device.hpp"
 
 #include <algorithm>  // max_element
+#include <array>      // begin, end
 
 #include "common/debug/error.hpp"
 #include "common/primitives.hpp"
@@ -35,8 +36,8 @@ namespace {
 
 [[nodiscard]] auto has_required_extensions(VkPhysicalDevice gpu) -> bool
 {
-  HashSet<String> missing_extensions(kRequiredDeviceExtensions.begin(),
-                                     kRequiredDeviceExtensions.end());
+  HashSet<String> missing_extensions {std::begin(kRequiredDeviceExtensions),
+                                      std::end(kRequiredDeviceExtensions)};
 
   const auto available_extensions = get_extensions(gpu);
   for (const auto& extension : available_extensions) {

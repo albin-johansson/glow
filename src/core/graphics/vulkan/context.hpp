@@ -19,6 +19,8 @@ struct [[deprecated]] VulkanContext final {
 struct ExtensionFunctions final {
   PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT {};
   PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT {};
+  PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR {};
+  PFN_vkCmdPushDescriptorSetWithTemplateKHR vkCmdPushDescriptorSetWithTemplateKHR {};
 };
 
 [[nodiscard]] auto get_extension_functions() noexcept -> ExtensionFunctions&;

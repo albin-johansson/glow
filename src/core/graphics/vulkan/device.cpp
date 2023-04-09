@@ -7,6 +7,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
+#include "util/arrays.hpp"
 
 namespace gravel::vlk {
 
@@ -57,15 +58,15 @@ Device::Device()
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
 
-      .enabledExtensionCount = kRequiredDeviceExtensions.size(),
-      .ppEnabledExtensionNames = kRequiredDeviceExtensions.data(),
+      .enabledExtensionCount = array_length(kRequiredDeviceExtensions),
+      .ppEnabledExtensionNames = kRequiredDeviceExtensions,
 
       .pEnabledFeatures = &device_features,
   };
 
   if constexpr (GRAVEL_DEBUG_BUILD) {
-    device_create_info.enabledLayerCount = kValidationLayerNames.size();
-    device_create_info.ppEnabledLayerNames = kValidationLayerNames.data();
+    device_create_info.enabledLayerCount = array_length(kValidationLayerNames);
+    device_create_info.ppEnabledLayerNames = kValidationLayerNames;
   }
 
   GRAVEL_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &mDevice),

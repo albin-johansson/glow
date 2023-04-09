@@ -112,23 +112,31 @@ void VulkanBackend::on_init(Scene& scene)
 
   prepare_imgui_for_vulkan();
 
-  VkPhysicalDeviceProperties gpu_properties {};
-  vkGetPhysicalDeviceProperties(mGPU, &gpu_properties);
+  VkPhysicalDevicePushDescriptorPropertiesKHR push_descriptor_properties {};
+  push_descriptor_properties.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
 
-  spdlog::debug("[VK] Max push constant size: {}",
-                gpu_properties.limits.maxPushConstantsSize);
+  VkPhysicalDeviceProperties2 gpu_properties {};
+  gpu_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  gpu_properties.pNext = &push_descriptor_properties;
+  vkGetPhysicalDeviceProperties2(mGPU, &gpu_properties);
+
+  spdlog::debug("[VK] Max push constant size: {} bytes",
+                gpu_properties.properties.limits.maxPushConstantsSize);
   spdlog::debug("[VK] Max sampler anisotropy: {}",
-                gpu_properties.limits.maxSamplerAnisotropy);
+                gpu_properties.properties.limits.maxSamplerAnisotropy);
   spdlog::debug("[VK] Max bound descriptor sets: {}",
-                gpu_properties.limits.maxBoundDescriptorSets);
+                gpu_properties.properties.limits.maxBoundDescriptorSets);
   spdlog::debug("[VK] Max memory allocation count: {}",
-                gpu_properties.limits.maxMemoryAllocationCount);
-  spdlog::debug("[VK] Max uniform buffer range: {}",
-                gpu_properties.limits.maxUniformBufferRange);
+                gpu_properties.properties.limits.maxMemoryAllocationCount);
+  spdlog::debug("[VK] Max uniform buffer range: {} bytes",
+                gpu_properties.properties.limits.maxUniformBufferRange);
+  spdlog::debug("[VK] Max push descriptors in descriptor set layout: {}",
+                push_descriptor_properties.maxPushDescriptors);
 
   auto& renderer_info = scene.get<RendererInfo>();
   renderer_info.api = get_api_version(mGPU);
-  renderer_info.renderer = gpu_properties.deviceName;
+  renderer_info.renderer = gpu_properties.properties.deviceName;
   renderer_info.vendor = "N/A";
   renderer_info.version = get_driver_version(mGPU);
 
