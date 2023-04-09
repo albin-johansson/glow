@@ -99,7 +99,7 @@ void RenderPass::begin(VkCommandBuffer command_buffer,
 {
   const VkClearValue clear_color {
       VkClearColorValue {
-          .float32 = {0.5f, 0.1f, 0.5f, 1.0f},
+          .float32 = {0.0f, 0.0f, 0.0f, 1.0f},
       },
   };
 

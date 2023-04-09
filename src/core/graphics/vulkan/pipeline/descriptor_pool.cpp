@@ -6,7 +6,8 @@
 
 namespace gravel::vlk {
 
-DescriptorPool::DescriptorPool(const VkDescriptorPoolSize* pool_sizes,
+DescriptorPool::DescriptorPool(const uint32 max_sets,
+                               const VkDescriptorPoolSize* pool_sizes,
                                const uint32 pool_size_count)
 {
   GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
@@ -17,7 +18,7 @@ DescriptorPool::DescriptorPool(const VkDescriptorPoolSize* pool_sizes,
       .pNext = nullptr,
       .flags = 0,
 
-      .maxSets = kDescriptorSetCount,
+      .maxSets = max_sets,
 
       .poolSizeCount = pool_size_count,
       .pPoolSizes = pool_sizes,

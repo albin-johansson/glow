@@ -11,7 +11,9 @@ class DescriptorPool final {
  public:
   GRAVEL_DELETE_COPY(DescriptorPool);
 
-  DescriptorPool(const VkDescriptorPoolSize* pool_sizes, uint32 pool_size_count);
+  DescriptorPool(uint32 max_sets,
+                 const VkDescriptorPoolSize* pool_sizes,
+                 uint32 pool_size_count);
 
   ~DescriptorPool() noexcept;
 
