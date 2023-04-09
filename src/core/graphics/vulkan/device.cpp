@@ -42,8 +42,14 @@ Device::Device()
   VkPhysicalDeviceFeatures device_features {};
   device_features.samplerAnisotropy = VK_TRUE;
 
+  VkPhysicalDeviceDescriptorIndexingFeatures indexing_features {};
+  indexing_features.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+  indexing_features.descriptorBindingPartiallyBound = VK_TRUE;
+
   VkDeviceCreateInfo device_create_info {
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+      .pNext = &indexing_features,
 
       .queueCreateInfoCount = static_cast<uint32>(queue_create_infos.size()),
       .pQueueCreateInfos = queue_create_infos.data(),

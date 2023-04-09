@@ -28,6 +28,8 @@ inline constexpr Array<const char*, 1> kValidationLayerNames {
 /// TODO: use CTAD with the Array alias here when all compilers support it
 inline constexpr std::array kRequiredDeviceExtensions {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+    VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
+
 #ifdef GRAVEL_USE_VULKAN_SUBSET
     "VK_KHR_portability_subset",
 #endif  // GRAVEL_USE_VULKAN_SUBSET
