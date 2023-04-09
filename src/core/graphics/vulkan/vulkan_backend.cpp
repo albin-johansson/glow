@@ -237,7 +237,7 @@ void VulkanBackend::render_scene(const Scene& scene,
   // Update the static (frame persistent) matrices
   mStaticMatrices.proj = to_projection_matrix(camera, GraphicsApi::Vulkan);
   mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
-  mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view_proj;
+  mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view;
   frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
 
   mRenderPass.begin(frame.command_buffer,
