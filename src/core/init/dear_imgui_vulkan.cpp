@@ -16,9 +16,6 @@ DearImGuiVulkan::DearImGuiVulkan(SDL_Window* window)
 
 DearImGuiVulkan::~DearImGuiVulkan()
 {
-  // Here we assume that the Vulkan backend has called ImGui_ImplVulkan_Init,
-  // because the initialization has to be deferred after instance creation, etc.
-  ImGui_ImplVulkan_Shutdown();
   ImGui_ImplSDL2_Shutdown();
 }
 

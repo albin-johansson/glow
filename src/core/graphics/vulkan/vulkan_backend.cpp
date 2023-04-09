@@ -44,6 +44,12 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
       mGPU {select_gpu()},
       mRenderPass {mSwapchain.get_image_format()},
       mShadingPipeline {mRenderPass.get(), mSwapchain.get_image_extent()},
+
+VulkanBackend::~VulkanBackend() noexcept
+{
+  ImGui_ImplVulkan_Shutdown();
+}
+
 {
 
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
