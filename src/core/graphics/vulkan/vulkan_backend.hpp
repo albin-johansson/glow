@@ -22,7 +22,6 @@
 #include "graphics/vulkan/render_pass.hpp"
 #include "graphics/vulkan/sampler.hpp"
 #include "graphics/vulkan/semaphore.hpp"
-#include "graphics/vulkan/shading_pipeline.hpp"
 #include "graphics/vulkan/surface.hpp"
 #include "graphics/vulkan/swapchain.hpp"
 #include "util/arrays.hpp"
