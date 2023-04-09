@@ -100,14 +100,6 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
-  auto& vulkan_context = scene.add<VulkanContext>();
-  vulkan_context.gpu = mGPU;
-  vulkan_context.device = mDevice.get();
-  vulkan_context.graphics_queue = mDevice.get_graphics_queue();
-  vulkan_context.presentation_queue = mDevice.get_present_queue();
-  vulkan_context.command_pool = mCommandPool.get();
-  vulkan_context.allocator = mAllocator.get();
-
   scene.add<ImageCache>();
 
   prepare_imgui_for_vulkan();

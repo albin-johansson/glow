@@ -5,16 +5,6 @@
 
 namespace gravel::vlk {
 
-/// Context component referencing fundamental Vulkan resources.
-struct [[deprecated]] VulkanContext final {
-  VkPhysicalDevice gpu {VK_NULL_HANDLE};
-  VkDevice device {VK_NULL_HANDLE};
-  VkQueue graphics_queue {VK_NULL_HANDLE};
-  VkQueue presentation_queue {VK_NULL_HANDLE};
-  VkCommandPool command_pool {VK_NULL_HANDLE};
-  VmaAllocator allocator {VK_NULL_HANDLE};
-};
-
 /// Stores extension function pointers.
 struct ExtensionFunctions final {
   PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT {};
