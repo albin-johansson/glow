@@ -147,13 +147,13 @@ auto PipelineBuilder::reset() -> Self&
 
 auto PipelineBuilder::shaders(const char* vertex_path, const char* fragment_path) -> Self&
 {
-  mVertexShader.emplace(get_device(), vertex_path);
-  mFragmentShader.emplace(get_device(), fragment_path);
+  mVertexShader = create_shader_module(vertex_path);
+  mFragmentShader = create_shader_module(fragment_path);
 
   mShaderStages[0] =
-      create_pipeline_shader_stage(VK_SHADER_STAGE_VERTEX_BIT, mVertexShader->get());
+      create_pipeline_shader_stage(VK_SHADER_STAGE_VERTEX_BIT, mVertexShader.get());
   mShaderStages[1] =
-      create_pipeline_shader_stage(VK_SHADER_STAGE_FRAGMENT_BIT, mFragmentShader->get());
+      create_pipeline_shader_stage(VK_SHADER_STAGE_FRAGMENT_BIT, mFragmentShader.get());
 
   return *this;
 }
@@ -222,6 +222,8 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
 
   const VkGraphicsPipelineCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+      .pNext = nullptr,
+      .flags = 0,
 
       .stageCount = 2,
       .pStages = mShaderStages,

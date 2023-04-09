@@ -2,25 +2,17 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 #include "common/type/path.hpp"
 
 namespace gravel::vlk {
 
-class ShaderModule final {
- public:
-  GRAVEL_DELETE_COPY(ShaderModule);
-  GRAVEL_DELETE_MOVE(ShaderModule);
-
-  ShaderModule(VkDevice device, const Path& code_path);
-
-  ~ShaderModule();
-
-  [[nodiscard]] auto get() -> VkShaderModule { return mModule; }
-
- private:
-  VkDevice mDevice {VK_NULL_HANDLE};
-  VkShaderModule mModule {VK_NULL_HANDLE};
+struct ShaderModuleDeleter final {
+  void operator()(VkShaderModule shader) noexcept;
 };
+
+using ShaderModule = Unique<VkShaderModule_T, ShaderModuleDeleter>;
+
+[[nodiscard]] auto create_shader_module(const Path& shader_path) -> ShaderModule;
 
 }  // namespace gravel::vlk

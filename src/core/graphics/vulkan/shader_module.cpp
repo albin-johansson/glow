@@ -1,36 +1,35 @@
 #include "shader_module.hpp"
 
 #include "common/debug/error.hpp"
-#include "common/primitives.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "io/files.hpp"
 
 namespace gravel::vlk {
 
-ShaderModule::ShaderModule(VkDevice device, const Path& code_path)
-    : mDevice {device}
+void ShaderModuleDeleter::operator()(VkShaderModule shader) noexcept
 {
-  const auto code = load_binary_file(code_path);
+  vkDestroyShaderModule(get_device(), shader, nullptr);
+}
+
+auto create_shader_module(const Path& shader_path) -> ShaderModule
+{
+  const auto code = load_binary_file(shader_path);
   if (!code) {
     throw Error {"[VK] Could not load shader code"};
   }
 
-  const VkShaderModuleCreateInfo shader_module_create_info {
+  const VkShaderModuleCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
       .codeSize = code->size(),
-      .pCode = reinterpret_cast<const uint32*>(code->data()),
+      .pCode = reinterpret_cast<const uint32*>(code->data()),  // NOLINT
   };
 
-  GRAVEL_VK_CALL(vkCreateShaderModule(mDevice,  //
-                                      &shader_module_create_info,
-                                      nullptr,
-                                      &mModule),
+  VkShaderModule shader = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateShaderModule(get_device(), &create_info, nullptr, &shader),
                  "[VK] Could not create shader module");
-}
 
-ShaderModule::~ShaderModule()
-{
-  vkDestroyShaderModule(mDevice, mModule, nullptr);
+  return ShaderModule {shader};
 }
 
 }  // namespace gravel::vlk

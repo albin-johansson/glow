@@ -80,8 +80,8 @@ class PipelineBuilder final {
  private:
   VkPipelineCache mCache;
 
-  Maybe<ShaderModule> mVertexShader;
-  Maybe<ShaderModule> mFragmentShader;
+  ShaderModule mVertexShader;
+  ShaderModule mFragmentShader;
   VkPipelineShaderStageCreateInfo mShaderStages[2] {};
 
   // We assume that all pipelines use vertex shaders with the usual "Vertex" arguments
