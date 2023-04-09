@@ -42,6 +42,7 @@ Device::Device()
 
   VkPhysicalDeviceFeatures device_features {};
   device_features.samplerAnisotropy = VK_TRUE;
+  device_features.fillModeNonSolid = VK_TRUE;
 
   VkPhysicalDeviceDescriptorIndexingFeatures indexing_features {};
   indexing_features.sType =
