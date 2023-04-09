@@ -98,7 +98,7 @@ class VulkanBackend final : public Backend {
   PipelineLayoutBuilder mPipelineLayoutBuilder;
   PipelineBuilder mPipelineBuilder;
 
-  DescriptorSetLayout mShadingDSLayout;
+  DescriptorSetLayout mShadingDescriptorSetLayout;
   PipelineLayout mShadingPipelineLayout;
   Pipeline mShadingPipeline;
 

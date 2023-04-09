@@ -64,15 +64,19 @@ void VulkanBackend::create_shading_pipeline()
       .descriptor(5,
                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                   VK_SHADER_STAGE_FRAGMENT_BIT);
-  mShadingDSLayout.reset(mDescriptorSetLayoutBuilder.build());
+  mShadingDescriptorSetLayout.reset(mDescriptorSetLayoutBuilder.build());
 
   mPipelineLayoutBuilder.reset()
-      .descriptor_layout(mShadingDSLayout.get())
+      .descriptor_layout(mShadingDescriptorSetLayout.get())
       .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
   mShadingPipelineLayout.reset(mPipelineLayoutBuilder.build());
 
-  mPipelineBuilder.reset().shaders("assets/shaders/vk/shading.vert.spv",
-                                   "assets/shaders/vk/shading.frag.spv");
+  mPipelineBuilder.reset()
+      .shaders("assets/shaders/vk/shading.vert.spv", "assets/shaders/vk/shading.frag.spv")
+      .rasterization(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT)
+      .multisample(VK_SAMPLE_COUNT_1_BIT)
+      .input_assembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+      .blending(false);
   mShadingPipeline.reset(
       mPipelineBuilder.build(mRenderPass.get(), mShadingPipelineLayout.get()));
 }
