@@ -164,7 +164,7 @@ auto VulkanBackend::begin_frame() -> Result
   auto& frame = mFrames.at(mFrameIndex);
 
   // Wait until the previous frame has finished
-  frame.in_flight_fence.wait();
+  wait_fence(frame.in_flight_fence.get());
 
   // Acquire an image from the swapchain
   const auto acquire_image_result =
@@ -180,11 +180,10 @@ auto VulkanBackend::begin_frame() -> Result
   }
 
   // The fence is only reset when we submit useful work
-  frame.in_flight_fence.reset();
+  reset_fence(frame.in_flight_fence.get());
 
   reset_command_buffer(frame.command_buffer);
   begin_command_buffer(frame.command_buffer);
-
 
   return kSuccess;
 }

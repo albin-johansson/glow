@@ -14,7 +14,12 @@ inline constexpr uint64 kMaxU64 = std::numeric_limits<uint64>::max();
 
 }  // namespace
 
-Fence::Fence(const bool signaled)
+void FenceDeleter::operator()(VkFence fence) noexcept
+{
+  vkDestroyFence(get_device(), fence, nullptr);
+}
+
+auto create_fence(const bool signaled) -> Fence
 {
   GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -26,49 +31,22 @@ Fence::Fence(const bool signaled)
       .flags = flags,
   };
 
-  GRAVEL_VK_CALL(vkCreateFence(get_device(), &create_info, nullptr, &mFence),
+  VkFence fence = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateFence(get_device(), &create_info, nullptr, &fence),
                  "[VK] Could not create fence");
+
+  return Fence {fence};
 }
 
-Fence::~Fence() noexcept
+void reset_fence(VkFence fence)
 {
-  dispose();
+  GRAVEL_VK_CALL(vkResetFences(get_device(), 1, &fence), "[VK] Could not reset fence");
 }
 
-void Fence::dispose() noexcept
+void wait_fence(VkFence fence)
 {
-  if (mFence != VK_NULL_HANDLE) {
-    vkDestroyFence(get_device(), mFence, nullptr);
-  }
-}
-
-Fence::Fence(Fence&& other) noexcept
-    : mFence {other.mFence}
-{
-  other.mFence = VK_NULL_HANDLE;
-}
-
-auto Fence::operator=(Fence&& other) noexcept -> Fence&
-{
-  if (this != &other) {
-    dispose();
-
-    mFence = other.mFence;
-    other.mFence = VK_NULL_HANDLE;
-  }
-
-  return *this;
-}
-
-void Fence::wait()
-{
-  GRAVEL_VK_CALL(vkWaitForFences(get_device(), 1, &mFence, VK_TRUE, kMaxU64),
+  GRAVEL_VK_CALL(vkWaitForFences(get_device(), 1, &fence, VK_TRUE, kMaxU64),
                  "[VK] Could not wait for fence");
-}
-
-void Fence::reset()
-{
-  GRAVEL_VK_CALL(vkResetFences(get_device(), 1, &mFence), "[VK] Could not reset fence");
 }
 
 }  // namespace gravel::vlk

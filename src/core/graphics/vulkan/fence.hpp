@@ -2,35 +2,23 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 
 namespace gravel::vlk {
 
-/// Represents a binary semaphore, for CPU-side synchronization (known as a "fence").
-class Fence final {
- public:
-  GRAVEL_DELETE_COPY(Fence);
-
-  explicit Fence(bool signaled = true);
-
-  ~Fence() noexcept;
-
-  Fence(Fence&& other) noexcept;
-
-  auto operator=(Fence&& other) noexcept -> Fence&;
-
-  /// Waits on the fence to get signaled.
-  void wait();
-
-  /// Resets the fence to its unsignaled state.
-  void reset();
-
-  [[nodiscard]] auto get() -> VkFence { return mFence; }
-
- private:
-  VkFence mFence {VK_NULL_HANDLE};
-
-  void dispose() noexcept;
+struct FenceDeleter final {
+  void operator()(VkFence fence) noexcept;
 };
+
+/// Represents a binary semaphore, for CPU-side synchronization (known as a "fence").
+using Fence = Unique<VkFence_T, FenceDeleter>;
+
+[[nodiscard]] auto create_fence(bool signaled = true) -> Fence;
+
+/// Resets a fence to its unsignaled state.
+void reset_fence(VkFence fence);
+
+/// Blocks the calling thread until the fence gets signaled.
+void wait_fence(VkFence fence);
 
 }  // namespace gravel::vlk

@@ -39,7 +39,7 @@ struct FrameData final {
 
   Semaphore image_available_semaphore {create_semaphore()};
   Semaphore render_finished_semaphore {create_semaphore()};
-  Fence in_flight_fence {true};
+  Fence in_flight_fence {create_fence(true)};
 
   Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
   Buffer material_ubo {Buffer::uniform(sizeof(MaterialBuffer))};
