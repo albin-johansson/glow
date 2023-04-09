@@ -94,7 +94,7 @@ class VulkanBackend final : public Backend {
   Sampler mSampler;
 
   PipelineCache mPipelineCache;
-  DescriptorSetLayoutBuilder mDSLayoutBuilder;
+  DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   PipelineLayoutBuilder mPipelineLayoutBuilder;
   PipelineBuilder mPipelineBuilder;
 

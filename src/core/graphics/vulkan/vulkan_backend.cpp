@@ -57,14 +57,14 @@ VulkanBackend::~VulkanBackend() noexcept
 
 void VulkanBackend::create_shading_pipeline()
 {
-  mDSLayoutBuilder.reset()
+  mDescriptorSetLayoutBuilder.reset()
       .use_push_descriptors()
       .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
       .descriptor(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT)
       .descriptor(5,
                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                   VK_SHADER_STAGE_FRAGMENT_BIT);
-  mShadingDSLayout.reset(mDSLayoutBuilder.build());
+  mShadingDSLayout.reset(mDescriptorSetLayoutBuilder.build());
 
   mPipelineLayoutBuilder.reset()
       .descriptor_layout(mShadingDSLayout.get())

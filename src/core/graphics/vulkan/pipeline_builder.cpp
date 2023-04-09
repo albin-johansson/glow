@@ -40,6 +40,17 @@ auto DescriptorSetLayoutBuilder::use_push_descriptors() -> Self&
 
 auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
 {
+  const Vector<VkDescriptorBindingFlags> binding_flags(
+      mBindings.size(),
+      VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT);
+
+  const VkDescriptorSetLayoutBindingFlagsCreateInfo binding_flags_create_info {
+      .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
+      .pNext = nullptr,
+      .bindingCount = static_cast<uint32>(binding_flags.size()),
+      .pBindingFlags = binding_flags.data(),
+  };
+
   VkDescriptorSetLayoutCreateFlags flags = 0;
   if (mUsePushDescriptors) {
     flags |= VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
@@ -48,7 +59,7 @@ auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
   const VkDescriptorSetLayoutCreateInfo info {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 
-      .pNext = nullptr,
+      .pNext = &binding_flags_create_info,
       .flags = flags,
 
       .bindingCount = static_cast<uint32>(mBindings.size()),
