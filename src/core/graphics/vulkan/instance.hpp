@@ -26,7 +26,7 @@ class Instance final {
   VkInstance mInstance {VK_NULL_HANDLE};
   VkDebugUtilsMessengerEXT mDebugMessenger {VK_NULL_HANDLE};
 
-  void create_debug_messenger();
+  void init_debug_messenger();
 };
 
 /// Returns all available GPUs, regardless of their suitability.

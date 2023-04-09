@@ -118,7 +118,7 @@ Instance::Instance()
                   functions.vkDestroyDebugUtilsMessengerEXT,
                   "vkDestroyDebugUtilsMessengerEXT");
 
-    create_debug_messenger();
+    init_debug_messenger();
   }
 
   load_function(mInstance,
@@ -131,18 +131,16 @@ Instance::Instance()
 
 Instance::~Instance() noexcept
 {
-  auto& functions = get_extension_functions();
-
   if constexpr (kDebugBuild) {
-    functions.vkDestroyDebugUtilsMessengerEXT(mInstance, mDebugMessenger, nullptr);
+    destroy_debug_messenger(mInstance, mDebugMessenger);
   }
 
   vkDestroyInstance(mInstance, nullptr);
 }
 
-void Instance::create_debug_messenger()
+void Instance::init_debug_messenger()
 {
-  const VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info {
+  const VkDebugUtilsMessengerCreateInfoEXT create_info {
       .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
       .pNext = nullptr,
       .flags = 0,
@@ -160,11 +158,7 @@ void Instance::create_debug_messenger()
       .pUserData = nullptr,
   };
 
-  auto& functions = get_extension_functions();
-  GRAVEL_VK_CALL(functions.vkCreateDebugUtilsMessengerEXT(mInstance,
-                                                          &debug_messenger_create_info,
-                                                          nullptr,
-                                                          &mDebugMessenger),
+  GRAVEL_VK_CALL(create_debug_messenger(mInstance, &create_info, &mDebugMessenger),
                  "[VK] Could not create debug messenger");
 }
 

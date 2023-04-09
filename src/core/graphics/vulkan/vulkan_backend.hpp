@@ -47,7 +47,6 @@ struct FrameData final {
   DescriptorPool descriptor_pool {2'048,
                                   kDescriptorPoolSizes,
                                   array_length(kDescriptorPoolSizes)};
-  VkDescriptorSet global_descriptor_set {VK_NULL_HANDLE};
 };
 
 class VulkanBackend final : public Backend {
@@ -99,7 +98,7 @@ class VulkanBackend final : public Backend {
   PipelineLayoutBuilder mPipelineLayoutBuilder;
   PipelineBuilder mPipelineBuilder;
 
-  DescriptorSetLayout mShadingGlobalDSLayout;
+  DescriptorSetLayout mShadingDSLayout;
   PipelineLayout mShadingPipelineLayout;
   Pipeline mShadingPipeline;
 

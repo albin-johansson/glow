@@ -3,7 +3,7 @@
 namespace gravel::vlk {
 namespace {
 
-inline ExtensionFunctions gExtensionFunctions;
+inline ExtensionFunctions gFunctions;
 
 inline VkInstance gInstance = VK_NULL_HANDLE;
 inline VkPhysicalDevice gGPU = VK_NULL_HANDLE;
@@ -18,7 +18,37 @@ inline VmaAllocator gAllocator = VK_NULL_HANDLE;
 
 auto get_extension_functions() noexcept -> ExtensionFunctions&
 {
-  return gExtensionFunctions;
+  return gFunctions;
+}
+
+auto create_debug_messenger(VkInstance instance,
+                            const VkDebugUtilsMessengerCreateInfoEXT* create_info,
+                            VkDebugUtilsMessengerEXT* messenger) -> VkResult
+{
+  return gFunctions.vkCreateDebugUtilsMessengerEXT(instance,
+                                                   create_info,
+                                                   nullptr,
+                                                   messenger);
+}
+
+void destroy_debug_messenger(VkInstance instance,
+                             VkDebugUtilsMessengerEXT messenger) noexcept
+{
+  gFunctions.vkDestroyDebugUtilsMessengerEXT(instance, messenger, nullptr);
+}
+
+void push_descriptor_set(VkCommandBuffer cmd_buffer,
+                         VkPipelineLayout layout,
+                         const uint32 set,
+                         const uint32 write_count,
+                         const VkWriteDescriptorSet* writes)
+{
+  gFunctions.vkCmdPushDescriptorSetKHR(cmd_buffer,
+                                       VK_PIPELINE_BIND_POINT_GRAPHICS,
+                                       layout,
+                                       set,
+                                       write_count,
+                                       writes);
 }
 
 void set_instance(VkInstance instance) noexcept

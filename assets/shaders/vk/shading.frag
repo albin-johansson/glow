@@ -13,26 +13,23 @@ layout (location = 0) out vec4 frag_color;
 
 layout (binding = 5) uniform sampler2D material_diffuse_tex;
 
-//layout (std140, set = 1, binding = 0) uniform MaterialBuffer {
-//  vec4 ambient;
-//  vec4 diffuse;
-//  vec4 specular;
-//  vec4 emission;
-//  bool has_ambient_tex;
-//  bool has_diffuse_tex;
-//  bool has_specular_tex;
-//  bool has_emission_tex;
-//} Material;
+layout (std140, set = 0, binding = 1) uniform MaterialBuffer {
+  vec4 ambient;
+  vec4 diffuse;
+  vec4 specular;
+  vec4 emission;
+  bool has_ambient_tex;
+  bool has_diffuse_tex;
+  bool has_specular_tex;
+  bool has_emission_tex;
+} Material;
 
 void main()
 {
-  frag_color = vec4(In.vs_normal, 1.0);
-//  if (Material.has_diffuse_tex) {
-//    // frag_color = texture(material_diffuse_tex, In.tex_coords);
-//    frag_color = vec4(Material.diffuse.rgb, 1.0);
-//  }
-//  else {
-//    frag_color = vec4(In.vs_normal, 1.0);
-//    // frag_color = vec4(Material.diffuse.rgb, 1.0);
-//  }
+  if (Material.has_diffuse_tex) {
+    frag_color = texture(material_diffuse_tex, In.tex_coords);
+  }
+  else {
+    frag_color = vec4(Material.diffuse.rgb, 1.0);
+  }
 }

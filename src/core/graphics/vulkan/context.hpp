@@ -3,6 +3,8 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
+#include "common/primitives.hpp"
+
 namespace gravel::vlk {
 
 /// Stores extension function pointers.
@@ -14,6 +16,19 @@ struct ExtensionFunctions final {
 };
 
 [[nodiscard]] auto get_extension_functions() noexcept -> ExtensionFunctions&;
+
+auto create_debug_messenger(VkInstance instance,
+                            const VkDebugUtilsMessengerCreateInfoEXT* create_info,
+                            VkDebugUtilsMessengerEXT* messenger) -> VkResult;
+
+void destroy_debug_messenger(VkInstance instance,
+                             VkDebugUtilsMessengerEXT messenger) noexcept;
+
+void push_descriptor_set(VkCommandBuffer cmd_buffer,
+                         VkPipelineLayout layout,
+                         uint32 set,
+                         uint32 write_count,
+                         const VkWriteDescriptorSet* writes);
 
 void set_instance(VkInstance instance) noexcept;
 void set_surface(VkSurfaceKHR surface) noexcept;

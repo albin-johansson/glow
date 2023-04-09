@@ -57,13 +57,17 @@ VulkanBackend::~VulkanBackend() noexcept
 
 void VulkanBackend::create_shading_pipeline()
 {
-  mDSLayoutBuilder.reset().descriptor(0,
-                                      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                      VK_SHADER_STAGE_VERTEX_BIT);
-  mShadingGlobalDSLayout.reset(mDSLayoutBuilder.build());
+  mDSLayoutBuilder.reset()
+      .use_push_descriptors()
+      .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+      .descriptor(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT)
+      .descriptor(5,
+                  VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                  VK_SHADER_STAGE_FRAGMENT_BIT);
+  mShadingDSLayout.reset(mDSLayoutBuilder.build());
 
   mPipelineLayoutBuilder.reset()
-      .descriptor_layout(mShadingGlobalDSLayout.get())
+      .descriptor_layout(mShadingDSLayout.get())
       .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
   mShadingPipelineLayout.reset(mPipelineLayoutBuilder.build());
 
@@ -78,18 +82,6 @@ void VulkanBackend::create_frame_data()
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
     frame.command_buffer = mCommandPool.create_command_buffer();
-    frame.global_descriptor_set =
-        frame.descriptor_pool.allocate(mShadingGlobalDSLayout.get());
-
-    const auto static_matrices =
-        StaticMatrices::descriptor_buffer_info(frame.static_matrix_ubo.get());
-
-    const VkWriteDescriptorSet writes[] {
-        StaticMatrices::descriptor_set_write(frame.global_descriptor_set,
-                                             &static_matrices),
-    };
-
-    vkUpdateDescriptorSets(mDevice.get(), array_length(writes), writes, 0, nullptr);
   }
 }
 
@@ -242,6 +234,12 @@ void VulkanBackend::render_scene(const Scene& scene,
     // dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
   }
 
+  // Update the static (frame persistent) matrices
+  mStaticMatrices.proj = to_projection_matrix(camera, GraphicsApi::Vulkan);
+  mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
+  mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view_proj;
+  frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
+
   mRenderPass.begin(frame.command_buffer,
                     mSwapchain.get_current_framebuffer().get(),
                     swapchain_image_extent);
@@ -249,29 +247,33 @@ void VulkanBackend::render_scene(const Scene& scene,
   cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
   cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
-  // Update the static (frame persistent) matrices
-  mStaticMatrices.proj = to_projection_matrix(camera, GraphicsApi::Vulkan);
-  mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
-  mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view_proj;
-  frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
-
   vkCmdBindPipeline(frame.command_buffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     mShadingPipeline.get());
 
-  vkCmdBindDescriptorSets(frame.command_buffer,
-                          VK_PIPELINE_BIND_POINT_GRAPHICS,
-                          mShadingPipelineLayout.get(),
-                          kGlobalDescriptorSet,
-                          1,
-                          &frame.global_descriptor_set,
-                          0,
-                          nullptr);
+  const auto static_matrices =
+      StaticMatrices::descriptor_buffer_info(frame.static_matrix_ubo.get());
+
+  const VkWriteDescriptorSet static_matrix_writes[] {
+      StaticMatrices::descriptor_set_write(VK_NULL_HANDLE, &static_matrices),
+  };
+
+  // Push the static matrix descriptor
+  push_descriptor_set(frame.command_buffer,
+                      mShadingPipelineLayout.get(),
+                      0,
+                      array_length(static_matrix_writes),
+                      static_matrix_writes);
+
+  static Vector<VkWriteDescriptorSet> write_buffer;
+  write_buffer.reserve(5);
 
   for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
     const auto model_transform = transform.to_model_matrix();
 
     for (const auto& mesh : model.meshes) {
+      write_buffer.clear();
+
       const auto& material = scene.get<Material>(mesh.material);
       const auto model_matrix = model_transform * mesh.transform;
 
@@ -281,6 +283,65 @@ void VulkanBackend::render_scene(const Scene& scene,
                          0,
                          sizeof model_matrix,
                          &model_matrix);
+
+      // Update material buffer
+      mMaterialBuffer.ambient = Vec4 {material.ambient, 0};
+      mMaterialBuffer.diffuse = Vec4 {material.diffuse, 0};
+      mMaterialBuffer.specular = Vec4 {material.specular, 0};
+      mMaterialBuffer.emission = Vec4 {material.emission, 0};
+      mMaterialBuffer.has_ambient_tex = false;
+      mMaterialBuffer.has_diffuse_tex = material.diffuse_tex != VK_NULL_HANDLE;
+      mMaterialBuffer.has_specular_tex = material.specular_tex != VK_NULL_HANDLE;
+      mMaterialBuffer.has_emission_tex = false;
+      frame.material_ubo.set_data(&mMaterialBuffer, sizeof mMaterialBuffer);
+
+      const VkDescriptorBufferInfo material_buffer_info {
+          .buffer = frame.material_ubo.get(),
+          .offset = 0,
+          .range = sizeof mMaterialBuffer,
+      };
+
+      const VkDescriptorImageInfo diffuse_info {
+          .sampler = mSampler.get(),
+          .imageView = material.diffuse_tex,
+          .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+      };
+
+      // Push update for the material buffer
+      write_buffer.push_back(VkWriteDescriptorSet {
+          .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+          .pNext = nullptr,
+          .dstSet = VK_NULL_HANDLE,  // Ignored for push descriptors
+          .dstBinding = 1,
+          .dstArrayElement = 0,
+          .descriptorCount = 1,
+          .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+          .pImageInfo = nullptr,
+          .pBufferInfo = &material_buffer_info,
+          .pTexelBufferView = nullptr,
+      });
+
+      if (material.diffuse_tex != VK_NULL_HANDLE) {
+        // Change the bound diffuse material texture
+        write_buffer.push_back(VkWriteDescriptorSet {
+            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+            .pNext = nullptr,
+            .dstSet = VK_NULL_HANDLE,  // Ignored for push descriptors
+            .dstBinding = 5,
+            .dstArrayElement = 0,
+            .descriptorCount = 1,
+            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .pImageInfo = &diffuse_info,
+            .pBufferInfo = nullptr,
+            .pTexelBufferView = nullptr,
+        });
+      }
+
+      push_descriptor_set(frame.command_buffer,
+                          mShadingPipelineLayout.get(),
+                          0,
+                          static_cast<uint32>(write_buffer.size()),
+                          write_buffer.data());
 
       mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
       mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
