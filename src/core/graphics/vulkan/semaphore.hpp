@@ -2,29 +2,17 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 
 namespace gravel::vlk {
 
-/// Represents a binary semaphore, for GPU-side synchronization.
-class Semaphore final {
- public:
-  GRAVEL_DELETE_COPY(Semaphore);
-
-  Semaphore();
-
-  ~Semaphore() noexcept;
-
-  Semaphore(Semaphore&& other) noexcept;
-
-  auto operator=(Semaphore&& other) noexcept -> Semaphore&;
-
-  [[nodiscard]] auto get() -> VkSemaphore { return mSemaphore; }
-
- private:
-  VkSemaphore mSemaphore {VK_NULL_HANDLE};
-
-  void dispose() noexcept;
+struct SemaphoreDeleter final {
+  void operator()(VkSemaphore semaphore) noexcept;
 };
+
+/// Represents a binary semaphore, for GPU-side synchronization.
+using Semaphore = Unique<VkSemaphore_T, SemaphoreDeleter>;
+
+[[nodiscard]] auto create_semaphore() -> Semaphore;
 
 }  // namespace gravel::vlk

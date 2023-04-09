@@ -40,9 +40,9 @@ Device::Device()
     });
   }
 
-  VkPhysicalDeviceFeatures device_features {};
-  device_features.samplerAnisotropy = VK_TRUE;
-  device_features.fillModeNonSolid = VK_TRUE;
+  VkPhysicalDeviceFeatures enabled_device_features {};
+  enabled_device_features.samplerAnisotropy = VK_TRUE;
+  enabled_device_features.fillModeNonSolid = VK_TRUE;
 
   VkPhysicalDeviceDescriptorIndexingFeatures indexing_features {};
   indexing_features.sType =
@@ -62,7 +62,7 @@ Device::Device()
       .enabledExtensionCount = array_length(kRequiredDeviceExtensions),
       .ppEnabledExtensionNames = kRequiredDeviceExtensions,
 
-      .pEnabledFeatures = &device_features,
+      .pEnabledFeatures = &enabled_device_features,
   };
 
   if constexpr (GRAVEL_DEBUG_BUILD) {

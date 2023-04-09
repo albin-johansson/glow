@@ -37,8 +37,8 @@ inline constexpr VkDescriptorPoolSize kDescriptorPoolSizes[] {
 struct FrameData final {
   VkCommandBuffer command_buffer {VK_NULL_HANDLE};
 
-  Semaphore image_available_semaphore;
-  Semaphore render_finished_semaphore;
+  Semaphore image_available_semaphore {create_semaphore()};
+  Semaphore render_finished_semaphore {create_semaphore()};
   Fence in_flight_fence {true};
 
   Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};

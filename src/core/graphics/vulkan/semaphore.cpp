@@ -6,7 +6,12 @@
 
 namespace gravel::vlk {
 
-Semaphore::Semaphore()
+void SemaphoreDeleter::operator()(VkSemaphore semaphore) noexcept
+{
+  vkDestroySemaphore(get_device(), semaphore, nullptr);
+}
+
+auto create_semaphore() -> Semaphore
 {
   GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -16,38 +21,11 @@ Semaphore::Semaphore()
       .flags = 0,
   };
 
-  GRAVEL_VK_CALL(vkCreateSemaphore(get_device(), &create_info, nullptr, &mSemaphore),
+  VkSemaphore semaphore = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateSemaphore(get_device(), &create_info, nullptr, &semaphore),
                  "[VK] Could not create semaphore");
-}
 
-Semaphore::~Semaphore() noexcept
-{
-  dispose();
-}
-
-void Semaphore::dispose() noexcept
-{
-  if (mSemaphore != VK_NULL_HANDLE) {
-    vkDestroySemaphore(get_device(), mSemaphore, nullptr);
-  }
-}
-
-Semaphore::Semaphore(Semaphore&& other) noexcept
-    : mSemaphore {other.mSemaphore}
-{
-  other.mSemaphore = VK_NULL_HANDLE;
-}
-
-auto Semaphore::operator=(Semaphore&& other) noexcept -> Semaphore&
-{
-  if (this != &other) {
-    dispose();
-
-    mSemaphore = other.mSemaphore;
-    other.mSemaphore = VK_NULL_HANDLE;
-  }
-
-  return *this;
+  return Semaphore {semaphore};
 }
 
 }  // namespace gravel::vlk
