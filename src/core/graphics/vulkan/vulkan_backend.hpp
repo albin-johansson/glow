@@ -15,23 +15,40 @@
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/fence.hpp"
 #include "graphics/vulkan/instance.hpp"
+#include "graphics/vulkan/managed.hpp"
+#include "graphics/vulkan/pipeline/descriptor_pool.hpp"
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
+#include "graphics/vulkan/pipeline_builder.hpp"
 #include "graphics/vulkan/render_pass.hpp"
 #include "graphics/vulkan/sampler.hpp"
 #include "graphics/vulkan/semaphore.hpp"
 #include "graphics/vulkan/shading_pipeline.hpp"
 #include "graphics/vulkan/surface.hpp"
 #include "graphics/vulkan/swapchain.hpp"
+#include "util/arrays.hpp"
 
 namespace gravel::vlk {
+
+inline constexpr VkDescriptorPoolSize kDescriptorPoolSizes[] {
+    {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 256},
+    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 256},
+};
 
 /// Stores resources required to allow for multiple frames in flight at the same time.
 struct FrameData final {
   VkCommandBuffer command_buffer {VK_NULL_HANDLE};
+
   Semaphore image_available_semaphore;
   Semaphore render_finished_semaphore;
   Fence in_flight_fence {true};
+
   Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
+  Buffer material_ubo {Buffer::uniform(sizeof(MaterialBuffer))};
+
+  DescriptorPool descriptor_pool {2'048,
+                                  kDescriptorPoolSizes,
+                                  array_length(kDescriptorPoolSizes)};
+  VkDescriptorSet global_descriptor_set {VK_NULL_HANDLE};
 };
 
 class VulkanBackend final : public Backend {
@@ -76,10 +93,17 @@ class VulkanBackend final : public Backend {
 
   Swapchain mSwapchain;
   RenderPass mRenderPass;
-  PipelineCache mPipelineCache;
   Sampler mSampler;
 
-  ShadingPipeline mShadingPipeline;
+  PipelineCache mPipelineCache;
+  DescriptorSetLayoutBuilder mDSLayoutBuilder;
+  PipelineLayoutBuilder mPipelineLayoutBuilder;
+  PipelineBuilder mPipelineBuilder;
+
+  DescriptorSetLayout mShadingGlobalDSLayout;
+  PipelineLayout mShadingPipelineLayout;
+  Pipeline mShadingPipeline;
+
   CommandPool mCommandPool;
 
   Vector<FrameData> mFrames;
@@ -87,11 +111,12 @@ class VulkanBackend final : public Backend {
 
   MaterialBuffer mMaterialBuffer;
   StaticMatrices mStaticMatrices;
-  DynamicMatrices mDynamicMatrices;
 
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};
 
+  void create_shading_pipeline();
+  void create_frame_data();
   void prepare_imgui_for_vulkan();
 };
 

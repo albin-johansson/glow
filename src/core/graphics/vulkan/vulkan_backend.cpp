@@ -18,7 +18,6 @@
 #include "graphics/vulkan/image_cache.hpp"
 #include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/physical_device.hpp"
-#include "graphics/vulkan/pipeline.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
@@ -43,21 +42,55 @@ VulkanBackend::VulkanBackend(SDL_Window* window)
     : mSurface {window},
       mGPU {select_gpu()},
       mRenderPass {mSwapchain.get_image_format()},
-      mShadingPipeline {mRenderPass.get(), mSwapchain.get_image_extent()},
+      mPipelineBuilder {mPipelineCache.get()}
+{
+  create_shading_pipeline();
+  create_frame_data();
+
+  mSwapchain.create_framebuffers(mRenderPass.get());
+}
 
 VulkanBackend::~VulkanBackend() noexcept
 {
   ImGui_ImplVulkan_Shutdown();
 }
 
+void VulkanBackend::create_shading_pipeline()
 {
+  mDSLayoutBuilder.reset().descriptor(0,
+                                      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                      VK_SHADER_STAGE_VERTEX_BIT);
+  mShadingGlobalDSLayout.reset(mDSLayoutBuilder.build());
 
+  mPipelineLayoutBuilder.reset()
+      .descriptor_layout(mShadingGlobalDSLayout.get())
+      .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
+  mShadingPipelineLayout.reset(mPipelineLayoutBuilder.build());
+
+  mPipelineBuilder.reset().shaders("assets/shaders/vk/shading.vert.spv",
+                                   "assets/shaders/vk/shading.frag.spv");
+  mShadingPipeline.reset(
+      mPipelineBuilder.build(mRenderPass.get(), mShadingPipelineLayout.get()));
+}
+
+void VulkanBackend::create_frame_data()
+{
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
     frame.command_buffer = mCommandPool.create_command_buffer();
-  }
+    frame.global_descriptor_set =
+        frame.descriptor_pool.allocate(mShadingGlobalDSLayout.get());
 
-  mSwapchain.create_framebuffers(mRenderPass.get());
+    const auto static_matrices =
+        StaticMatrices::descriptor_buffer_info(frame.static_matrix_ubo.get());
+
+    const VkWriteDescriptorSet writes[] {
+        StaticMatrices::descriptor_set_write(frame.global_descriptor_set,
+                                             &static_matrices),
+    };
+
+    vkUpdateDescriptorSets(mDevice.get(), array_length(writes), writes, 0, nullptr);
+  }
 }
 
 void VulkanBackend::stop()
@@ -106,16 +139,13 @@ void VulkanBackend::on_init(Scene& scene)
   camera_context.active_camera = camera_entity;
 }
 
+void VulkanBackend::prepare_imgui_for_vulkan()
+{
+}
+
 void VulkanBackend::on_quit()
 {
   vkDeviceWaitIdle(mDevice.get());
-}
-
-void VulkanBackend::prepare_imgui_for_vulkan()
-{
-  //  if (!ImGui_ImplVulkan_Init(&init_info, render_pass)) {
-  //    throw Error {"[VK] Could not initialize DearImGui Vulkan backend"};
-  //  }
 }
 
 void VulkanBackend::on_event(const SDL_Event& event)
@@ -199,12 +229,22 @@ void VulkanBackend::render_scene(const Scene& scene,
   // TODO resize swap chain images if necessary
 
   const auto swapchain_image_extent = mSwapchain.get_image_extent();
+  const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
+
+  if (!scene.has_active_camera()) {
+    return;
+  }
+
+  const auto& [camera_entity, camera] = scene.get_active_camera();
+  const auto& camera_transform = scene.get<Transform>(camera_entity);
+
+  if (camera.aspect_ratio != aspect_ratio) {
+    // dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
+  }
 
   mRenderPass.begin(frame.command_buffer,
                     mSwapchain.get_current_framebuffer().get(),
                     swapchain_image_extent);
-
-  mShadingPipeline.bind(frame.command_buffer, mFrameIndex);
 
   cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
   cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
@@ -214,6 +254,40 @@ void VulkanBackend::render_scene(const Scene& scene,
   mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
   mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view_proj;
   frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
+
+  vkCmdBindPipeline(frame.command_buffer,
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    mShadingPipeline.get());
+
+  vkCmdBindDescriptorSets(frame.command_buffer,
+                          VK_PIPELINE_BIND_POINT_GRAPHICS,
+                          mShadingPipelineLayout.get(),
+                          kGlobalDescriptorSet,
+                          1,
+                          &frame.global_descriptor_set,
+                          0,
+                          nullptr);
+
+  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
+    const auto model_transform = transform.to_model_matrix();
+
+    for (const auto& mesh : model.meshes) {
+      const auto& material = scene.get<Material>(mesh.material);
+      const auto model_matrix = model_transform * mesh.transform;
+
+      vkCmdPushConstants(frame.command_buffer,
+                         mShadingPipelineLayout.get(),
+                         VK_SHADER_STAGE_VERTEX_BIT,
+                         0,
+                         sizeof model_matrix,
+                         &model_matrix);
+
+      mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
+      mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
+
+      vkCmdDrawIndexed(frame.command_buffer, mesh.index_count, 1, 0, 0, 0);
+    }
+  }
 
   vkCmdEndRenderPass(frame.command_buffer);
 }
