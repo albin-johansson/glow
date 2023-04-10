@@ -23,7 +23,7 @@
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
 #include "graphics/vulkan/render_pass.hpp"
 #include "graphics/vulkan/surface.hpp"
-#include "graphics/vulkan/swapchain.hpp"
+#include "graphics/vulkan/swapchain/swapchain.hpp"
 #include "graphics/vulkan/sync/fence.hpp"
 #include "graphics/vulkan/sync/semaphore.hpp"
 #include "scene/transform.hpp"

@@ -6,9 +6,9 @@
 #include "common/primitives.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
-#include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/image/image.hpp"
 #include "graphics/vulkan/image/image_view.hpp"
+#include "graphics/vulkan/swapchain/framebuffer.hpp"
 
 namespace gravel::vk {
 

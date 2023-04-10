@@ -2,7 +2,6 @@
 
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/framebuffer.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
