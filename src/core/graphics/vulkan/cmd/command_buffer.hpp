@@ -7,7 +7,7 @@
 #include "common/primitives.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 [[nodiscard]] auto create_command_buffer(VkDevice device, VkCommandPool command_pool)
     -> VkCommandBuffer;
@@ -30,4 +30,4 @@ void execute_one_time_commands(VkCommandBuffer cmd_buffer);
 /// Records a one time command buffer, and executes it (and waits for it to complete).
 void execute_immediately(const std::function<void(VkCommandBuffer)>& func);
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

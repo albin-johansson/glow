@@ -20,7 +20,7 @@
 #include "graphics/vulkan/util.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
@@ -424,4 +424,4 @@ auto VulkanBackend::get_primary_framebuffer_handle() -> void*
   return nullptr;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

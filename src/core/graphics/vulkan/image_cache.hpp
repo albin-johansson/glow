@@ -8,7 +8,7 @@
 #include "graphics/vulkan/image.hpp"
 #include "graphics/vulkan/image_view.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 /// Vulkan image cache context component.
 struct ImageCache final {
@@ -18,4 +18,4 @@ struct ImageCache final {
   Map<VkImage, ImageView> views;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

@@ -4,7 +4,7 @@
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 auto create_command_buffer(VkDevice device, VkCommandPool command_pool) -> VkCommandBuffer
 {
@@ -113,4 +113,4 @@ void execute_immediately(const std::function<void(VkCommandBuffer)>& func)
   execute_one_time_commands(cmd_buffer);
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

@@ -14,7 +14,7 @@
 #include "init/window.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 [[nodiscard]] auto pick_swap_surface_format(const Vector<VkSurfaceFormatKHR>& formats)
@@ -271,4 +271,4 @@ auto Swapchain::get_current_framebuffer() -> Framebuffer&
   return mFramebuffers.at(static_cast<usize>(mImageIndex));
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

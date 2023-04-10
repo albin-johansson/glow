@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class PipelineCache final {
  public:
@@ -26,4 +26,4 @@ class PipelineCache final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

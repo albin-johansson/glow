@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class ImageView final {
  public:
@@ -29,4 +29,4 @@ class ImageView final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

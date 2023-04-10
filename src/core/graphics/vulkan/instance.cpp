@@ -11,7 +11,7 @@
 #include "init/window.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 [[nodiscard]] auto get_instance_extension_names(SDL_Window* window) -> Vector<const char*>
@@ -117,4 +117,4 @@ auto create_instance() -> Instance
   return Instance {instance};
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

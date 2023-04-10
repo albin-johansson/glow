@@ -10,7 +10,7 @@
 #include "graphics/vulkan/image.hpp"
 #include "graphics/vulkan/image_view.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class Swapchain final {
  public:
@@ -58,4 +58,4 @@ class Swapchain final {
   void create_depth_buffer();
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

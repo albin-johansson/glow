@@ -5,7 +5,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class DescriptorPool final {
  public:
@@ -31,4 +31,4 @@ class DescriptorPool final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

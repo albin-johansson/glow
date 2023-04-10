@@ -13,7 +13,7 @@
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 [[nodiscard]] auto rate_gpu(VkPhysicalDevice gpu) -> int
@@ -210,4 +210,4 @@ auto get_suitable_physical_device(VkInstance instance, VkSurfaceKHR surface)
   return best_gpu;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

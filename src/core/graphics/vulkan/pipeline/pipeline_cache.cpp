@@ -4,7 +4,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 PipelineCache::PipelineCache()
 {
@@ -52,4 +52,4 @@ auto PipelineCache::operator=(PipelineCache&& other) noexcept -> PipelineCache&
   return *this;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

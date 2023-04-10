@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class Sampler final {
  public:
@@ -26,4 +26,4 @@ class Sampler final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

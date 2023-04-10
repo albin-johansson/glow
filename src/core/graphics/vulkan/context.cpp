@@ -1,6 +1,6 @@
 #include "context.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 inline ExtensionFunctions gFunctions;
@@ -131,4 +131,4 @@ auto get_allocator() noexcept -> VmaAllocator
   return gAllocator;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

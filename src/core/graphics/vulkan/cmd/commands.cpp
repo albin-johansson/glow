@@ -1,6 +1,6 @@
 #include "commands.hpp"
 
-namespace gravel::vlk::cmd {
+namespace gravel::vk::cmd {
 
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent)
 {
@@ -42,4 +42,4 @@ void copy_buffer(VkCommandBuffer command_buffer,
   vkCmdCopyBuffer(command_buffer, src, dst, 1, &region);
 }
 
-}  // namespace gravel::vlk::cmd
+}  // namespace gravel::vk::cmd

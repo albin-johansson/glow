@@ -8,7 +8,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 Allocator::Allocator()
 {
@@ -31,4 +31,4 @@ Allocator::~Allocator() noexcept
   vmaDestroyAllocator(mAllocator);
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

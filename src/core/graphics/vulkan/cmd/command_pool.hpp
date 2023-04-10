@@ -6,7 +6,7 @@
 #include "common/primitives.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class CommandPool final {
  public:
@@ -32,4 +32,4 @@ class CommandPool final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

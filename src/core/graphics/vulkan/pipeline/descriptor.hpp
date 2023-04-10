@@ -4,7 +4,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 [[nodiscard]] auto create_descriptor_buffer_write(uint32 binding,
                                                   VkDescriptorType type,
@@ -18,4 +18,4 @@ namespace gravel::vlk {
                                                  VkDescriptorSet dst = VK_NULL_HANDLE)
     -> VkWriteDescriptorSet;
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

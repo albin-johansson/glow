@@ -5,7 +5,7 @@
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 CommandPool::CommandPool()
 {
@@ -93,4 +93,4 @@ auto CommandPool::create_command_buffers(const uint32 count) -> Vector<VkCommand
   return buffers;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

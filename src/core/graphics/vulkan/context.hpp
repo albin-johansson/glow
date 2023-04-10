@@ -5,7 +5,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 /// Stores extension function pointers.
 struct ExtensionFunctions final {
@@ -48,4 +48,4 @@ void set_allocator(VmaAllocator allocator) noexcept;
 [[nodiscard]] auto get_command_pool() noexcept -> VkCommandPool;
 [[nodiscard]] auto get_allocator() noexcept -> VmaAllocator;
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

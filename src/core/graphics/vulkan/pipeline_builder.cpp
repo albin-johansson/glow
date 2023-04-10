@@ -6,7 +6,7 @@
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 auto DescriptorSetLayoutBuilder::reset() -> Self&
 {
@@ -268,4 +268,4 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
   return pipeline;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

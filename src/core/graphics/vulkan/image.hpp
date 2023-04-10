@@ -7,7 +7,7 @@
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class Image final {
  public:
@@ -61,4 +61,4 @@ class Image final {
                                  VkFormat format,
                                  VkImageUsageFlags usage) -> Maybe<Image>;
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

@@ -4,7 +4,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 void SemaphoreDeleter::operator()(VkSemaphore semaphore) noexcept
 {
@@ -28,4 +28,4 @@ auto create_semaphore() -> Semaphore
   return Semaphore {semaphore};
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

@@ -4,7 +4,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel::vlk::cmd {
+namespace gravel::vk::cmd {
 
 void set_viewport(VkCommandBuffer command_buffer, VkExtent2D extent);
 
@@ -15,4 +15,4 @@ void copy_buffer(VkCommandBuffer command_buffer,
                  VkBuffer dst,
                  usize data_size);
 
-}  // namespace gravel::vlk::cmd
+}  // namespace gravel::vk::cmd

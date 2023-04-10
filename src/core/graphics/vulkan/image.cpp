@@ -9,7 +9,7 @@
 #include "graphics/vulkan/util.hpp"
 #include "io/texture_loader.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 void transition_image_layout(VkCommandBuffer command_buffer,
@@ -227,4 +227,4 @@ auto load_image_2d(const Path& path, VkFormat format, VkImageUsageFlags usage)
   return kNothing;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

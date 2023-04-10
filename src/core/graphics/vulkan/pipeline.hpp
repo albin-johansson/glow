@@ -5,7 +5,7 @@
 #include "common/primitives.hpp"
 #include "common/type/array.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 [[nodiscard]] auto create_pipeline_cache(VkDevice device) -> VkPipelineCache;
 
@@ -46,4 +46,4 @@ namespace gravel::vlk {
 [[nodiscard]] auto create_vertex_attribute_descriptions()
     -> Array<VkVertexInputAttributeDescription, 3>;
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

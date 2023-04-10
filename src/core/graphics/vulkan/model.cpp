@@ -10,7 +10,7 @@
 #include "io/model_loader.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 [[nodiscard]] auto load_image_if_missing(Maybe<Path> path, ImageCache& cache)
@@ -105,4 +105,4 @@ void assign_model(Scene& scene, const Entity entity, const Path& path)
   }
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

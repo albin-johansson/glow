@@ -5,7 +5,7 @@
 #include "graphics/vertex.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 auto create_pipeline_cache(VkDevice device) -> VkPipelineCache
 {
@@ -234,4 +234,4 @@ auto create_vertex_attribute_descriptions() -> Array<VkVertexInputAttributeDescr
   return vertex_attribute_descriptions;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

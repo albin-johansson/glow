@@ -2,7 +2,7 @@
 
 #include <magic_enum.hpp>
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 auto stringify_result(VkResult result) -> StringView
 {
@@ -31,4 +31,4 @@ auto get_driver_version(VkPhysicalDevice gpu) -> String
                      VK_API_VERSION_PATCH(gpu_properties.driverVersion));
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

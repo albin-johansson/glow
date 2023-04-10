@@ -29,7 +29,7 @@
 #include "scene/transform.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 inline constexpr VkDescriptorPoolSize kDescriptorPoolSizes[] {
     {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 256},
@@ -133,4 +133,4 @@ class VulkanBackend final : public Backend {
   void present_image();
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

@@ -3,7 +3,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 ImageView::ImageView(VkImage image,
                      const VkFormat image_format,
@@ -67,4 +67,4 @@ auto ImageView::operator=(ImageView&& other) noexcept -> ImageView&
   return *this;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

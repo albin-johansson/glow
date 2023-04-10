@@ -8,7 +8,7 @@
 #include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 Buffer::Buffer(const uint64 size,
                const VkBufferUsageFlags buffer_usage,
@@ -169,4 +169,4 @@ void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, const usize data_size
   });
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

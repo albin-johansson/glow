@@ -7,7 +7,7 @@
 #include "common/primitives.hpp"
 #include "graphics/vulkan/context.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 class Buffer final {
  public:
@@ -60,4 +60,4 @@ class Buffer final {
 /// Copies a buffer into another using the buffer copy draw command.
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, usize data_size);
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

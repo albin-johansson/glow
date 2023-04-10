@@ -7,7 +7,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 inline constexpr uint64 kMaxU64 = std::numeric_limits<uint64>::max();
@@ -49,4 +49,4 @@ void wait_fence(VkFence fence)
                  "[VK] Could not wait for fence");
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

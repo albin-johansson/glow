@@ -3,7 +3,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 Sampler::Sampler()
 {
@@ -77,4 +77,4 @@ auto Sampler::operator=(Sampler&& other) noexcept -> Sampler&
   return *this;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

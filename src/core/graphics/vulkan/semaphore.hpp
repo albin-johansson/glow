@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 struct SemaphoreDeleter final {
   void operator()(VkSemaphore semaphore) noexcept;
@@ -15,4 +15,4 @@ using Semaphore = Unique<VkSemaphore_T, SemaphoreDeleter>;
 
 [[nodiscard]] auto create_semaphore() -> Semaphore;
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

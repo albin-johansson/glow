@@ -9,7 +9,7 @@
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 void DeviceDeleter::operator()(VkDevice device) noexcept
 {
@@ -94,4 +94,4 @@ auto create_device() -> Device
   return Device {device};
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

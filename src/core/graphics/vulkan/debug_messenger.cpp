@@ -8,7 +8,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 namespace {
 
 VKAPI_ATTR auto debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
@@ -70,4 +70,4 @@ auto create_debug_messenger() -> DebugMessenger
   return DebugMessenger {messenger};
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

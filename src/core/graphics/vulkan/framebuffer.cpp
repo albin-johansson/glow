@@ -4,7 +4,7 @@
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 Framebuffer::Framebuffer(VkRenderPass render_pass,
                          VkImageView image_view,
@@ -71,4 +71,4 @@ auto Framebuffer::operator=(Framebuffer&& other) noexcept -> Framebuffer&
   return *this;
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

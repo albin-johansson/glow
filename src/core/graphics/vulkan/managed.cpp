@@ -2,7 +2,7 @@
 
 #include "graphics/vulkan/context.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 void PipelineDeleter::operator()(VkPipeline pipeline) noexcept
 {
@@ -19,4 +19,4 @@ void DescriptorSetLayoutDeleter::operator()(VkDescriptorSetLayout layout) noexce
   vkDestroyDescriptorSetLayout(get_device(), layout, nullptr);
 }
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk

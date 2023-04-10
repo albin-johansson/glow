@@ -5,7 +5,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vlk {
+namespace gravel::vk {
 
 /// Wrapper around the dedicated Vulkan memory allocator.
 ///
@@ -26,4 +26,4 @@ class Allocator final {
   VmaAllocator mAllocator;
 };
 
-}  // namespace gravel::vlk
+}  // namespace gravel::vk
