@@ -6,7 +6,7 @@
 #include "common/type/array.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
-#include "graphics/vulkan/shader_module.hpp"
+#include "graphics/vulkan/pipeline/shader_module.hpp"
 
 namespace gravel::vk {
 

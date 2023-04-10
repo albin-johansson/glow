@@ -2,7 +2,7 @@
 
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/pipeline.hpp"
+#include "graphics/vulkan/pipeline/pipeline.hpp"
 #include "graphics/vulkan/util.hpp"
 #include "util/arrays.hpp"
 
