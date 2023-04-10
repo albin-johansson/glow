@@ -171,9 +171,9 @@ auto load_model_data(const Path& path, const GraphicsApi api) -> Maybe<ModelData
 
   Assimp::Importer importer;
 
-  auto flags = aiProcessPreset_TargetRealtime_MaxQuality;
+  auto flags = aiProcessPreset_TargetRealtime_Quality;
   if (api == GraphicsApi::Vulkan) {
-    flags |= aiProcess_ConvertToLeftHanded;
+    flags |= aiProcess_MakeLeftHanded;
   }
 
   const auto* scene = importer.ReadFile(path.string(), flags);
