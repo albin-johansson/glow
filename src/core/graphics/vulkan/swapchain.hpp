@@ -27,6 +27,9 @@ class Swapchain final {
 
   auto acquire_next_image(VkSemaphore semaphore) -> VkResult;
 
+  /// Presents the current swapchain image to the presentation queue.
+  auto present_image(VkSemaphore render_finished_semaphore) -> VkResult;
+
   [[nodiscard]] auto get_current_framebuffer() -> Framebuffer&;
 
   [[nodiscard]] auto get() -> VkSwapchainKHR { return mSwapchain; }

@@ -16,17 +16,6 @@ class Device final {
 
   ~Device();
 
-  /// Submits rendering commands to the graphics queue.
-  void submit(VkCommandBuffer cmd_buffer,
-              VkSemaphore image_available_semaphore,
-              VkSemaphore render_finished_semaphore,
-              VkFence in_flight_fence);
-
-  /// Presents a swapchain image to the presentation queue.
-  auto present(VkSwapchainKHR swapchain,
-               uint32 swapchain_image_index,
-               VkSemaphore render_finished_semaphore) -> VkResult;
-
   [[nodiscard]] auto get() -> VkDevice { return mDevice; }
   [[nodiscard]] auto get_graphics_queue() -> VkQueue { return mGraphicsQueue; }
   [[nodiscard]] auto get_present_queue() -> VkQueue { return mPresentQueue; }

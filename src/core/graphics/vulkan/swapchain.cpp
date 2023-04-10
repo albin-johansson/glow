@@ -245,6 +245,27 @@ auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
                                &mImageIndex);
 }
 
+auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
+{
+  const VkPresentInfoKHR present_info {
+      .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+      .pNext = nullptr,
+
+      // Wait on the render_finished_semaphore before presentation
+      .waitSemaphoreCount = 1,
+      .pWaitSemaphores = &render_finished_semaphore,
+
+      // Target swapchain image
+      .swapchainCount = 1,
+      .pSwapchains = &mSwapchain,
+      .pImageIndices = &mImageIndex,
+
+      .pResults = nullptr,
+  };
+
+  return vkQueuePresentKHR(get_presentation_queue(), &present_info);
+}
+
 auto Swapchain::get_current_framebuffer() -> Framebuffer&
 {
   return mFramebuffers.at(static_cast<usize>(mImageIndex));

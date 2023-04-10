@@ -120,11 +120,17 @@ class VulkanBackend final : public Backend {
   void create_frame_data();
   void prepare_imgui_for_vulkan();
 
-  void update_static_matrix_buffer(const Camera& camera, const Transform& camera_transform);
+  void update_static_matrix_buffer(const Camera& camera,
+                                   const Transform& camera_transform);
 
   void update_material_buffer(const Material& material);
 
   void push_static_matrix_descriptor();
+
+  /// Submits rendering commands to the graphics queue.
+  void submit_commands();
+
+  void present_image();
 };
 
 }  // namespace gravel::vlk

@@ -191,15 +191,50 @@ void VulkanBackend::end_frame()
   auto& frame = mFrames.at(mFrameIndex);
 
   end_command_buffer(frame.command_buffer);
+  submit_commands();
+  present_image();
 
-  mDevice.submit(frame.command_buffer,
-                 frame.image_available_semaphore.get(),
-                 frame.render_finished_semaphore.get(),
-                 frame.in_flight_fence.get());
+  mFrameIndex = (mFrameIndex + 1) % kMaxFramesInFlight;
+}
 
-  const auto present_result = mDevice.present(mSwapchain.get(),
-                                              mSwapchain.get_image_index(),
-                                              frame.render_finished_semaphore.get());
+void VulkanBackend::submit_commands()
+{
+  auto& frame = mFrames.at(mFrameIndex);
+
+  VkSemaphore image_available_semaphore = frame.image_available_semaphore.get();
+  VkSemaphore render_finished_semaphore = frame.render_finished_semaphore.get();
+
+  const VkPipelineStageFlags wait_dst_stage_mask =
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+  const VkSubmitInfo submit_info {
+      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+      .pNext = nullptr,
+
+      // Wait on the image_available_semaphore before command buffer execution
+      .waitSemaphoreCount = 1,
+      .pWaitSemaphores = &image_available_semaphore,
+      .pWaitDstStageMask = &wait_dst_stage_mask,
+
+      .commandBufferCount = 1,
+      .pCommandBuffers = &frame.command_buffer,
+
+      // Signal the render_finished_semaphore after command buffer execution
+      .signalSemaphoreCount = 1,
+      .pSignalSemaphores = &render_finished_semaphore,
+  };
+
+  VkQueue queue = get_graphics_queue();
+  GRAVEL_VK_CALL(vkQueueSubmit(queue, 1, &submit_info, frame.in_flight_fence.get()),
+                 "[VK] Could not submit command buffer to graphics queue");
+}
+
+void VulkanBackend::present_image()
+{
+  auto& frame = mFrames.at(mFrameIndex);
+
+  const auto present_result =
+      mSwapchain.present_image(frame.render_finished_semaphore.get());
 
   if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
       mResizedFramebuffer) {
@@ -209,8 +244,6 @@ void VulkanBackend::end_frame()
   else if (present_result != VK_SUCCESS) {
     throw Error {"[VK] Could not present swapchain image"};
   }
-
-  mFrameIndex = (mFrameIndex + 1) % kMaxFramesInFlight;
 }
 
 void VulkanBackend::render_scene(const Scene& scene,
