@@ -120,7 +120,7 @@ void RenderPass::begin(VkCommandBuffer command_buffer,
                        const VkExtent2D framebuffer_extent)
 {
   VkClearValue clear_values[2] {};
-  clear_values[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+  clear_values[0].color = {.float32 = {0.0f, 0.0f, 0.0f, 1.0f}};
   clear_values[1].depthStencil = {.depth = 1.0f, .stencil = 0};
 
   const VkRect2D render_area {
