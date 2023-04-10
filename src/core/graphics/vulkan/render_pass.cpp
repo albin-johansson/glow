@@ -10,7 +10,7 @@ namespace gravel::vlk {
 
 RenderPass::RenderPass(const VkFormat swapchain_image_format)
 {
-  const VkAttachmentDescription attachment_descriptions[] {
+  const VkAttachmentDescription attachments[] {
       VkAttachmentDescription {
           .flags = 0,
           .format = swapchain_image_format,
@@ -25,13 +25,32 @@ RenderPass::RenderPass(const VkFormat swapchain_image_format)
           .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
           .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
       },
-  };
+      // Depth attachment
+      VkAttachmentDescription {
+          .flags = 0,
+          .format = VK_FORMAT_D32_SFLOAT_S8_UINT,
+          .samples = VK_SAMPLE_COUNT_1_BIT,
+
+          .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+          .storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+
+          .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+          .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+
+          .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+          .finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+      }};
 
   const VkAttachmentReference color_attachments[] {
       VkAttachmentReference {
           .attachment = 0,
           .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
       },
+  };
+
+  const VkAttachmentReference depth_attachment {
+      .attachment = 1,
+      .layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
   };
 
   const VkSubpassDescription subpasses[] {
@@ -46,7 +65,7 @@ RenderPass::RenderPass(const VkFormat swapchain_image_format)
           .pColorAttachments = color_attachments,
 
           .pResolveAttachments = nullptr,
-          .pDepthStencilAttachment = nullptr,
+          .pDepthStencilAttachment = &depth_attachment,
 
           .preserveAttachmentCount = 0,
           .pPreserveAttachments = nullptr,
@@ -58,11 +77,14 @@ RenderPass::RenderPass(const VkFormat swapchain_image_format)
           .srcSubpass = VK_SUBPASS_EXTERNAL,
           .dstSubpass = 0,
 
-          .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-          .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+          .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                          VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
+          .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                          VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT,
 
           .srcAccessMask = 0,
-          .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+          .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+                           VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,
 
           .dependencyFlags = 0,
       },
@@ -71,8 +93,8 @@ RenderPass::RenderPass(const VkFormat swapchain_image_format)
   const VkRenderPassCreateInfo render_pass_create_info {
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 
-      .attachmentCount = array_length(attachment_descriptions),
-      .pAttachments = attachment_descriptions,
+      .attachmentCount = array_length(attachments),
+      .pAttachments = attachments,
 
       .subpassCount = array_length(subpasses),
       .pSubpasses = subpasses,
@@ -97,11 +119,9 @@ void RenderPass::begin(VkCommandBuffer command_buffer,
                        VkFramebuffer framebuffer,
                        const VkExtent2D framebuffer_extent)
 {
-  const VkClearValue clear_color {
-      VkClearColorValue {
-          .float32 = {0.0f, 0.0f, 0.0f, 1.0f},
-      },
-  };
+  VkClearValue clear_values[2] {};
+  clear_values[0].color = {0.0f, 0.0f, 0.0f, 1.0f};
+  clear_values[1].depthStencil = {.depth = 1.0f, .stencil = 0};
 
   const VkRect2D render_area {
       .offset = VkOffset2D {0, 0},
@@ -110,12 +130,14 @@ void RenderPass::begin(VkCommandBuffer command_buffer,
 
   const VkRenderPassBeginInfo render_pass_begin_info {
       .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+      .pNext = nullptr,
 
       .renderPass = mRenderPass,
       .framebuffer = framebuffer,
       .renderArea = render_area,
-      .clearValueCount = 1,
-      .pClearValues = &clear_color,
+
+      .clearValueCount = array_length(clear_values),
+      .pClearValues = clear_values,
   };
 
   vkCmdBeginRenderPass(command_buffer,

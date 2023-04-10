@@ -88,6 +88,7 @@ Swapchain::Swapchain()
 {
   create_swapchain();
   create_image_views();
+  create_depth_buffer();
 }
 
 Swapchain::~Swapchain()
@@ -106,8 +107,23 @@ void Swapchain::create_image_views()
   mImageViews.reserve(mImages.size());
 
   for (VkImage image : mImages) {
-    mImageViews.emplace_back(image, mImageFormat, VK_IMAGE_VIEW_TYPE_2D);
+    mImageViews.emplace_back(image,
+                             mImageFormat,
+                             VK_IMAGE_VIEW_TYPE_2D,
+                             VK_IMAGE_ASPECT_COLOR_BIT);
   }
+}
+
+void Swapchain::create_depth_buffer()
+{
+  mDepthImage.emplace(VK_IMAGE_TYPE_2D,
+                      VkExtent3D {mImageExtent.width, mImageExtent.height, 1},
+                      VK_FORMAT_D32_SFLOAT_S8_UINT,
+                      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+  mDepthImageView.emplace(mDepthImage->get(),
+                          VK_FORMAT_D32_SFLOAT_S8_UINT,
+                          VK_IMAGE_VIEW_TYPE_2D,
+                          VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 
 void Swapchain::recreate(VkRenderPass render_pass)
@@ -129,11 +145,15 @@ void Swapchain::recreate(VkRenderPass render_pass)
   // Destroy existing resources
   mFramebuffers.clear();
   mImageViews.clear();
+  mDepthImageView.reset();
+  mDepthImage.reset();
   destroy_swapchain();
 
   // Recreate the resources
   create_swapchain();
   create_image_views();
+  create_depth_buffer();
+
   create_framebuffers(render_pass);
 }
 
@@ -208,7 +228,10 @@ void Swapchain::create_framebuffers(VkRenderPass render_pass)
   mFramebuffers.reserve(mImageViews.size());
 
   for (auto& image_view : mImageViews) {
-    mFramebuffers.emplace_back(render_pass, image_view.get(), mImageExtent);
+    mFramebuffers.emplace_back(render_pass,
+                               image_view.get(),
+                               mDepthImageView.value().get(),
+                               mImageExtent);
   }
 }
 

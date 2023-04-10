@@ -2,14 +2,21 @@
 
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util.hpp"
+#include "util/arrays.hpp"
 
 namespace gravel::vlk {
 
 Framebuffer::Framebuffer(VkRenderPass render_pass,
                          VkImageView image_view,
+                         VkImageView depth_view,
                          const VkExtent2D extent)
     : mExtent {extent}
 {
+  const VkImageView attachments[] {
+      image_view,
+      depth_view,
+  };
+
   const VkFramebufferCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 
@@ -18,8 +25,8 @@ Framebuffer::Framebuffer(VkRenderPass render_pass,
 
       .renderPass = render_pass,
 
-      .attachmentCount = 1,
-      .pAttachments = &image_view,
+      .attachmentCount = array_length(attachments),
+      .pAttachments = attachments,
 
       .width = mExtent.width,
       .height = mExtent.height,

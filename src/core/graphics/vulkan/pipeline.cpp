@@ -144,17 +144,6 @@ auto create_pipeline_input_assembly_state(const VkPrimitiveTopology topology)
 
 auto create_pipeline_depth_stencil_state() -> VkPipelineDepthStencilStateCreateInfo
 {
-  const VkStencilOpState stencil_op_state {
-      // TODO investigate the values in this struct
-      .failOp = VK_STENCIL_OP_KEEP,
-      .passOp = VK_STENCIL_OP_KEEP,
-      .depthFailOp = VK_STENCIL_OP_KEEP,
-      .compareOp = VK_COMPARE_OP_LESS,
-      .compareMask = 0,
-      .writeMask = 0,
-      .reference = 0,
-  };
-
   const VkPipelineDepthStencilStateCreateInfo depth_stencil_state {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
 
@@ -163,13 +152,12 @@ auto create_pipeline_depth_stencil_state() -> VkPipelineDepthStencilStateCreateI
 
       .depthTestEnable = VK_TRUE,
       .depthWriteEnable = VK_TRUE,
-      .depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL,
-      .depthBoundsTestEnable = VK_TRUE,
+      .depthCompareOp = VK_COMPARE_OP_LESS,
+      .depthBoundsTestEnable = VK_FALSE,
 
       .stencilTestEnable = VK_FALSE,
-
-      .front = stencil_op_state,
-      .back = stencil_op_state,
+      .front = VkStencilOpState {},
+      .back = VkStencilOpState {},
 
       .minDepthBounds = 0.0f,
       .maxDepthBounds = 1.0f,

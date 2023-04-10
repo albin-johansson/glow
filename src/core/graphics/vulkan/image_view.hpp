@@ -10,7 +10,10 @@ class ImageView final {
  public:
   GRAVEL_DELETE_COPY(ImageView);
 
-  ImageView(VkImage image, VkFormat image_format, VkImageViewType type);
+  ImageView(VkImage image,
+            VkFormat image_format,
+            VkImageViewType type,
+            VkImageAspectFlags aspects);
 
   ~ImageView() noexcept;
 

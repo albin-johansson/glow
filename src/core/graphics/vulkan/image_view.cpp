@@ -7,7 +7,8 @@ namespace gravel::vlk {
 
 ImageView::ImageView(VkImage image,
                      const VkFormat image_format,
-                     const VkImageViewType type)
+                     const VkImageViewType type,
+                     const VkImageAspectFlags aspects)
 {
   const VkImageViewCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -24,7 +25,7 @@ ImageView::ImageView(VkImage image,
           },
       .subresourceRange =
           VkImageSubresourceRange {
-              .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+              .aspectMask = aspects,
               .baseMipLevel = 0,
               .levelCount = 1,
               .baseArrayLayer = 0,

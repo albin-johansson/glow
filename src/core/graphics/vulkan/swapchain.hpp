@@ -4,8 +4,10 @@
 
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
+#include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/framebuffer.hpp"
+#include "graphics/vulkan/image.hpp"
 #include "graphics/vulkan/image_view.hpp"
 
 namespace gravel::vlk {
@@ -36,15 +38,20 @@ class Swapchain final {
   VkSwapchainKHR mSwapchain {VK_NULL_HANDLE};
   VkExtent2D mImageExtent {};
   VkFormat mImageFormat {};
+
   Vector<VkImage> mImages;
   Vector<ImageView> mImageViews;
   Vector<Framebuffer> mFramebuffers;
-  uint32 mImageIndex {};
+  uint32 mImageIndex {0};
+
+  Maybe<Image> mDepthImage;
+  Maybe<ImageView> mDepthImageView;
 
   void destroy_swapchain();
 
   void create_swapchain();
   void create_image_views();
+  void create_depth_buffer();
 };
 
 }  // namespace gravel::vlk

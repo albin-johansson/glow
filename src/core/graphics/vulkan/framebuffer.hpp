@@ -10,7 +10,10 @@ class Framebuffer final {
  public:
   GRAVEL_DELETE_COPY(Framebuffer);
 
-  Framebuffer(VkRenderPass render_pass, VkImageView image_view, VkExtent2D extent);
+  Framebuffer(VkRenderPass render_pass,
+              VkImageView image_view,
+              VkImageView depth_view,
+              VkExtent2D extent);
 
   ~Framebuffer() noexcept;
 
