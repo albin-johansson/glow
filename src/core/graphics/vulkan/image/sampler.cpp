@@ -5,7 +5,12 @@
 
 namespace gravel::vk {
 
-Sampler::Sampler()
+void SamplerDeleter::operator()(VkSampler sampler) noexcept
+{
+  vkDestroySampler(get_device(), sampler, nullptr);
+}
+
+auto create_sampler() -> Sampler
 {
   VkPhysicalDeviceFeatures device_features {};
   vkGetPhysicalDeviceFeatures(get_gpu(), &device_features);
@@ -43,38 +48,11 @@ Sampler::Sampler()
       .unnormalizedCoordinates = VK_FALSE,
   };
 
-  GRAVEL_VK_CALL(vkCreateSampler(get_device(), &create_info, nullptr, &mSampler),
+  VkSampler sampler = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateSampler(get_device(), &create_info, nullptr, &sampler),
                  "[VK] Could not create sampler");
-}
 
-Sampler::~Sampler() noexcept
-{
-  dispose();
-}
-
-void Sampler::dispose() noexcept
-{
-  if (mSampler != VK_NULL_HANDLE) {
-    vkDestroySampler(get_device(), mSampler, nullptr);
-  }
-}
-
-Sampler::Sampler(Sampler&& other) noexcept
-    : mSampler {other.mSampler}
-{
-  other.mSampler = VK_NULL_HANDLE;
-}
-
-auto Sampler::operator=(Sampler&& other) noexcept -> Sampler&
-{
-  if (this != &other) {
-    dispose();
-
-    mSampler = other.mSampler;
-    other.mSampler = VK_NULL_HANDLE;
-  }
-
-  return *this;
+  return Sampler {sampler};
 }
 
 }  // namespace gravel::vk

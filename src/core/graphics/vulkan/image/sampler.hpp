@@ -2,28 +2,16 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 
 namespace gravel::vk {
 
-class Sampler final {
- public:
-  GRAVEL_DELETE_COPY(Sampler);
-
-  Sampler();
-
-  ~Sampler() noexcept;
-
-  Sampler(Sampler&& other) noexcept;
-
-  auto operator=(Sampler&& other) noexcept -> Sampler&;
-
-  [[nodiscard]] auto get() noexcept -> VkSampler { return mSampler; }
-
- private:
-  VkSampler mSampler {VK_NULL_HANDLE};
-
-  void dispose() noexcept;
+struct SamplerDeleter final {
+  void operator()(VkSampler sampler) noexcept;
 };
+
+using Sampler = Unique<VkSampler_T, SamplerDeleter>;
+
+[[nodiscard]] auto create_sampler() -> Sampler;
 
 }  // namespace gravel::vk
