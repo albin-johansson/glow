@@ -6,7 +6,7 @@
 #include "common/debug/assert.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
 

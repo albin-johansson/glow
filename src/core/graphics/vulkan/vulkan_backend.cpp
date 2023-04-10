@@ -17,7 +17,9 @@
 #include "graphics/vulkan/image/image_cache.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline/descriptor.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/constants.hpp"
+#include "graphics/vulkan/util/version.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 #include "scene/scene.hpp"
 
 namespace gravel::vk {

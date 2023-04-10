@@ -6,7 +6,7 @@
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 #include "io/texture_loader.hpp"
 
 namespace gravel::vk {

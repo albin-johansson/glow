@@ -1,7 +1,7 @@
 #include "framebuffer.hpp"
 
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vk {

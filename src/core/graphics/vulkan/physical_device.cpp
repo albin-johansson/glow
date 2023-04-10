@@ -4,14 +4,11 @@
 #include <array>      // begin, end
 
 #include "common/debug/error.hpp"
-#include "common/primitives.hpp"
-#include "common/type/array.hpp"
 #include "common/type/map.hpp"
 #include "common/type/set.hpp"
 #include "common/type/string.hpp"
-#include "common/type/vector.hpp"
 #include "graphics/vulkan/instance.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/constants.hpp"
 
 namespace gravel::vk {
 namespace {

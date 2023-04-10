@@ -3,7 +3,7 @@
 #include <cstddef>  // offsetof
 
 #include "graphics/vertex.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
 

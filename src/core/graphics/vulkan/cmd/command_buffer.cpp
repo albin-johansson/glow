@@ -2,7 +2,7 @@
 
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
 

@@ -2,7 +2,7 @@
 
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/util.hpp"
+#include "graphics/vulkan/util/vk_call.hpp"
 #include "io/files.hpp"
 
 namespace gravel::vk {
