@@ -6,7 +6,12 @@
 
 namespace gravel::vk {
 
-PipelineCache::PipelineCache()
+void PipelineCacheDeleter::operator()(VkPipelineCache cache) noexcept
+{
+  vkDestroyPipelineCache(get_device(), cache, nullptr);
+}
+
+auto create_pipeline_cache() -> PipelineCache
 {
   GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -18,38 +23,11 @@ PipelineCache::PipelineCache()
       .pInitialData = nullptr,
   };
 
-  GRAVEL_VK_CALL(vkCreatePipelineCache(get_device(), &create_info, nullptr, &mCache),
+  VkPipelineCache cache = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreatePipelineCache(get_device(), &create_info, nullptr, &cache),
                  "[VK] Could not create pipeline cache");
-}
 
-PipelineCache::~PipelineCache() noexcept
-{
-  dispose();
-}
-
-void PipelineCache::dispose() noexcept
-{
-  if (mCache != VK_NULL_HANDLE) {
-    vkDestroyPipelineCache(get_device(), mCache, nullptr);
-  }
-}
-
-PipelineCache::PipelineCache(PipelineCache&& other) noexcept
-    : mCache {other.mCache}
-{
-  other.mCache = VK_NULL_HANDLE;
-}
-
-auto PipelineCache::operator=(PipelineCache&& other) noexcept -> PipelineCache&
-{
-  if (this != &other) {
-    dispose();
-
-    mCache = other.mCache;
-    other.mCache = VK_NULL_HANDLE;
-  }
-
-  return *this;
+  return PipelineCache {cache};
 }
 
 }  // namespace gravel::vk

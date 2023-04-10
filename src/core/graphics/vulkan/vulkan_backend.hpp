@@ -95,7 +95,7 @@ class VulkanBackend final : public Backend {
   Swapchain mSwapchain;
   RenderPass mRenderPass;
   Sampler mSampler;
-  PipelineCache mPipelineCache;
+  PipelineCache mPipelineCache {create_pipeline_cache()};
 
   DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   PipelineLayoutBuilder mPipelineLayoutBuilder;

@@ -7,8 +7,6 @@
 
 namespace gravel::vk {
 
-[[nodiscard]] auto create_pipeline_cache(VkDevice device) -> VkPipelineCache;
-
 [[nodiscard]] auto create_pipeline_shader_stage(VkShaderStageFlagBits stage,
                                                 VkShaderModule shader_module)
     -> VkPipelineShaderStageCreateInfo;

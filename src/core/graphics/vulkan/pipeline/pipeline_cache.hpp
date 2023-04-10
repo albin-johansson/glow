@@ -2,28 +2,16 @@
 
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 
 namespace gravel::vk {
 
-class PipelineCache final {
- public:
-  GRAVEL_DELETE_COPY(PipelineCache);
-
-  PipelineCache();
-
-  ~PipelineCache() noexcept;
-
-  PipelineCache(PipelineCache&& other) noexcept;
-
-  auto operator=(PipelineCache&& other) noexcept -> PipelineCache&;
-
-  [[nodiscard]] auto get() -> VkPipelineCache { return mCache; }
-
- private:
-  VkPipelineCache mCache {VK_NULL_HANDLE};
-
-  void dispose() noexcept;
+struct PipelineCacheDeleter final {
+  void operator()(VkPipelineCache cache) noexcept;
 };
+
+using PipelineCache = Unique<VkPipelineCache_T, PipelineCacheDeleter>;
+
+[[nodiscard]] auto create_pipeline_cache() -> PipelineCache;
 
 }  // namespace gravel::vk
