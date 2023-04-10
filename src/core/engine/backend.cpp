@@ -13,7 +13,7 @@ auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend
       return std::make_unique<gl::OpenGLBackend>(window);
 
     case GraphicsApi::Vulkan:
-      return std::make_unique<vlk::VulkanBackend>(window);
+      return std::make_unique<vlk::VulkanBackend>();
 
     default:
       throw Error {"Unsupported backend"};

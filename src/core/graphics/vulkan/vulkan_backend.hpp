@@ -58,7 +58,7 @@ class VulkanBackend final : public Backend {
   GRAVEL_DELETE_COPY(VulkanBackend);
   GRAVEL_DELETE_MOVE(VulkanBackend);
 
-  explicit VulkanBackend(SDL_Window* window);
+  VulkanBackend();
 
   ~VulkanBackend() noexcept override;
 

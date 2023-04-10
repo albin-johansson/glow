@@ -36,7 +36,7 @@ namespace {
 
 }  // namespace
 
-VulkanBackend::VulkanBackend(SDL_Window* window)
+VulkanBackend::VulkanBackend()
     : mGPU {select_gpu()},
       mRenderPass {mSwapchain.get_image_format()},
       mPipelineBuilder {mPipelineCache.get()}
