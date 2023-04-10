@@ -34,4 +34,16 @@ struct DynamicMatrices final {
       -> VkPushConstantRange;
 };
 
+/// This struct corresponds to a std140 layout uniform block.
+struct MaterialBuffer final {
+  alignas(16) Vec4 ambient {};
+  alignas(16) Vec4 diffuse {};
+  alignas(16) Vec4 specular {};
+  alignas(16) Vec4 emission {};
+  int32 has_ambient_tex {false};
+  int32 has_diffuse_tex {false};
+  int32 has_specular_tex {false};
+  int32 has_emission_tex {false};
+};
+
 }  // namespace gravel::vlk

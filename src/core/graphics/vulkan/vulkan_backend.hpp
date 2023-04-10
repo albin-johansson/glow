@@ -7,7 +7,6 @@
 #include "common/primitives.hpp"
 #include "common/type/vector.hpp"
 #include "engine/backend.hpp"
-#include "graphics/buffers.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/buffer.hpp"
