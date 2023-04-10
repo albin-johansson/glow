@@ -43,12 +43,14 @@ class Image final {
 
   [[nodiscard]] auto get() noexcept -> VkImage { return mImage; }
   [[nodiscard]] auto get_extent() const noexcept -> const VkExtent3D& { return mExtent; }
+  [[nodiscard]] auto get_format() const noexcept -> VkFormat { return mFormat; }
   [[nodiscard]] auto get_layout() const noexcept -> VkImageLayout { return mLayout; }
 
  private:
   VkImage mImage {VK_NULL_HANDLE};
   VmaAllocation mAllocation {VK_NULL_HANDLE};
   VkExtent3D mExtent {};
+  VkFormat mFormat {};
   VkImageLayout mLayout {VK_IMAGE_LAYOUT_UNDEFINED};
 
   void dispose() noexcept;

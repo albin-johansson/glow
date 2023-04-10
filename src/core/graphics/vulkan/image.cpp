@@ -85,7 +85,8 @@ Image::Image(const VkImageType type,
              const VkExtent3D extent,
              const VkFormat format,
              const VkImageUsageFlags usage)
-    : mExtent {extent}
+    : mExtent {extent},
+      mFormat {format}
 {
   const VkImageCreateInfo image_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
