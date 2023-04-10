@@ -7,8 +7,8 @@
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/framebuffer.hpp"
-#include "graphics/vulkan/image.hpp"
-#include "graphics/vulkan/image_view.hpp"
+#include "graphics/vulkan/image/image.hpp"
+#include "graphics/vulkan/image/image_view.hpp"
 
 namespace gravel::vk {
 

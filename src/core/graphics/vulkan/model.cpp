@@ -4,9 +4,9 @@
 
 #include <spdlog/spdlog.h>
 
-#include "graphics/vulkan/image.hpp"
-#include "graphics/vulkan/image_cache.hpp"
-#include "graphics/vulkan/image_view.hpp"
+#include "graphics/vulkan/image/image.hpp"
+#include "graphics/vulkan/image/image_cache.hpp"
+#include "graphics/vulkan/image/image_view.hpp"
 #include "io/model_loader.hpp"
 #include "scene/scene.hpp"
 

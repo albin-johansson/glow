@@ -5,8 +5,8 @@
 #include "common/predef.hpp"
 #include "common/type/map.hpp"
 #include "common/type/path.hpp"
-#include "graphics/vulkan/image.hpp"
-#include "graphics/vulkan/image_view.hpp"
+#include "graphics/vulkan/image/image.hpp"
+#include "graphics/vulkan/image/image_view.hpp"
 
 namespace gravel::vk {
 
