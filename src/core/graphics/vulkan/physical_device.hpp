@@ -19,6 +19,9 @@ struct SwapchainSupport final {
   Vector<VkPresentModeKHR> present_modes;
 };
 
+/// Returns all available GPUs, regardless of their suitability.
+[[nodiscard]] auto get_physical_devices(VkInstance instance) -> Vector<VkPhysicalDevice>;
+
 /// Returns all available extensions for a specific GPU.
 [[nodiscard]] auto get_extensions(VkPhysicalDevice gpu) -> Vector<VkExtensionProperties>;
 

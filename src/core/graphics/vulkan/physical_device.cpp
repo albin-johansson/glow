@@ -73,6 +73,19 @@ namespace {
 
 }  // namespace
 
+auto get_physical_devices(VkInstance instance) -> Vector<VkPhysicalDevice>
+{
+  uint32 gpu_count = 0;
+  vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr);
+
+  Vector<VkPhysicalDevice> gpus;
+  gpus.resize(gpu_count);
+
+  vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data());
+
+  return gpus;
+}
+
 auto get_extensions(VkPhysicalDevice gpu) -> Vector<VkExtensionProperties>
 {
   uint32 extension_count = 0;

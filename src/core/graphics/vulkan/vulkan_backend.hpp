@@ -13,6 +13,7 @@
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/buffers.hpp"
 #include "graphics/vulkan/cmd/command_pool.hpp"
+#include "graphics/vulkan/debug_messenger.hpp"
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/fence.hpp"
 #include "graphics/vulkan/instance.hpp"
@@ -86,17 +87,17 @@ class VulkanBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
-  Instance mInstance;
+  Instance mInstance {create_instance()};
+  DebugMessenger mDebugMessenger {kDebugBuild ? create_debug_messenger() : nullptr};
   Surface mSurface {create_surface()};
   VkPhysicalDevice mGPU {VK_NULL_HANDLE};
   Device mDevice {create_device()};
   Allocator mAllocator;
-
   Swapchain mSwapchain;
   RenderPass mRenderPass;
   Sampler mSampler;
-
   PipelineCache mPipelineCache;
+
   DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   PipelineLayoutBuilder mPipelineLayoutBuilder;
   PipelineBuilder mPipelineBuilder;
