@@ -89,7 +89,7 @@ class VulkanBackend final : public Backend {
   Instance mInstance;
   Surface mSurface;
   VkPhysicalDevice mGPU {VK_NULL_HANDLE};
-  Device mDevice;
+  Device mDevice {create_device()};
   Allocator mAllocator;
 
   Swapchain mSwapchain;

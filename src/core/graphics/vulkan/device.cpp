@@ -11,7 +11,12 @@
 
 namespace gravel::vlk {
 
-Device::Device()
+void DeviceDeleter::operator()(VkDevice device) noexcept
+{
+  vkDestroyDevice(device, nullptr);
+}
+
+auto create_device() -> Device
 {
   GRAVEL_ASSERT(get_gpu() != VK_NULL_HANDLE);
   GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
@@ -29,14 +34,16 @@ Device::Device()
   Vector<VkDeviceQueueCreateInfo> queue_create_infos;
   queue_create_infos.reserve(unique_queue_families.size());
 
-  const float priority = 1.0f;
+  const float queue_priority = 1.0f;
+
   for (const auto queue_family_index : unique_queue_families) {
     queue_create_infos.push_back(VkDeviceQueueCreateInfo {
         .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-
+        .pNext = nullptr,
+        .flags = 0,
         .queueFamilyIndex = queue_family_index,
         .queueCount = 1,
-        .pQueuePriorities = &priority,
+        .pQueuePriorities = &queue_priority,
     });
   }
 
@@ -70,20 +77,21 @@ Device::Device()
     device_create_info.ppEnabledLayerNames = kValidationLayerNames;
   }
 
-  GRAVEL_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &mDevice),
-                 "[VK] Could not create logical device");
-  set_device(mDevice);
+  VkDevice device = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &device),
+                 "[VK] Could not create Vulkan device");
+  set_device(device);
 
-  vkGetDeviceQueue(mDevice, graphics_family_index, 0, &mGraphicsQueue);
-  vkGetDeviceQueue(mDevice, present_family_index, 0, &mPresentQueue);
+  VkQueue graphics_queue = VK_NULL_HANDLE;
+  VkQueue presentation_queue = VK_NULL_HANDLE;
 
-  set_graphics_queue(mGraphicsQueue);
-  set_presentation_queue(mPresentQueue);
-}
+  vkGetDeviceQueue(device, graphics_family_index, 0, &graphics_queue);
+  vkGetDeviceQueue(device, present_family_index, 0, &presentation_queue);
 
-Device::~Device()
-{
-  vkDestroyDevice(mDevice, nullptr);
+  set_graphics_queue(graphics_queue);
+  set_presentation_queue(presentation_queue);
+
+  return Device {device};
 }
 
 }  // namespace gravel::vlk

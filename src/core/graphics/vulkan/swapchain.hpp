@@ -25,6 +25,7 @@ class Swapchain final {
 
   void create_framebuffers(VkRenderPass render_pass);
 
+  /// Attempts to acquire the next image from the available swapchain images.
   auto acquire_next_image(VkSemaphore semaphore) -> VkResult;
 
   /// Presents the current swapchain image to the presentation queue.
