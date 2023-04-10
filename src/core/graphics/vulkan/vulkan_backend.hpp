@@ -8,6 +8,7 @@
 #include "common/type/vector.hpp"
 #include "engine/backend.hpp"
 #include "graphics/buffers.hpp"
+#include "graphics/camera.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/buffers.hpp"
@@ -16,6 +17,7 @@
 #include "graphics/vulkan/fence.hpp"
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/managed.hpp"
+#include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/pipeline/descriptor_pool.hpp"
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
 #include "graphics/vulkan/pipeline_builder.hpp"
@@ -24,6 +26,7 @@
 #include "graphics/vulkan/semaphore.hpp"
 #include "graphics/vulkan/surface.hpp"
 #include "graphics/vulkan/swapchain.hpp"
+#include "scene/transform.hpp"
 #include "util/arrays.hpp"
 
 namespace gravel::vlk {
@@ -116,6 +119,12 @@ class VulkanBackend final : public Backend {
   void create_shading_pipeline();
   void create_frame_data();
   void prepare_imgui_for_vulkan();
+
+  void update_static_matrix_buffer(const Camera& camera, const Transform& camera_transform);
+
+  void update_material_buffer(const Material& material);
+
+  void push_static_matrix_descriptor();
 };
 
 }  // namespace gravel::vlk
