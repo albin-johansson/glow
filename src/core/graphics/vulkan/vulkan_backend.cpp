@@ -84,7 +84,7 @@ void VulkanBackend::create_frame_data()
 {
   for (usize index = 0; index < kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
-    frame.command_buffer = mCommandPool.create_command_buffer();
+    frame.command_buffer = mCommandPool.allocate_command_buffer();
   }
 }
 

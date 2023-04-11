@@ -7,6 +7,11 @@
 
 namespace gravel::vk {
 
+void CommandPoolDeleter::operator()(VkCommandPool pool) noexcept
+{
+  vkDestroyCommandPool(get_device(), pool, nullptr);
+}
+
 CommandPool::CommandPool()
 {
   GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
@@ -22,47 +27,20 @@ CommandPool::CommandPool()
       .queueFamilyIndex = queue_family_indices.graphics_family.value(),
   };
 
-  GRAVEL_VK_CALL(vkCreateCommandPool(get_device(), &create_info, nullptr, &mCommandPool),
+  VkCommandPool pool = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vkCreateCommandPool(get_device(), &create_info, nullptr, &pool),
                  "[VK] Could not create command pool");
-  set_command_pool(mCommandPool);
+
+  mCommandPool.reset(pool);
+  set_command_pool(pool);
 }
 
-CommandPool::~CommandPool() noexcept
-{
-  dispose();
-}
-
-void CommandPool::dispose() noexcept
-{
-  if (mCommandPool != VK_NULL_HANDLE) {
-    vkDestroyCommandPool(get_device(), mCommandPool, nullptr);
-  }
-}
-
-CommandPool::CommandPool(CommandPool&& other) noexcept
-    : mCommandPool {other.mCommandPool}
-{
-  other.mCommandPool = VK_NULL_HANDLE;
-}
-
-auto CommandPool::operator=(CommandPool&& other) noexcept -> CommandPool&
-{
-  if (this != &other) {
-    dispose();
-
-    mCommandPool = other.mCommandPool;
-    other.mCommandPool = VK_NULL_HANDLE;
-  }
-
-  return *this;
-}
-
-auto CommandPool::create_command_buffer() -> VkCommandBuffer
+auto CommandPool::allocate_command_buffer() -> VkCommandBuffer
 {
   const VkCommandBufferAllocateInfo allocate_info {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
-      .commandPool = mCommandPool,
+      .commandPool = mCommandPool.get(),
       .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
       .commandBufferCount = 1,
   };
@@ -74,12 +52,12 @@ auto CommandPool::create_command_buffer() -> VkCommandBuffer
   return buffer;
 }
 
-auto CommandPool::create_command_buffers(const uint32 count) -> Vector<VkCommandBuffer>
+auto CommandPool::allocate_command_buffers(uint32 count) -> Vector<VkCommandBuffer>
 {
   const VkCommandBufferAllocateInfo allocate_info {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
-      .commandPool = mCommandPool,
+      .commandPool = mCommandPool.get(),
       .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
       .commandBufferCount = count,
   };

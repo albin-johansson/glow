@@ -4,32 +4,32 @@
 
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
+#include "common/type/memory.hpp"
 #include "common/type/vector.hpp"
 
 namespace gravel::vk {
 
+struct CommandPoolDeleter final {
+  void operator()(VkCommandPool pool) noexcept;
+};
+
+using ManagedCommandPool = Unique<VkCommandPool_T, CommandPoolDeleter>;
+
 class CommandPool final {
  public:
   GRAVEL_DELETE_COPY(CommandPool);
+  GRAVEL_DEFAULT_MOVE(CommandPool);
 
   CommandPool();
 
-  ~CommandPool() noexcept;
+  [[nodiscard]] auto allocate_command_buffer() -> VkCommandBuffer;
 
-  CommandPool(CommandPool&& other) noexcept;
+  [[nodiscard]] auto allocate_command_buffers(uint32 count) -> Vector<VkCommandBuffer>;
 
-  auto operator=(CommandPool&& other) noexcept -> CommandPool&;
-
-  [[nodiscard]] auto create_command_buffer() -> VkCommandBuffer;
-
-  [[nodiscard]] auto create_command_buffers(uint32 count) -> Vector<VkCommandBuffer>;
-
-  [[nodiscard]] auto get() -> VkCommandPool { return mCommandPool; }
+  [[nodiscard]] auto get() noexcept -> VkCommandPool { return mCommandPool.get(); }
 
  private:
-  VkCommandPool mCommandPool {VK_NULL_HANDLE};
-
-  void dispose() noexcept;
+  ManagedCommandPool mCommandPool;
 };
 
 }  // namespace gravel::vk
