@@ -11,7 +11,6 @@
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/cmd/command_pool.hpp"
-#include "graphics/vulkan/debug_messenger.hpp"
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/image/sampler.hpp"
 #include "graphics/vulkan/instance.hpp"
@@ -26,6 +25,7 @@
 #include "graphics/vulkan/swapchain/swapchain.hpp"
 #include "graphics/vulkan/sync/fence.hpp"
 #include "graphics/vulkan/sync/semaphore.hpp"
+#include "graphics/vulkan/util/debug_messenger.hpp"
 #include "scene/transform.hpp"
 #include "util/arrays.hpp"
 
