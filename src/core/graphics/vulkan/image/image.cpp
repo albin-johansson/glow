@@ -10,6 +10,7 @@
 #include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
 #include "common/type/chrono.hpp"
+#include "common/type/map.hpp"
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
@@ -19,6 +20,22 @@
 namespace gravel::vk {
 namespace {
 
+/// Used to determine access flags for layout transitions.
+const HashMap<VkImageLayout, VkAccessFlags> kTransitionAccessMap {
+    {VK_IMAGE_LAYOUT_UNDEFINED, 0},
+    {VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT},
+    {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT},
+    {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT},
+};
+
+/// Used to determine pipeline stage flags for layout transitions.
+const HashMap<VkImageLayout, VkPipelineStageFlags> kTransitionStageMap {
+    {VK_IMAGE_LAYOUT_UNDEFINED, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT},
+    {VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT},
+    {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT},
+    {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT},
+};
+
 void transition_image_layout(VkCommandBuffer command_buffer,
                              VkImage image,
                              const VkImageLayout old_layout,
@@ -26,48 +43,10 @@ void transition_image_layout(VkCommandBuffer command_buffer,
                              const uint32 level_count,
                              const uint32 base_level)
 {
-  VkAccessFlags src_access = 0;
-  VkAccessFlags dst_access = 0;
-  VkPipelineStageFlags src_stage = 0;
-  VkPipelineStageFlags dst_stage = 0;
+  const auto src_access = kTransitionAccessMap.at(old_layout);
+  const auto dst_access = kTransitionAccessMap.at(new_layout);
 
-  if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED &&
-      new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-    src_access = 0;
-    dst_access = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-    src_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    dst_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-  }
-  else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-           new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-    src_access = VK_ACCESS_TRANSFER_WRITE_BIT;
-    dst_access = VK_ACCESS_SHADER_READ_BIT;
-
-    src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    dst_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-  }
-  else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL &&
-           new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-    src_access = VK_ACCESS_TRANSFER_READ_BIT;
-    dst_access = VK_ACCESS_SHADER_READ_BIT;
-
-    src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    dst_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-  }
-  else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-           new_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-    src_access = VK_ACCESS_TRANSFER_WRITE_BIT;
-    dst_access = VK_ACCESS_TRANSFER_READ_BIT;
-
-    src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    dst_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-  }
-  else {
-    throw Error {"[VK] Unsupported image layout transition"};
-  }
-
-  const VkImageMemoryBarrier image_memory_barrier {
+  const VkImageMemoryBarrier barrier {
       .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
       .pNext = nullptr,
 
@@ -92,6 +71,9 @@ void transition_image_layout(VkCommandBuffer command_buffer,
           },
   };
 
+  const auto src_stage = kTransitionStageMap.at(old_layout);
+  const auto dst_stage = kTransitionStageMap.at(new_layout);
+
   vkCmdPipelineBarrier(command_buffer,
                        src_stage,
                        dst_stage,
@@ -101,7 +83,7 @@ void transition_image_layout(VkCommandBuffer command_buffer,
                        0,
                        nullptr,
                        1,
-                       &image_memory_barrier);
+                       &barrier);
 }
 
 }  // namespace
