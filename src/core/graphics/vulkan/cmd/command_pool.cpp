@@ -37,38 +37,49 @@ CommandPool::CommandPool()
 
 auto CommandPool::allocate_command_buffer() -> VkCommandBuffer
 {
-  const VkCommandBufferAllocateInfo allocate_info {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-      .pNext = nullptr,
-      .commandPool = mCommandPool.get(),
-      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = 1,
-  };
-
-  VkCommandBuffer buffer {VK_NULL_HANDLE};
-  GRAVEL_VK_CALL(vkAllocateCommandBuffers(get_device(), &allocate_info, &buffer),
-                 "[VK] Could not create command buffer");
-
-  return buffer;
+  return gravel::vk::allocate_command_buffer(mCommandPool.get());
 }
 
 auto CommandPool::allocate_command_buffers(uint32 count) -> Vector<VkCommandBuffer>
 {
-  const VkCommandBufferAllocateInfo allocate_info {
+  return gravel::vk::allocate_command_buffers(mCommandPool.get(), count);
+}
+
+auto allocate_command_buffer(VkCommandPool command_pool) -> VkCommandBuffer
+{
+  const VkCommandBufferAllocateInfo alloc_info {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .pNext = nullptr,
-      .commandPool = mCommandPool.get(),
+      .commandPool = command_pool,
+      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+      .commandBufferCount = 1,
+  };
+
+  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
+  GRAVEL_VK_CALL(vkAllocateCommandBuffers(get_device(), &alloc_info, &command_buffer),
+                 "[VK] Could not allocate command buffer");
+
+  return command_buffer;
+}
+
+auto allocate_command_buffers(VkCommandPool command_pool, const uint32 count)
+    -> Vector<VkCommandBuffer>
+{
+  const VkCommandBufferAllocateInfo alloc_info {
+      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+      .pNext = nullptr,
+      .commandPool = command_pool,
       .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
       .commandBufferCount = count,
   };
 
-  Vector<VkCommandBuffer> buffers;
-  buffers.resize(count);
+  Vector<VkCommandBuffer> cmd_buffers;
+  cmd_buffers.resize(count);
 
-  GRAVEL_VK_CALL(vkAllocateCommandBuffers(get_device(), &allocate_info, buffers.data()),
-                 "[VK] Could not create command buffers");
+  GRAVEL_VK_CALL(vkAllocateCommandBuffers(get_device(), &alloc_info, cmd_buffers.data()),
+                 "[VK] Could not allocate command buffers");
 
-  return buffers;
+  return cmd_buffers;
 }
 
 }  // namespace gravel::vk

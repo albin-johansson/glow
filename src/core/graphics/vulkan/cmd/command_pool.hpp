@@ -32,4 +32,9 @@ class CommandPool final {
   ManagedCommandPool mCommandPool;
 };
 
+[[nodiscard]] auto allocate_command_buffer(VkCommandPool command_pool) -> VkCommandBuffer;
+
+[[nodiscard]] auto allocate_command_buffers(VkCommandPool command_pool, uint32 count)
+    -> Vector<VkCommandBuffer>;
+
 }  // namespace gravel::vk

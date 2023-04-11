@@ -17,6 +17,7 @@
 #include "graphics/vulkan/image/image_cache.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/pipeline/descriptor.hpp"
+#include "graphics/vulkan/queue.hpp"
 #include "graphics/vulkan/util/constants.hpp"
 #include "graphics/vulkan/util/version.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
@@ -311,32 +312,15 @@ void VulkanBackend::submit_commands()
 {
   auto& frame = mFrames.at(mFrameIndex);
 
-  VkSemaphore image_available_semaphore = frame.image_available_semaphore.get();
-  VkSemaphore render_finished_semaphore = frame.render_finished_semaphore.get();
-
-  const VkPipelineStageFlags wait_dst_stage_mask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-
-  const VkSubmitInfo submit_info {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .pNext = nullptr,
-
-      // Wait on the image_available_semaphore before command buffer execution
-      .waitSemaphoreCount = 1,
-      .pWaitSemaphores = &image_available_semaphore,
-      .pWaitDstStageMask = &wait_dst_stage_mask,
-
-      .commandBufferCount = 1,
-      .pCommandBuffers = &frame.command_buffer,
-
-      // Signal the render_finished_semaphore after command buffer execution
-      .signalSemaphoreCount = 1,
-      .pSignalSemaphores = &render_finished_semaphore,
-  };
-
-  VkQueue queue = get_graphics_queue();
-  GRAVEL_VK_CALL(vkQueueSubmit(queue, 1, &submit_info, frame.in_flight_fence.get()),
-                 "[VK] Could not submit command buffer to graphics queue");
+  // Wait on the image_available_semaphore before command buffer execution,
+  // and signal the render_finished_semaphore and in_flight_fence after the command buffer
+  // is executed.
+  submit_to_queue(get_graphics_queue(),
+                  frame.command_buffer,
+                  frame.image_available_semaphore.get(),
+                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                  frame.render_finished_semaphore.get(),
+                  frame.in_flight_fence.get());
 }
 
 void VulkanBackend::present_image()

@@ -1,48 +1,33 @@
 #include "command_buffer.hpp"
 
+#include "graphics/vulkan/cmd/command_pool.hpp"
 #include "graphics/vulkan/context.hpp"
-#include "graphics/vulkan/physical_device.hpp"
+#include "graphics/vulkan/queue.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
+namespace {
 
-auto create_command_buffer(VkDevice device, VkCommandPool command_pool) -> VkCommandBuffer
+[[nodiscard]] auto record_one_time_commands() -> VkCommandBuffer
 {
-  const VkCommandBufferAllocateInfo allocate_info {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-      .pNext = nullptr,
-      .commandPool = command_pool,
-      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = 1,
-  };
+  VkCommandBuffer cmd_buffer = allocate_command_buffer(get_command_pool());
+  begin_command_buffer(cmd_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
-  GRAVEL_VK_CALL(vkAllocateCommandBuffers(device, &allocate_info, &command_buffer),
-                 "[VK] Could not create command buffer");
-
-  return command_buffer;
+  return cmd_buffer;
 }
 
-auto create_command_buffers(VkDevice device,
-                            VkCommandPool command_pool,
-                            const uint32 count) -> Vector<VkCommandBuffer>
+void execute_one_time_commands(VkCommandBuffer cmd_buffer)
 {
-  const VkCommandBufferAllocateInfo allocate_info {
-      .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-      .pNext = nullptr,
-      .commandPool = command_pool,
-      .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = count,
-  };
+  end_command_buffer(cmd_buffer);
 
-  Vector<VkCommandBuffer> command_buffers;
-  command_buffers.resize(count);
+  VkQueue graphics_queue = get_graphics_queue();
+  submit_to_queue(graphics_queue, cmd_buffer);
+  wait_on_queue(graphics_queue);
 
-  GRAVEL_VK_CALL(vkAllocateCommandBuffers(device, &allocate_info, command_buffers.data()),
-                 "[VK] Could not create command buffers");
-
-  return command_buffers;
+  vkFreeCommandBuffers(get_device(), get_command_pool(), 1, &cmd_buffer);
 }
+
+}  // namespace
 
 void reset_command_buffer(VkCommandBuffer command_buffer)
 {
@@ -70,43 +55,7 @@ void end_command_buffer(VkCommandBuffer command_buffer)
   GRAVEL_VK_CALL(vkEndCommandBuffer(command_buffer), "[VK] Could not end command buffer");
 }
 
-auto record_one_time_commands() -> VkCommandBuffer
-{
-  VkCommandBuffer cmd_buffer = create_command_buffer(get_device(), get_command_pool());
-  begin_command_buffer(cmd_buffer, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
-
-  return cmd_buffer;
-}
-
-void execute_one_time_commands(VkCommandBuffer cmd_buffer)
-{
-  end_command_buffer(cmd_buffer);
-
-  const VkSubmitInfo submit_info {
-      .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-      .pNext = nullptr,
-
-      .waitSemaphoreCount = 0,
-      .pWaitSemaphores = nullptr,
-      .pWaitDstStageMask = nullptr,
-
-      .commandBufferCount = 1,
-      .pCommandBuffers = &cmd_buffer,
-
-      .signalSemaphoreCount = 0,
-      .pSignalSemaphores = nullptr,
-  };
-
-  VkQueue graphics_queue = get_graphics_queue();
-  GRAVEL_VK_CALL(vkQueueSubmit(graphics_queue, 1, &submit_info, VK_NULL_HANDLE),
-                 "[VK] Could not submit work to queue");
-  GRAVEL_VK_CALL(vkQueueWaitIdle(graphics_queue),
-                 "[VK] Could not wait for graphics queue");
-
-  vkFreeCommandBuffers(get_device(), get_command_pool(), 1, &cmd_buffer);
-}
-
-void execute_immediately(const std::function<void(VkCommandBuffer)>& func)
+void execute_immediately(const UnaryCmdBufferFunc& func)
 {
   VkCommandBuffer cmd_buffer = record_one_time_commands();
   func(cmd_buffer);
