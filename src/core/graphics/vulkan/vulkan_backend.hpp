@@ -127,6 +127,8 @@ class VulkanBackend final : public Backend {
 
   void push_static_matrix_descriptor();
 
+  void render_model(const Scene& scene, const Transform& transform, const Model& model);
+
   /// Submits rendering commands to the graphics queue.
   void submit_commands();
 

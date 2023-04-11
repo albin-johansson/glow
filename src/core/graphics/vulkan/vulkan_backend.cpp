@@ -230,66 +230,74 @@ void VulkanBackend::render_scene(const Scene& scene,
 
   push_static_matrix_descriptor();
 
+  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
+    render_model(scene, transform, model);
+  }
+}
+
+void VulkanBackend::render_model(const Scene& scene,
+                                 const Transform& transform,
+                                 const Model& model)
+{
+  auto& frame = mFrames.at(mFrameIndex);
+
   static Vector<VkWriteDescriptorSet> write_buffer;
   write_buffer.reserve(5);
 
-  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
-    const auto model_transform = transform.to_model_matrix();
+  const auto model_transform = transform.to_model_matrix();
 
-    for (const auto& mesh : model.meshes) {
-      write_buffer.clear();
+  for (const auto& mesh : model.meshes) {
+    write_buffer.clear();
 
-      const auto& material = scene.get<Material>(mesh.material);
-      const auto model_matrix = model_transform * mesh.transform;
+    const auto& material = scene.get<Material>(mesh.material);
+    const auto model_matrix = model_transform * mesh.transform;
 
-      vkCmdPushConstants(frame.command_buffer,
-                         mShadingPipelineLayout.get(),
-                         VK_SHADER_STAGE_VERTEX_BIT,
-                         0,
-                         sizeof model_matrix,
-                         &model_matrix);
+    vkCmdPushConstants(frame.command_buffer,
+                       mShadingPipelineLayout.get(),
+                       VK_SHADER_STAGE_VERTEX_BIT,
+                       0,
+                       sizeof model_matrix,
+                       &model_matrix);
 
-      update_material_buffer(material);
+    update_material_buffer(material);
 
-      const VkDescriptorBufferInfo material_buffer_info {
-          .buffer = frame.material_ubo.get(),
-          .offset = 0,
-          .range = sizeof mMaterialBuffer,
-      };
+    const VkDescriptorBufferInfo material_buffer_info {
+        .buffer = frame.material_ubo.get(),
+        .offset = 0,
+        .range = sizeof mMaterialBuffer,
+    };
 
-      const VkDescriptorImageInfo diffuse_image_info {
-          .sampler = mSampler.get(),
-          .imageView = material.diffuse_tex,
-          .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-      };
+    const VkDescriptorImageInfo diffuse_image_info {
+        .sampler = mSampler.get(),
+        .imageView = material.diffuse_tex,
+        .imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+    };
 
-      // Update for the material buffer
+    // Update for the material buffer
+    write_buffer.push_back(
+        create_descriptor_buffer_write(1,
+                                       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                       &material_buffer_info));
+
+    if (material.diffuse_tex != VK_NULL_HANDLE) {
+      // Change the bound diffuse material texture
       write_buffer.push_back(
-          create_descriptor_buffer_write(1,
-                                         VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                         &material_buffer_info));
-
-      if (material.diffuse_tex != VK_NULL_HANDLE) {
-        // Change the bound diffuse material texture
-        write_buffer.push_back(
-            create_descriptor_image_write(5,
-                                          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                          &diffuse_image_info));
-      }
-
-      push_descriptor_set(frame.command_buffer,
-                          mShadingPipelineLayout.get(),
-                          0,
-                          static_cast<uint32>(write_buffer.size()),
-                          write_buffer.data());
-
-      mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
-      mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
-
-      vkCmdDrawIndexed(frame.command_buffer, mesh.index_count, 1, 0, 0, 0);
+          create_descriptor_image_write(5,
+                                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                        &diffuse_image_info));
     }
-  }
 
+    push_descriptor_set(frame.command_buffer,
+                        mShadingPipelineLayout.get(),
+                        0,
+                        static_cast<uint32>(write_buffer.size()),
+                        write_buffer.data());
+
+    mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
+    mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
+
+    vkCmdDrawIndexed(frame.command_buffer, mesh.index_count, 1, 0, 0, 0);
+  }
 }
 
 void VulkanBackend::end_frame()
