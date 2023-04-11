@@ -1,8 +1,15 @@
 #include "image.hpp"
 
+#include <algorithm>  // max
+#include <cmath>      // floor, log2
+
+#include <fmt/chrono.h>
+#include <spdlog/spdlog.h>
 #include <vk_mem_alloc.h>
 
+#include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
+#include "common/type/chrono.hpp"
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
@@ -15,7 +22,9 @@ namespace {
 void transition_image_layout(VkCommandBuffer command_buffer,
                              VkImage image,
                              const VkImageLayout old_layout,
-                             const VkImageLayout new_layout)
+                             const VkImageLayout new_layout,
+                             const uint32 level_count,
+                             const uint32 base_level)
 {
   VkAccessFlags src_access = 0;
   VkAccessFlags dst_access = 0;
@@ -37,6 +46,22 @@ void transition_image_layout(VkCommandBuffer command_buffer,
 
     src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
     dst_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  }
+  else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL &&
+           new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+    src_access = VK_ACCESS_TRANSFER_READ_BIT;
+    dst_access = VK_ACCESS_SHADER_READ_BIT;
+
+    src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    dst_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+  }
+  else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+           new_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+    src_access = VK_ACCESS_TRANSFER_WRITE_BIT;
+    dst_access = VK_ACCESS_TRANSFER_READ_BIT;
+
+    src_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    dst_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
   }
   else {
     throw Error {"[VK] Unsupported image layout transition"};
@@ -60,8 +85,8 @@ void transition_image_layout(VkCommandBuffer command_buffer,
       .subresourceRange =
           VkImageSubresourceRange {
               .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-              .baseMipLevel = 0,
-              .levelCount = 1,
+              .baseMipLevel = base_level,
+              .levelCount = level_count,
               .baseArrayLayer = 0,
               .layerCount = 1,
           },
@@ -86,23 +111,28 @@ Image::Image(const VkImageType type,
              const VkFormat format,
              const VkImageUsageFlags usage)
     : mExtent {extent},
-      mFormat {format}
+      mFormat {format},
+      mMipLevels {1 + static_cast<uint32>(
+                          std::floor(std::log2(std::max(extent.width, extent.height))))}
 {
+  GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_UNDEFINED);
+  GRAVEL_ASSERT(mFormat != VK_FORMAT_UNDEFINED);
+
   const VkImageCreateInfo image_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
       .pNext = nullptr,
       .flags = 0,
 
       .imageType = type,
-      .format = format,
+      .format = mFormat,
       .extent = mExtent,
 
-      .mipLevels = 1,
+      .mipLevels = mMipLevels,
       .arrayLayers = 1,
 
       .samples = VK_SAMPLE_COUNT_1_BIT,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
-      .usage = usage | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+      .usage = usage | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
 
       .queueFamilyIndexCount = 0,
@@ -145,7 +175,9 @@ Image::Image(Image&& other) noexcept
     : mImage {other.mImage},
       mAllocation {other.mAllocation},
       mExtent {other.mExtent},
-      mLayout {other.mLayout}
+      mFormat {other.mFormat},
+      mLayout {other.mLayout},
+      mMipLevels {other.mMipLevels}
 {
   other.mImage = VK_NULL_HANDLE;
   other.mAllocation = VK_NULL_HANDLE;
@@ -159,7 +191,9 @@ auto Image::operator=(Image&& other) noexcept -> Image&
     mImage = other.mImage;
     mAllocation = other.mAllocation;
     mExtent = other.mExtent;
+    mFormat = other.mFormat;
     mLayout = other.mLayout;
+    mMipLevels = other.mMipLevels;
 
     other.mImage = VK_NULL_HANDLE;
     other.mAllocation = VK_NULL_HANDLE;
@@ -171,7 +205,7 @@ auto Image::operator=(Image&& other) noexcept -> Image&
 void Image::change_layout(const VkImageLayout new_layout)
 {
   execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
-    transition_image_layout(cmd_buffer, mImage, mLayout, new_layout);
+    transition_image_layout(cmd_buffer, mImage, mLayout, new_layout, mMipLevels, 0);
     mLayout = new_layout;
   });
 }
@@ -198,9 +232,85 @@ void Image::copy_from_buffer(VkBuffer buffer)
   });
 }
 
-auto load_image_2d(const Path& path, VkFormat format, VkImageUsageFlags usage)
+void Image::generate_mipmaps()
+{
+  GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+  execute_immediately([this](VkCommandBuffer cmd_buffer) {
+    auto mip_width = static_cast<int32>(mExtent.width);
+    auto mip_height = static_cast<int32>(mExtent.height);
+
+    for (uint32 level = 1; level < mMipLevels; ++level) {
+      const uint32 base_level = level - 1;
+
+      transition_image_layout(cmd_buffer,
+                              mImage,
+                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                              1,
+                              base_level);
+
+      VkImageBlit blit {};
+      blit.srcOffsets[0] = {0, 0, 0};
+      blit.srcOffsets[1] = {mip_width, mip_height, 1};
+
+      blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      blit.srcSubresource.mipLevel = base_level;
+      blit.srcSubresource.baseArrayLayer = 0;
+      blit.srcSubresource.layerCount = 1;
+
+      blit.dstOffsets[0] = {0, 0, 0};
+      blit.dstOffsets[1] = {(mip_width > 1) ? (mip_width / 2) : 1,
+                            (mip_height > 1) ? (mip_height / 2) : 1,
+                            1};
+
+      blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      blit.dstSubresource.mipLevel = level;
+      blit.dstSubresource.baseArrayLayer = 0;
+      blit.dstSubresource.layerCount = 1;
+
+      vkCmdBlitImage(cmd_buffer,
+                     mImage,
+                     VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                     mImage,
+                     VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                     1,
+                     &blit,
+                     VK_FILTER_LINEAR);
+
+      transition_image_layout(cmd_buffer,
+                              mImage,
+                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                              1,
+                              base_level);
+
+      if (mip_width > 1) {
+        mip_width /= 2;
+      }
+
+      if (mip_height > 1) {
+        mip_height /= 2;
+      }
+    }
+
+    // Transitions the last mipmap image to the optimal shader read layout
+    transition_image_layout(cmd_buffer,
+                            mImage,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                            1,
+                            mMipLevels - 1);
+
+    mLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+  });
+}
+
+auto load_image_2d(const Path& path, const VkFormat format, const VkImageUsageFlags usage)
     -> Maybe<Image>
 {
+  const auto start_time = Clock::now();
+
   if (const auto data =
           load_texture_data(path, TextureFormat::Byte, TextureChannels::RGBA)) {
     const auto width = static_cast<uint32>(data->size.x);
@@ -218,8 +328,15 @@ auto load_image_2d(const Path& path, VkFormat format, VkImageUsageFlags usage)
     image.change_layout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
     image.copy_from_buffer(staging_buffer.get());
 
-    // Ensure image has optimal layout for being read from shaders
-    image.change_layout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    // Generate mipmaps
+    image.generate_mipmaps();
+
+    GRAVEL_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    GRAVEL_ASSERT(image.get_format() == format);
+
+    const auto end_time = Clock::now();
+    spdlog::debug("[VK] Loaded image in {}",
+                  chrono::duration_cast<Milliseconds>(end_time - start_time));
 
     return image;
   }

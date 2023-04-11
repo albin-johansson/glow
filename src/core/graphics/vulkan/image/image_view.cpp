@@ -1,6 +1,8 @@
 #include "image_view.hpp"
 
+#include "common/debug/assert.hpp"
 #include "graphics/vulkan/context.hpp"
+#include "graphics/vulkan/image/image.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
@@ -8,8 +10,11 @@ namespace gravel::vk {
 ImageView::ImageView(VkImage image,
                      const VkFormat image_format,
                      const VkImageViewType type,
-                     const VkImageAspectFlags aspects)
+                     const VkImageAspectFlags aspects,
+                     const uint32 mip_levels)
 {
+  GRAVEL_ASSERT(image_format != VK_FORMAT_UNDEFINED);
+
   const VkImageViewCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 
@@ -27,7 +32,7 @@ ImageView::ImageView(VkImage image,
           VkImageSubresourceRange {
               .aspectMask = aspects,
               .baseMipLevel = 0,
-              .levelCount = 1,
+              .levelCount = mip_levels,
               .baseArrayLayer = 0,
               .layerCount = 1,
           },
@@ -35,6 +40,13 @@ ImageView::ImageView(VkImage image,
 
   GRAVEL_VK_CALL(vkCreateImageView(get_device(), &create_info, nullptr, &mImageView),
                  "[VK] Could not create image view");
+}
+
+ImageView::ImageView(Image& image,
+                     const VkImageViewType type,
+                     const VkImageAspectFlags aspects)
+    : ImageView {image.get(), image.get_format(), type, aspects, image.get_mip_levels()}
+{
 }
 
 ImageView::~ImageView() noexcept

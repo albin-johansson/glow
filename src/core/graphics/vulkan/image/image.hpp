@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.h>
 
 #include "common/predef.hpp"
+#include "common/primitives.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 
@@ -16,9 +17,10 @@ class Image final {
   /// Creates an empty GPU image.
   ///
   /// \details
-  /// The image is created with the `VK_IMAGE_USAGE_TRANSFER_DST` flag combined with the
-  /// provided image usage flags. Put the pixel data into a staging buffer, and use
-  /// the `copy_from_buffer` function to upload the data to the image.
+  /// The image is created with the `VK_IMAGE_USAGE_TRANSFER_SRC` and
+  /// `VK_IMAGE_USAGE_TRANSFER_DST` flags combined with the provided image usage flags.
+  /// Put the pixel data into a staging buffer, and use the `copy_from_buffer` function to
+  /// upload the data to the image.
   ///
   /// \param type the kind of image to create, e.g. `VK_IMAGE_TYPE_2D`.
   /// \param extent the size of the image (use depth 1 for 2D images).
@@ -41,17 +43,21 @@ class Image final {
   /// Uploads pixel data from a buffer into the image.
   void copy_from_buffer(VkBuffer buffer);
 
+  void generate_mipmaps();
+
   [[nodiscard]] auto get() noexcept -> VkImage { return mImage; }
   [[nodiscard]] auto get_extent() const noexcept -> const VkExtent3D& { return mExtent; }
   [[nodiscard]] auto get_format() const noexcept -> VkFormat { return mFormat; }
   [[nodiscard]] auto get_layout() const noexcept -> VkImageLayout { return mLayout; }
+  [[nodiscard]] auto get_mip_levels() const noexcept -> uint32 { return mMipLevels; }
 
  private:
   VkImage mImage {VK_NULL_HANDLE};
   VmaAllocation mAllocation {VK_NULL_HANDLE};
   VkExtent3D mExtent {};
-  VkFormat mFormat {};
+  VkFormat mFormat {VK_FORMAT_UNDEFINED};
   VkImageLayout mLayout {VK_IMAGE_LAYOUT_UNDEFINED};
+  uint32 mMipLevels {1};
 
   void dispose() noexcept;
 };

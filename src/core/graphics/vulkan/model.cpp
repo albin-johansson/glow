@@ -17,13 +17,9 @@ namespace {
     -> VkImageView
 {
   if (path.has_value() && !cache.images.contains(*path)) {
-    const auto image_format = VK_FORMAT_R8G8B8A8_SRGB;
-
-    if (auto image = load_image_2d(*path, image_format, VK_IMAGE_USAGE_SAMPLED_BIT)) {
-      ImageView view {image->get(),
-                      image_format,
-                      VK_IMAGE_VIEW_TYPE_2D,
-                      VK_IMAGE_ASPECT_COLOR_BIT};
+    if (auto image =
+            load_image_2d(*path, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_USAGE_SAMPLED_BIT)) {
+      ImageView view {*image, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT};
       VkImageView result = view.get();
 
       cache.views.try_emplace(image->get(), std::move(view));
