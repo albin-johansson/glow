@@ -1,4 +1,4 @@
-#include "buffers.hpp"
+#include "shader_buffers.hpp"
 
 namespace gravel::vk {
 
