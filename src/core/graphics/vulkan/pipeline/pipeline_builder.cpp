@@ -3,6 +3,7 @@
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/pipeline/pipeline.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
@@ -47,7 +48,7 @@ auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
   const VkDescriptorSetLayoutBindingFlagsCreateInfo binding_flags_create_info {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
       .pNext = nullptr,
-      .bindingCount = static_cast<uint32>(binding_flags.size()),
+      .bindingCount = u32_size(binding_flags),
       .pBindingFlags = binding_flags.data(),
   };
 
@@ -62,7 +63,7 @@ auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
       .pNext = &binding_flags_create_info,
       .flags = flags,
 
-      .bindingCount = static_cast<uint32>(mBindings.size()),
+      .bindingCount = u32_size(mBindings),
       .pBindings = mBindings.data(),
   };
 
@@ -105,10 +106,10 @@ auto PipelineLayoutBuilder::build() const -> VkPipelineLayout
       .pNext = nullptr,
       .flags = 0,
 
-      .setLayoutCount = static_cast<uint32>(mDescriptorSetLayouts.size()),
+      .setLayoutCount = u32_size(mDescriptorSetLayouts),
       .pSetLayouts = mDescriptorSetLayouts.data(),
 
-      .pushConstantRangeCount = static_cast<uint32>(mPushConstants.size()),
+      .pushConstantRangeCount = u32_size(mPushConstants),
       .pPushConstantRanges = mPushConstants.data(),
   };
 
@@ -134,11 +135,10 @@ PipelineBuilder::PipelineBuilder(VkPipelineCache cache)
       .pNext = nullptr,
       .flags = 0,
 
-      .vertexBindingDescriptionCount = static_cast<uint32>(mVertexInputBindings.size()),
+      .vertexBindingDescriptionCount = u32_size(mVertexInputBindings),
       .pVertexBindingDescriptions = mVertexInputBindings.data(),
 
-      .vertexAttributeDescriptionCount =
-          static_cast<uint32>(mVertexAttributeDescriptions.size()),
+      .vertexAttributeDescriptionCount = u32_size(mVertexAttributeDescriptions),
       .pVertexAttributeDescriptions = mVertexAttributeDescriptions.data(),
   };
 

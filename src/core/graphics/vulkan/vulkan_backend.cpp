@@ -19,6 +19,7 @@
 #include "graphics/vulkan/pipeline/descriptor.hpp"
 #include "graphics/vulkan/queue.hpp"
 #include "graphics/vulkan/util/constants.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/version.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "scene/scene.hpp"
@@ -290,7 +291,7 @@ void VulkanBackend::render_model(const Scene& scene,
     push_descriptor_set(frame.command_buffer,
                         mShadingPipelineLayout.get(),
                         0,
-                        static_cast<uint32>(write_buffer.size()),
+                        u32_size(write_buffer),
                         write_buffer.data());
 
     mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);

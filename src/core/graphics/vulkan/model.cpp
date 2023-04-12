@@ -66,7 +66,7 @@ namespace {
   Mesh mesh;
   mesh.transform = mesh_data.transform;
   mesh.material = material_entity;
-  mesh.index_count = static_cast<uint32>(mesh_data.indices.size());
+  mesh.index_count = u32_size(mesh_data.indices);
 
   mesh.vertex_buffer = Buffer::create(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                       mesh_data.vertices.data(),

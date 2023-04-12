@@ -8,6 +8,7 @@
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/constants.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/window.hpp"
 #include "util/arrays.hpp"
@@ -75,7 +76,7 @@ auto create_instance() -> Instance
       .enabledLayerCount = 0,
       .ppEnabledLayerNames = nullptr,
 
-      .enabledExtensionCount = static_cast<uint32>(extension_names.size()),
+      .enabledExtensionCount = u32_size(extension_names),
       .ppEnabledExtensionNames = extension_names.data(),
   };
 

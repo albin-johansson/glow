@@ -7,6 +7,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util/constants.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
@@ -61,7 +62,7 @@ auto create_device() -> Device
       .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
       .pNext = &indexing_features,
 
-      .queueCreateInfoCount = static_cast<uint32>(queue_create_infos.size()),
+      .queueCreateInfoCount = u32_size(queue_create_infos),
       .pQueueCreateInfos = queue_create_infos.data(),
 
       .enabledLayerCount = 0,
