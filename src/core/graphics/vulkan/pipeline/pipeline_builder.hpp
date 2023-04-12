@@ -16,12 +16,12 @@ class DescriptorSetLayoutBuilder final {
 
   auto reset() -> Self&;
 
+  auto use_push_descriptors() -> Self&;
+
   auto descriptor(uint32 binding,
                   VkDescriptorType type,
                   VkShaderStageFlags stages,
                   uint32 count = 1) -> Self&;
-
-  auto use_push_descriptors() -> Self&;
 
   [[nodiscard]] auto build() const -> VkDescriptorSetLayout;
 
@@ -36,7 +36,7 @@ class PipelineLayoutBuilder final {
 
   auto reset() -> Self&;
 
-  auto descriptor_layout(VkDescriptorSetLayout set_layout) -> Self&;
+  auto descriptor_set_layout(VkDescriptorSetLayout set_layout) -> Self&;
 
   auto push_constant(VkShaderStageFlags stages, uint32 offset, uint32 size) -> Self&;
 
@@ -63,6 +63,11 @@ class PipelineBuilder final {
 
   auto shaders(const char* vertex_path, const char* fragment_path) -> Self&;
 
+  auto vertex_input_binding(uint32 binding, uint32 stride) -> Self&;
+
+  auto vertex_attribute(uint32 binding, uint32 location,
+                              VkFormat format, uint32 offset) -> Self&;
+
   auto rasterization(VkPolygonMode polygon_mode, VkCullModeFlags cull_mode) -> Self&;
 
   auto multisample(VkSampleCountFlagBits samples) -> Self&;
@@ -84,15 +89,13 @@ class PipelineBuilder final {
   ShaderModule mFragmentShader;
   VkPipelineShaderStageCreateInfo mShaderStages[2] {};
 
-  // We assume that all pipelines use vertex shaders with the usual "Vertex" arguments
-  Array<VkVertexInputBindingDescription, 1> mVertexInputBindings {};
-  Array<VkVertexInputAttributeDescription, 3> mVertexAttributeDescriptions {};
-  VkPipelineVertexInputStateCreateInfo mVertexInputState {};
-
   VkPipelineDynamicStateCreateInfo mDynamicState {};
   VkPipelineViewportStateCreateInfo mViewportState {};
   VkPipelineDepthStencilStateCreateInfo mDepthStencilState {};
   VkPipelineColorBlendAttachmentState mColorBlendAttachmentState {};
+
+  Vector<VkVertexInputBindingDescription> mVertexInputBindings;
+  Vector<VkVertexInputAttributeDescription> mVertexAttributeDescriptions;
 
   Maybe<VkPipelineRasterizationStateCreateInfo> mRasterizationState;
   Maybe<VkPipelineMultisampleStateCreateInfo> mMultisampleState;

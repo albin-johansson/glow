@@ -1,5 +1,7 @@
 #include "vulkan_backend.hpp"
 
+#include <cstddef>  // offsetof
+
 #include <fmt/format.h>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
@@ -11,6 +13,7 @@
 
 #include "common/debug/assert.hpp"
 #include "graphics/renderer_info.hpp"
+#include "graphics/vertex.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 #include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/context.hpp"
@@ -68,12 +71,16 @@ void VulkanBackend::create_shading_pipeline()
   mShadingDescriptorSetLayout.reset(mDescriptorSetLayoutBuilder.build());
 
   mPipelineLayoutBuilder.reset()
-      .descriptor_layout(mShadingDescriptorSetLayout.get())
+      .descriptor_set_layout(mShadingDescriptorSetLayout.get())
       .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
   mShadingPipelineLayout.reset(mPipelineLayoutBuilder.build());
 
   mPipelineBuilder.reset()
       .shaders("assets/shaders/vk/shading.vert.spv", "assets/shaders/vk/shading.frag.spv")
+      .vertex_input_binding(0, sizeof(Vertex))
+      .vertex_attribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position))
+      .vertex_attribute(0, 1, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal))
+      .vertex_attribute(0, 2, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, tex_coords))
       .rasterization(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT)
       .multisample(VK_SAMPLE_COUNT_1_BIT)
       .input_assembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)

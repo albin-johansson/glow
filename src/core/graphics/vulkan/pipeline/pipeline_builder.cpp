@@ -17,6 +17,12 @@ auto DescriptorSetLayoutBuilder::reset() -> Self&
   return *this;
 }
 
+auto DescriptorSetLayoutBuilder::use_push_descriptors() -> Self&
+{
+  mUsePushDescriptors = true;
+  return *this;
+}
+
 auto DescriptorSetLayoutBuilder::descriptor(const uint32 binding,
                                             const VkDescriptorType type,
                                             const VkShaderStageFlags stages,
@@ -30,12 +36,6 @@ auto DescriptorSetLayoutBuilder::descriptor(const uint32 binding,
       .pImmutableSamplers = nullptr,
   });
 
-  return *this;
-}
-
-auto DescriptorSetLayoutBuilder::use_push_descriptors() -> Self&
-{
-  mUsePushDescriptors = true;
   return *this;
 }
 
@@ -81,7 +81,8 @@ auto PipelineLayoutBuilder::reset() -> Self&
   return *this;
 }
 
-auto PipelineLayoutBuilder::descriptor_layout(VkDescriptorSetLayout set_layout) -> Self&
+auto PipelineLayoutBuilder::descriptor_set_layout(VkDescriptorSetLayout set_layout)
+    -> Self&
 {
   mDescriptorSetLayouts.push_back(set_layout);
   return *this;
@@ -122,26 +123,11 @@ auto PipelineLayoutBuilder::build() const -> VkPipelineLayout
 
 PipelineBuilder::PipelineBuilder(VkPipelineCache cache)
     : mCache {cache},
-      mVertexInputBindings {create_vertex_binding_descriptions(0)},
-      mVertexAttributeDescriptions {create_vertex_attribute_descriptions()},
       mDynamicState {
           create_pipeline_dynamic_state(array_length(kDynamicStates), kDynamicStates)},
       mViewportState {create_pipeline_viewport_state()},
       mDepthStencilState {create_pipeline_depth_stencil_state()}
 {
-  mVertexInputState = VkPipelineVertexInputStateCreateInfo {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-
-      .pNext = nullptr,
-      .flags = 0,
-
-      .vertexBindingDescriptionCount = u32_size(mVertexInputBindings),
-      .pVertexBindingDescriptions = mVertexInputBindings.data(),
-
-      .vertexAttributeDescriptionCount = u32_size(mVertexAttributeDescriptions),
-      .pVertexAttributeDescriptions = mVertexAttributeDescriptions.data(),
-  };
-
   reset();
 }
 
@@ -149,6 +135,9 @@ auto PipelineBuilder::reset() -> Self&
 {
   mVertexShader.reset();
   mFragmentShader.reset();
+
+  mVertexInputBindings.clear();
+  mVertexAttributeDescriptions.clear();
 
   return rasterization(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT)
       .multisample(VK_SAMPLE_COUNT_1_BIT)
@@ -165,6 +154,33 @@ auto PipelineBuilder::shaders(const char* vertex_path, const char* fragment_path
       create_pipeline_shader_stage(VK_SHADER_STAGE_VERTEX_BIT, mVertexShader.get());
   mShaderStages[1] =
       create_pipeline_shader_stage(VK_SHADER_STAGE_FRAGMENT_BIT, mFragmentShader.get());
+
+  return *this;
+}
+
+auto PipelineBuilder::vertex_input_binding(const uint32 binding, const uint32 stride)
+    -> PipelineBuilder::Self&
+{
+  mVertexInputBindings.push_back(VkVertexInputBindingDescription {
+      .binding = binding,
+      .stride = stride,
+      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+  });
+
+  return *this;
+}
+
+auto PipelineBuilder::vertex_attribute(const uint32 binding,
+                                       const uint32 location,
+                                       const VkFormat format,
+                                       const uint32 offset) -> Self&
+{
+  mVertexAttributeDescriptions.push_back(VkVertexInputAttributeDescription {
+      .location = location,
+      .binding = binding,
+      .format = format,
+      .offset = offset,
+  });
 
   return *this;
 }
@@ -225,11 +241,30 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
   else if (!mColorBlendState) {
     throw Error {"[VK] Missing pipeline color blend state"};
   }
+  else if (mVertexInputBindings.empty()) {
+    throw Error {"[VK] Missing vertex input bindings"};
+  }
+  else if (mVertexAttributeDescriptions.empty()) {
+    throw Error {"[VK] Missing vertex input attribute descriptions"};
+  }
 
   auto& rasterization = mRasterizationState.value();
   auto& multisample = mMultisampleState.value();
   auto& input_assembly = mInputAssemblyState.value();
   auto& color_blend = mColorBlendState.value();
+
+  const VkPipelineVertexInputStateCreateInfo vertex_input_state {
+      .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+
+      .pNext = nullptr,
+      .flags = 0,
+
+      .vertexBindingDescriptionCount = u32_size(mVertexInputBindings),
+      .pVertexBindingDescriptions = mVertexInputBindings.data(),
+
+      .vertexAttributeDescriptionCount = u32_size(mVertexAttributeDescriptions),
+      .pVertexAttributeDescriptions = mVertexAttributeDescriptions.data(),
+  };
 
   const VkGraphicsPipelineCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
@@ -239,7 +274,7 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
       .stageCount = 2,
       .pStages = mShaderStages,
 
-      .pVertexInputState = &mVertexInputState,
+      .pVertexInputState = &vertex_input_state,
       .pInputAssemblyState = &input_assembly,
       .pViewportState = &mViewportState,
       .pRasterizationState = &rasterization,
