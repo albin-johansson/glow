@@ -8,7 +8,8 @@ namespace gravel::vk {
 
 DescriptorPool::DescriptorPool(const uint32 max_sets,
                                const VkDescriptorPoolSize* pool_sizes,
-                               const uint32 pool_size_count)
+                               const uint32 pool_size_count,
+                               const VkDescriptorPoolCreateFlags flags)
 {
   GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -16,7 +17,7 @@ DescriptorPool::DescriptorPool(const uint32 max_sets,
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 
       .pNext = nullptr,
-      .flags = 0,
+      .flags = flags,
 
       .maxSets = max_sets,
 
