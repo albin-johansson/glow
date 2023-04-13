@@ -1,8 +1,10 @@
 #include "swapchain.hpp"
 
 #include <algorithm>  // clamp, min
+#include <array>      // size
 #include <limits>     // numeric_limits
 
+#include <imgui_impl_vulkan.h>
 #include <spdlog/spdlog.h>
 
 #include "common/debug/assert.hpp"
@@ -12,7 +14,6 @@
 #include "graphics/vulkan/swapchain/framebuffer.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/window.hpp"
-#include "util/arrays.hpp"
 
 namespace gravel::vk {
 namespace {
@@ -93,12 +94,9 @@ Swapchain::Swapchain()
 
 Swapchain::~Swapchain()
 {
-  destroy_swapchain();
-}
-
-void Swapchain::destroy_swapchain()
-{
-  vkDestroySwapchainKHR(get_device(), mSwapchain, nullptr);
+  if (mSwapchain != VK_NULL_HANDLE) {
+    vkDestroySwapchainKHR(get_device(), mSwapchain, nullptr);
+  }
 }
 
 void Swapchain::create_image_views()
@@ -128,8 +126,6 @@ void Swapchain::create_depth_buffer()
 
 void Swapchain::recreate(VkRenderPass render_pass)
 {
-  spdlog::debug("[VK] Recreating swapchain");
-
   int width = 0;
   int height = 0;
   SDL_GetWindowSizeInPixels(get_window(), &width, &height);
@@ -147,17 +143,17 @@ void Swapchain::recreate(VkRenderPass render_pass)
   mImageViews.clear();
   mDepthImageView.reset();
   mDepthImage.reset();
-  destroy_swapchain();
 
-  // Recreate the resources
-  create_swapchain();
+  VkSwapchainKHR old_swapchain = mSwapchain;
+  create_swapchain(old_swapchain);
+  vkDestroySwapchainKHR(get_device(), old_swapchain, nullptr);
+
   create_image_views();
   create_depth_buffer();
-
   create_framebuffers(render_pass);
 }
 
-void Swapchain::create_swapchain()
+void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
 {
   const auto queue_family_indices = get_queue_family_indices(get_gpu(), get_surface());
   const auto swapchain_support = get_swapchain_support(get_gpu(), get_surface());
@@ -196,14 +192,14 @@ void Swapchain::create_swapchain()
       .presentMode = present_mode,
       .clipped = VK_TRUE,
 
-      .oldSwapchain = VK_NULL_HANDLE,
+      .oldSwapchain = old_swapchain,
   };
 
   if (queue_family_indices.graphics_family != queue_family_indices.present_family) {
     // In this case we opt for concurrent mode, so that images can be (easily) used across
     // multiple queue families, since the graphics and present queues are distinct.
     create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-    create_info.queueFamilyIndexCount = array_length(queue_family_indices_arr);
+    create_info.queueFamilyIndexCount = std::size(queue_family_indices_arr);
     create_info.pQueueFamilyIndices = queue_family_indices_arr;
   }
   else {

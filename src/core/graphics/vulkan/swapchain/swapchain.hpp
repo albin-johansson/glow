@@ -51,9 +51,7 @@ class Swapchain final {
   Maybe<Image> mDepthImage;
   Maybe<ImageView> mDepthImageView;
 
-  void destroy_swapchain();
-
-  void create_swapchain();
+  void create_swapchain(VkSwapchainKHR old_swapchain = VK_NULL_HANDLE);
   void create_image_views();
   void create_depth_buffer();
 };
