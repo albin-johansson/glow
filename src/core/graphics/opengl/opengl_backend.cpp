@@ -71,7 +71,7 @@ void OpenGLBackend::on_event(const SDL_Event& event)
   }
 }
 
-auto OpenGLBackend::begin_frame() -> Result
+auto OpenGLBackend::begin_frame(const Scene& scene) -> Result
 {
   mRenderer.begin_frame();
   return kSuccess;

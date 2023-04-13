@@ -4,6 +4,7 @@
 #include <imgui_impl_vulkan.h>
 
 #include "common/debug/error.hpp"
+#include "graphics/vulkan/cmd/command_buffer.hpp"
 
 namespace gravel {
 
@@ -19,10 +20,16 @@ DearImGuiVulkan::~DearImGuiVulkan()
   ImGui_ImplSDL2_Shutdown();
 }
 
-void DearImGuiVulkan::recreate_font_textures(VkCommandBuffer command_buffer)
+void DearImGuiVulkan::recreate_font_textures()
 {
+  // FIXME we need ImGui to provide ImGui_ImplVulkan_DestroyFontsTexture, open issue?
+  //  ImGui_ImplVulkan_DestroyFontsTexture();
+
+  vk::execute_immediately([](VkCommandBuffer cmd_buffer) {
+    ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
+  });
+
   ImGui_ImplVulkan_DestroyFontUploadObjects();
-  ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 }
 
 }  // namespace gravel

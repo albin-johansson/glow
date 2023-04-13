@@ -7,6 +7,7 @@
 #include "graphics/vulkan/image/image.hpp"
 #include "graphics/vulkan/image/image_cache.hpp"
 #include "graphics/vulkan/image/image_view.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "io/model_loader.hpp"
 #include "scene/scene.hpp"
 

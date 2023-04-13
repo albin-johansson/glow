@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include <vulkan/vulkan.h>
 
 #include "common/predef.hpp"
 
@@ -16,7 +15,7 @@ class DearImGuiVulkan final {
 
   ~DearImGuiVulkan();
 
-  void recreate_font_textures(VkCommandBuffer command_buffer);
+  static void recreate_font_textures();
 };
 
 }  // namespace gravel

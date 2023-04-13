@@ -25,10 +25,25 @@
 #include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/version.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
+#include "init/dear_imgui_vulkan.hpp"
 #include "scene/scene.hpp"
 
 namespace gravel::vk {
 namespace {
+
+inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
+    {VK_DESCRIPTOR_TYPE_SAMPLER, 8},
+    {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 32},
+    {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 8},
+    {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 8},
+    {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 8},
+    {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 8},
+    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 32},
+    {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 8},
+    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 8},
+    {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 8},
+    {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 8},
+};
 
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
 {
@@ -46,6 +61,10 @@ namespace {
 VulkanBackend::VulkanBackend()
     : mGPU {select_gpu()},
       mRenderPass {mSwapchain.get_image_format()},
+      mImGuiDescriptorPool {1'000,
+                            kImGuiDescriptorPoolSizes,
+                            array_length(kImGuiDescriptorPoolSizes),
+                            VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT},
       mPipelineBuilder {mPipelineCache.get()}
 {
   create_shading_pipeline();
@@ -104,31 +123,13 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
-  scene.add<ImageCache>();
-
   prepare_imgui_for_vulkan();
 
-  VkPhysicalDevicePushDescriptorPropertiesKHR push_descriptor_properties {};
-  push_descriptor_properties.sType =
-      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
+  scene.add<ImageCache>();
 
   VkPhysicalDeviceProperties2 gpu_properties {};
   gpu_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-  gpu_properties.pNext = &push_descriptor_properties;
   vkGetPhysicalDeviceProperties2(mGPU, &gpu_properties);
-
-  spdlog::debug("[VK] Max push constant size: {} bytes",
-                gpu_properties.properties.limits.maxPushConstantsSize);
-  spdlog::debug("[VK] Max sampler anisotropy: {}",
-                gpu_properties.properties.limits.maxSamplerAnisotropy);
-  spdlog::debug("[VK] Max bound descriptor sets: {}",
-                gpu_properties.properties.limits.maxBoundDescriptorSets);
-  spdlog::debug("[VK] Max memory allocation count: {}",
-                gpu_properties.properties.limits.maxMemoryAllocationCount);
-  spdlog::debug("[VK] Max uniform buffer range: {} bytes",
-                gpu_properties.properties.limits.maxUniformBufferRange);
-  spdlog::debug("[VK] Max push descriptors in descriptor set layout: {}",
-                push_descriptor_properties.maxPushDescriptors);
 
   auto& renderer_info = scene.get<RendererInfo>();
   renderer_info.api = get_api_version(mGPU);
@@ -145,6 +146,31 @@ void VulkanBackend::on_init(Scene& scene)
 
 void VulkanBackend::prepare_imgui_for_vulkan()
 {
+  const auto graphics_queue_family_index =
+      get_queue_family_indices(get_gpu(), get_surface()).graphics_family.value();
+
+  ImGui_ImplVulkan_InitInfo info {};
+  info.Instance = mInstance.get();
+  info.PhysicalDevice = mGPU;
+  info.Device = mDevice.get();
+  info.QueueFamily = graphics_queue_family_index;
+  info.Queue = get_graphics_queue();
+  info.PipelineCache = mImGuiPipelineCache.get();
+  info.DescriptorPool = mImGuiDescriptorPool.get();
+  info.Subpass = 0;
+  info.MinImageCount = kMaxFramesInFlight;
+  info.ImageCount = kMaxFramesInFlight;
+  info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+  info.Allocator = nullptr;
+  info.CheckVkResultFn = [](const VkResult result) {
+    GRAVEL_VK_CALL(result, "[VK] ImGui Vulkan backend error");
+  };
+
+  if (!ImGui_ImplVulkan_Init(&info, mRenderPass.get())) {
+    throw Error {"[VK] Could not initialize ImGui Vulkan backend"};
+  }
+
+  DearImGuiVulkan::recreate_font_textures();
 }
 
 void VulkanBackend::on_quit()
@@ -167,8 +193,12 @@ void VulkanBackend::on_event(const SDL_Event& event)
   }
 }
 
-auto VulkanBackend::begin_frame() -> Result
+auto VulkanBackend::begin_frame(const Scene& scene) -> Result
 {
+  if (!scene.has_active_camera()) {
+    return kFailure;
+  }
+
   auto& frame = mFrames.at(mFrameIndex);
 
   // Wait until the previous frame has finished
@@ -179,6 +209,7 @@ auto VulkanBackend::begin_frame() -> Result
       mSwapchain.acquire_next_image(frame.image_available_semaphore.get());
 
   if (acquire_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
+    spdlog::debug("[VK] Recreating outdated swapchain");
     mSwapchain.recreate(mRenderPass.get());
     return kFailure;
   }
@@ -187,16 +218,20 @@ auto VulkanBackend::begin_frame() -> Result
     throw Error {"[VK] Could not acquire next swapchain image"};
   }
 
+  ImGui_ImplVulkan_NewFrame();
+  ImGui_ImplSDL2_NewFrame();
+  ImGui::NewFrame();
+  ImGuizmo::BeginFrame();
+
   // The fence is only reset when we submit useful work
   reset_fence(frame.in_flight_fence.get());
 
   reset_command_buffer(frame.command_buffer);
   begin_command_buffer(frame.command_buffer);
 
-  ImGui_ImplSDL2_NewFrame();
-  ImGui_ImplVulkan_NewFrame();
-  ImGui::NewFrame();
-  ImGuizmo::BeginFrame();
+  mRenderPass.begin(frame.command_buffer,
+                    mSwapchain.get_current_framebuffer().get(),
+                    mSwapchain.get_image_extent());
 
   return kSuccess;
 }
@@ -212,10 +247,6 @@ void VulkanBackend::render_scene(const Scene& scene,
   const auto swapchain_image_extent = mSwapchain.get_image_extent();
   const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
 
-  if (!scene.has_active_camera()) {
-    return;
-  }
-
   const auto& [camera_entity, camera] = scene.get_active_camera();
   const auto& camera_transform = scene.get<Transform>(camera_entity);
 
@@ -223,19 +254,14 @@ void VulkanBackend::render_scene(const Scene& scene,
     // dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
   }
 
-  update_static_matrix_buffer(camera, camera_transform);
-
-  mRenderPass.begin(frame.command_buffer,
-                    mSwapchain.get_current_framebuffer().get(),
-                    swapchain_image_extent);
-
-  cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
-  cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
-
   vkCmdBindPipeline(frame.command_buffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     mShadingPipeline.get());
 
+  cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
+  cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
+
+  update_static_matrix_buffer(camera, camera_transform);
   push_static_matrix_descriptor();
 
   for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
@@ -348,6 +374,7 @@ void VulkanBackend::present_image()
 
   if (present_result == VK_ERROR_OUT_OF_DATE_KHR || present_result == VK_SUBOPTIMAL_KHR ||
       mResizedFramebuffer) {
+    spdlog::debug("[VK] Recreating outdated or suboptimal swapchain");
     mResizedFramebuffer = false;
     mSwapchain.recreate(mRenderPass.get());
   }

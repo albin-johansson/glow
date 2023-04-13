@@ -13,7 +13,8 @@ class DescriptorPool final {
 
   DescriptorPool(uint32 max_sets,
                  const VkDescriptorPoolSize* pool_sizes,
-                 uint32 pool_size_count);
+                 uint32 pool_size_count,
+                 VkDescriptorPoolCreateFlags flags = 0);
 
   ~DescriptorPool() noexcept;
 

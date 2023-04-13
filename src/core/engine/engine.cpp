@@ -200,8 +200,8 @@ void Engine::update_camera_position(const float32 dt)
 
 void Engine::render()
 {
-  if (mBackend->begin_frame().failed()) {
-    spdlog::error("[Engine] Failed to begin frame");
+  if (mBackend->begin_frame(mScene).failed()) {
+    spdlog::error("[Engine] Skipping frame");
     return;
   }
 

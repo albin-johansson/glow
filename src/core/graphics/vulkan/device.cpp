@@ -1,5 +1,7 @@
 #include "device.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "common/debug/assert.hpp"
 #include "common/debug/error.hpp"
 #include "common/type/set.hpp"
@@ -12,6 +14,34 @@
 #include "util/arrays.hpp"
 
 namespace gravel::vk {
+namespace {
+
+void print_relevant_device_properties(VkPhysicalDevice gpu)
+{
+  VkPhysicalDevicePushDescriptorPropertiesKHR push_descriptor_properties {};
+  push_descriptor_properties.sType =
+      VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
+
+  VkPhysicalDeviceProperties2 gpu_properties {};
+  gpu_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+  gpu_properties.pNext = &push_descriptor_properties;
+  vkGetPhysicalDeviceProperties2(gpu, &gpu_properties);
+
+  spdlog::debug("[VK] Max push constant size: {} bytes",
+                gpu_properties.properties.limits.maxPushConstantsSize);
+  spdlog::debug("[VK] Max sampler anisotropy: {}",
+                gpu_properties.properties.limits.maxSamplerAnisotropy);
+  spdlog::debug("[VK] Max bound descriptor sets: {}",
+                gpu_properties.properties.limits.maxBoundDescriptorSets);
+  spdlog::debug("[VK] Max memory allocation count: {}",
+                gpu_properties.properties.limits.maxMemoryAllocationCount);
+  spdlog::debug("[VK] Max uniform buffer range: {} bytes",
+                gpu_properties.properties.limits.maxUniformBufferRange);
+  spdlog::debug("[VK] Max push descriptors in descriptor set layout: {}",
+                push_descriptor_properties.maxPushDescriptors);
+}
+
+}  // namespace
 
 void DeviceDeleter::operator()(VkDevice device) noexcept
 {
@@ -92,6 +122,8 @@ auto create_device() -> Device
 
   set_graphics_queue(graphics_queue);
   set_presentation_queue(presentation_queue);
+
+  print_relevant_device_properties(get_gpu());
 
   return Device {device};
 }

@@ -74,6 +74,11 @@ DearImGui::~DearImGui()
 
 void DearImGui::reload_fonts()
 {
+  if (mVK.has_value()) {
+    // FIXME this cannot be done until ImGui offers way to delete uploaded font textures
+    return;
+  }
+
   spdlog::debug("[GUI] Reloading fonts...");
 
   auto& io = ImGui::GetIO();
@@ -106,7 +111,7 @@ void DearImGui::reload_fonts()
   }
 
   if (mVK) {
-    // TODO mVK->recreate_font_textures(command_buffer);
+    mVK->recreate_font_textures();
   }
 
   ImGui::GetStyle().ScaleAllSizes(1.0f);

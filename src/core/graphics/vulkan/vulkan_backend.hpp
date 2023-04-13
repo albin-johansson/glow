@@ -31,11 +31,6 @@
 
 namespace gravel::vk {
 
-inline constexpr VkDescriptorPoolSize kDescriptorPoolSizes[] {
-    {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 256},
-    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 256},
-};
-
 /// Stores resources required to allow for multiple frames in flight at the same time.
 struct FrameData final {
   VkCommandBuffer command_buffer {VK_NULL_HANDLE};
@@ -46,10 +41,6 @@ struct FrameData final {
 
   Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
   Buffer material_ubo {Buffer::uniform(sizeof(MaterialBuffer))};
-
-  DescriptorPool descriptor_pool {2'048,
-                                  kDescriptorPoolSizes,
-                                  array_length(kDescriptorPoolSizes)};
 };
 
 class VulkanBackend final : public Backend {
@@ -69,7 +60,7 @@ class VulkanBackend final : public Backend {
 
   void on_event(const SDL_Event& event) override;
 
-  auto begin_frame() -> Result override;
+  auto begin_frame(const Scene& scene) -> Result override;
 
   void end_frame() override;
 
@@ -96,6 +87,9 @@ class VulkanBackend final : public Backend {
   RenderPass mRenderPass;
   Sampler mSampler {create_sampler()};
   PipelineCache mPipelineCache {create_pipeline_cache()};
+  PipelineCache mImGuiPipelineCache {create_pipeline_cache()};
+  DescriptorPool mImGuiDescriptorPool;
+  CommandPool mCommandPool;
 
   DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   PipelineLayoutBuilder mPipelineLayoutBuilder;
@@ -104,8 +98,6 @@ class VulkanBackend final : public Backend {
   DescriptorSetLayout mShadingDescriptorSetLayout;
   PipelineLayout mShadingPipelineLayout;
   Pipeline mShadingPipeline;
-
-  CommandPool mCommandPool;
 
   Vector<FrameData> mFrames;
   usize mFrameIndex {0};

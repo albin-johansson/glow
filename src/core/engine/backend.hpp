@@ -26,7 +26,7 @@ class Backend {
 
   virtual void on_event(const SDL_Event& event) = 0;
 
-  virtual auto begin_frame() -> Result = 0;
+  virtual auto begin_frame(const Scene& scene) -> Result = 0;
 
   virtual void end_frame() = 0;
 
