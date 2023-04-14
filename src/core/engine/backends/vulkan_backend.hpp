@@ -12,6 +12,7 @@
 #include "graphics/vulkan/buffer.hpp"
 #include "graphics/vulkan/cmd/command_pool.hpp"
 #include "graphics/vulkan/device.hpp"
+#include "graphics/vulkan/frame.hpp"
 #include "graphics/vulkan/image/sampler.hpp"
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/managed.hpp"
@@ -29,19 +30,7 @@
 #include "scene/transform.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vk {
-
-/// Stores resources required to allow for multiple frames in flight at the same time.
-struct FrameData final {
-  VkCommandBuffer command_buffer {VK_NULL_HANDLE};
-
-  Semaphore image_available_semaphore {create_semaphore()};
-  Semaphore render_finished_semaphore {create_semaphore()};
-  Fence in_flight_fence {create_fence(true)};
-
-  Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
-  Buffer material_ubo {Buffer::uniform(sizeof(MaterialBuffer))};
-};
+namespace gravel {
 
 class VulkanBackend final : public Backend {
  public:
@@ -77,33 +66,34 @@ class VulkanBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
-  Instance mInstance {create_instance()};
-  DebugMessenger mDebugMessenger {kDebugBuild ? create_debug_messenger() : nullptr};
-  Surface mSurface {create_surface()};
+  vk::Instance mInstance {vk::create_instance()};
+  vk::DebugMessenger mDebugMessenger {kDebugBuild ? vk::create_debug_messenger()
+                                                  : nullptr};
+  vk::Surface mSurface {vk::create_surface()};
   VkPhysicalDevice mGPU {VK_NULL_HANDLE};
-  Device mDevice {create_device()};
-  Allocator mAllocator;
-  Swapchain mSwapchain;
-  RenderPass mRenderPass;
-  Sampler mSampler {create_sampler()};
-  PipelineCache mPipelineCache {create_pipeline_cache()};
-  PipelineCache mImGuiPipelineCache {create_pipeline_cache()};
-  DescriptorPool mImGuiDescriptorPool;
-  CommandPool mCommandPool;
+  vk::Device mDevice {vk::create_device()};
+  vk::Allocator mAllocator;
+  vk::Swapchain mSwapchain;
+  vk::RenderPass mRenderPass;
+  vk::Sampler mSampler {vk::create_sampler()};
+  vk::PipelineCache mPipelineCache {vk::create_pipeline_cache()};
+  vk::PipelineCache mImGuiPipelineCache {vk::create_pipeline_cache()};
+  vk::DescriptorPool mImGuiDescriptorPool;
+  vk::CommandPool mCommandPool;
 
-  DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
-  PipelineLayoutBuilder mPipelineLayoutBuilder;
-  PipelineBuilder mPipelineBuilder;
+  vk::DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
+  vk::PipelineLayoutBuilder mPipelineLayoutBuilder;
+  vk::PipelineBuilder mPipelineBuilder;
 
-  DescriptorSetLayout mShadingDescriptorSetLayout;
-  PipelineLayout mShadingPipelineLayout;
-  Pipeline mShadingPipeline;
+  vk::DescriptorSetLayout mShadingDescriptorSetLayout;
+  vk::PipelineLayout mShadingPipelineLayout;
+  vk::Pipeline mShadingPipeline;
 
-  Vector<FrameData> mFrames;
+  Vector<vk::FrameData> mFrames;
   usize mFrameIndex {0};
 
-  MaterialBuffer mMaterialBuffer;
-  StaticMatrices mStaticMatrices;
+  vk::MaterialBuffer mMaterialBuffer;
+  vk::StaticMatrices mStaticMatrices;
 
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};
@@ -115,11 +105,13 @@ class VulkanBackend final : public Backend {
   void update_static_matrix_buffer(const Camera& camera,
                                    const Transform& camera_transform);
 
-  void update_material_buffer(const Material& material);
+  void update_material_buffer(const vk::Material& material);
 
   void push_static_matrix_descriptor();
 
-  void render_model(const Scene& scene, const Transform& transform, const Model& model);
+  void render_model(const Scene& scene,
+                    const Transform& transform,
+                    const vk::Model& model);
 
   /// Submits rendering commands to the graphics queue.
   void submit_commands();

@@ -28,7 +28,7 @@
 #include "init/dear_imgui_vulkan.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel::vk {
+namespace gravel {
 namespace {
 
 inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
@@ -47,11 +47,12 @@ inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
 
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
 {
-  GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
+  GRAVEL_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
+  GRAVEL_ASSERT(vk::get_surface() != VK_NULL_HANDLE);
 
-  VkPhysicalDevice gpu = get_suitable_physical_device(get_instance(), get_surface());
-  set_gpu(gpu);
+  VkPhysicalDevice gpu =
+      vk::get_suitable_physical_device(vk::get_instance(), vk::get_surface());
+  vk::set_gpu(gpu);
 
   return gpu;
 }
@@ -110,7 +111,7 @@ void VulkanBackend::create_shading_pipeline()
 
 void VulkanBackend::create_frame_data()
 {
-  for (usize index = 0; index < kMaxFramesInFlight; ++index) {
+  for (usize index = 0; index < vk::kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
     frame.command_buffer = mCommandPool.allocate_command_buffer();
   }
@@ -125,17 +126,17 @@ void VulkanBackend::on_init(Scene& scene)
 {
   prepare_imgui_for_vulkan();
 
-  scene.add<ImageCache>();
+  scene.add<vk::ImageCache>();
 
   VkPhysicalDeviceProperties2 gpu_properties {};
   gpu_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
   vkGetPhysicalDeviceProperties2(mGPU, &gpu_properties);
 
   auto& renderer_info = scene.get<RendererInfo>();
-  renderer_info.api = get_api_version(mGPU);
+  renderer_info.api = vk::get_api_version(mGPU);
   renderer_info.renderer = gpu_properties.properties.deviceName;
   renderer_info.vendor = "N/A";
-  renderer_info.version = get_driver_version(mGPU);
+  renderer_info.version = vk::get_driver_version(mGPU);
 
   const auto camera_entity =
       make_camera(scene, "Camera", Vec3 {0, 2, -5}, Vec3 {0, 0, 1});
@@ -147,19 +148,20 @@ void VulkanBackend::on_init(Scene& scene)
 void VulkanBackend::prepare_imgui_for_vulkan()
 {
   const auto graphics_queue_family_index =
-      get_queue_family_indices(get_gpu(), get_surface()).graphics_family.value();
+      vk::get_queue_family_indices(vk::get_gpu(), vk::get_surface())
+          .graphics_family.value();
 
   ImGui_ImplVulkan_InitInfo info {};
   info.Instance = mInstance.get();
   info.PhysicalDevice = mGPU;
   info.Device = mDevice.get();
   info.QueueFamily = graphics_queue_family_index;
-  info.Queue = get_graphics_queue();
+  info.Queue = vk::get_graphics_queue();
   info.PipelineCache = mImGuiPipelineCache.get();
   info.DescriptorPool = mImGuiDescriptorPool.get();
   info.Subpass = 0;
-  info.MinImageCount = kMaxFramesInFlight;
-  info.ImageCount = kMaxFramesInFlight;
+  info.MinImageCount = vk::kMaxFramesInFlight;
+  info.ImageCount = vk::kMaxFramesInFlight;
   info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
   info.Allocator = nullptr;
   info.CheckVkResultFn = [](const VkResult result) {
@@ -202,7 +204,7 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
   auto& frame = mFrames.at(mFrameIndex);
 
   // Wait until the previous frame has finished
-  wait_fence(frame.in_flight_fence.get());
+  vk::wait_fence(frame.in_flight_fence.get());
 
   // Acquire an image from the swapchain
   const auto acquire_image_result =
@@ -224,10 +226,10 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
   ImGuizmo::BeginFrame();
 
   // The fence is only reset when we submit useful work
-  reset_fence(frame.in_flight_fence.get());
+  vk::reset_fence(frame.in_flight_fence.get());
 
-  reset_command_buffer(frame.command_buffer);
-  begin_command_buffer(frame.command_buffer);
+  vk::reset_command_buffer(frame.command_buffer);
+  vk::begin_command_buffer(frame.command_buffer);
 
   mRenderPass.begin(frame.command_buffer,
                     mSwapchain.get_current_framebuffer().get(),
@@ -258,20 +260,20 @@ void VulkanBackend::render_scene(const Scene& scene,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     mShadingPipeline.get());
 
-  cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
-  cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
+  vk::cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
+  vk::cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
   update_static_matrix_buffer(camera, camera_transform);
   push_static_matrix_descriptor();
 
-  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
+  for (auto [entity, transform, model] : scene.each<Transform, vk::Model>()) {
     render_model(scene, transform, model);
   }
 }
 
 void VulkanBackend::render_model(const Scene& scene,
                                  const Transform& transform,
-                                 const Model& model)
+                                 const vk::Model& model)
 {
   auto& frame = mFrames.at(mFrameIndex);
 
@@ -283,7 +285,7 @@ void VulkanBackend::render_model(const Scene& scene,
   for (const auto& mesh : model.meshes) {
     write_buffer.clear();
 
-    const auto& material = scene.get<Material>(mesh.material);
+    const auto& material = scene.get<vk::Material>(mesh.material);
     const auto model_matrix = model_transform * mesh.transform;
 
     vkCmdPushConstants(frame.command_buffer,
@@ -309,23 +311,23 @@ void VulkanBackend::render_model(const Scene& scene,
 
     // Update for the material buffer
     write_buffer.push_back(
-        create_descriptor_buffer_write(1,
-                                       VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-                                       &material_buffer_info));
+        vk::create_descriptor_buffer_write(1,
+                                           VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+                                           &material_buffer_info));
 
     if (material.diffuse_tex != VK_NULL_HANDLE) {
       // Change the bound diffuse material texture
       write_buffer.push_back(
-          create_descriptor_image_write(5,
-                                        VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-                                        &diffuse_image_info));
+          vk::create_descriptor_image_write(5,
+                                            VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+                                            &diffuse_image_info));
     }
 
-    push_descriptor_set(frame.command_buffer,
-                        mShadingPipelineLayout.get(),
-                        0,
-                        u32_size(write_buffer),
-                        write_buffer.data());
+    vk::push_descriptor_set(frame.command_buffer,
+                            mShadingPipelineLayout.get(),
+                            0,
+                            vk::u32_size(write_buffer),
+                            write_buffer.data());
 
     mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
     mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
@@ -342,12 +344,12 @@ void VulkanBackend::end_frame()
   ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), frame.command_buffer);
 
   vkCmdEndRenderPass(frame.command_buffer);
-  end_command_buffer(frame.command_buffer);
+  vk::end_command_buffer(frame.command_buffer);
 
   submit_commands();
   present_image();
 
-  mFrameIndex = (mFrameIndex + 1) % kMaxFramesInFlight;
+  mFrameIndex = (mFrameIndex + 1) % vk::kMaxFramesInFlight;
 }
 
 void VulkanBackend::submit_commands()
@@ -357,12 +359,12 @@ void VulkanBackend::submit_commands()
   // Wait on the image_available_semaphore before command buffer execution,
   // and signal the render_finished_semaphore and in_flight_fence after the command buffer
   // is executed.
-  submit_to_queue(get_graphics_queue(),
-                  frame.command_buffer,
-                  frame.image_available_semaphore.get(),
-                  VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-                  frame.render_finished_semaphore.get(),
-                  frame.in_flight_fence.get());
+  vk::submit_to_queue(vk::get_graphics_queue(),
+                      frame.command_buffer,
+                      frame.image_available_semaphore.get(),
+                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                      frame.render_finished_semaphore.get(),
+                      frame.in_flight_fence.get());
 }
 
 void VulkanBackend::present_image()
@@ -394,7 +396,7 @@ void VulkanBackend::update_static_matrix_buffer(const Camera& camera,
   frame.static_matrix_ubo.set_data(&mStaticMatrices, sizeof mStaticMatrices);
 }
 
-void VulkanBackend::update_material_buffer(const Material& material)
+void VulkanBackend::update_material_buffer(const vk::Material& material)
 {
   mMaterialBuffer.ambient = Vec4 {material.ambient, 0};
   mMaterialBuffer.diffuse = Vec4 {material.diffuse, 0};
@@ -415,17 +417,17 @@ void VulkanBackend::push_static_matrix_descriptor()
   auto& frame = mFrames.at(mFrameIndex);
 
   const auto buffer_info =
-      StaticMatrices::descriptor_buffer_info(frame.static_matrix_ubo.get());
+      vk::StaticMatrices::descriptor_buffer_info(frame.static_matrix_ubo.get());
 
   const VkWriteDescriptorSet writes[] {
-      StaticMatrices::descriptor_set_write(VK_NULL_HANDLE, &buffer_info),
+      vk::StaticMatrices::descriptor_set_write(VK_NULL_HANDLE, &buffer_info),
   };
 
-  push_descriptor_set(frame.command_buffer,
-                      mShadingPipelineLayout.get(),
-                      0,
-                      array_length(writes),
-                      writes);
+  vk::push_descriptor_set(frame.command_buffer,
+                          mShadingPipelineLayout.get(),
+                          0,
+                          array_length(writes),
+                          writes);
 }
 
 void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,
@@ -439,7 +441,7 @@ void VulkanBackend::load_model(Scene& scene, const Path& path)
   static int index = 0;
 
   const auto model_entity = scene.make_node(fmt::format("Model {}", index));
-  assign_model(scene, model_entity, path);
+  vk::assign_model(scene, model_entity, path);
 
   ++index;
 }
@@ -453,4 +455,4 @@ auto VulkanBackend::get_primary_framebuffer_handle() -> void*
   return nullptr;
 }
 
-}  // namespace gravel::vk
+}  // namespace gravel

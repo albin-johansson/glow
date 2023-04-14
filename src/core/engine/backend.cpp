@@ -1,8 +1,8 @@
 #include "backend.hpp"
 
 #include "common/debug/error.hpp"
-#include "graphics/opengl/opengl_backend.hpp"
-#include "graphics/vulkan/vulkan_backend.hpp"
+#include "engine/backends/opengl_backend.hpp"
+#include "engine/backends/vulkan_backend.hpp"
 
 namespace gravel {
 
@@ -13,7 +13,7 @@ auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend
       return std::make_unique<OpenGLBackend>(window);
 
     case GraphicsApi::Vulkan:
-      return std::make_unique<vk::VulkanBackend>();
+      return std::make_unique<VulkanBackend>();
 
     default:
       throw Error {"Unsupported backend"};
