@@ -17,7 +17,7 @@
 #include "graphics/opengl/uniform_buffer.hpp"
 #include "ui/gizmos.hpp"
 
-namespace gravel::gl {
+namespace gravel {
 
 class OpenGLBackend final : public Backend {
  public:
@@ -46,9 +46,9 @@ class OpenGLBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
-  Renderer mRenderer;
-  Maybe<Texture2D> mEnvTexture;
-  Framebuffer mPrimaryFBO;
+  gl::Renderer mRenderer;
+  Maybe<gl::Texture2D> mEnvTexture;
+  gl::Framebuffer mPrimaryFBO;
   bool mQuit {false};
 
   void render_environment(const Scene& scene,
@@ -62,4 +62,4 @@ class OpenGLBackend final : public Backend {
                      Dispatcher& dispatcher);
 };
 
-}  // namespace gravel::gl
+}  // namespace gravel

@@ -24,7 +24,7 @@
 #include "ui/gizmos.hpp"
 #include "util/bits.hpp"
 
-namespace gravel::gl {
+namespace gravel {
 
 OpenGLBackend::OpenGLBackend(SDL_Window* window)
     : mRenderer {window}
@@ -38,7 +38,7 @@ void OpenGLBackend::stop()
 
 void OpenGLBackend::on_init(Scene& scene)
 {
-  scene.add<TextureCache>();
+  scene.add<gl::TextureCache>();
 
   auto& rendering_options = scene.get<RenderingOptions>();
   rendering_options.options = {
@@ -51,9 +51,9 @@ void OpenGLBackend::on_init(Scene& scene)
 
   auto& renderer_info = scene.get<RendererInfo>();
   renderer_info.api = "OpenGL 4.1.0 core";
-  renderer_info.renderer = get_renderer_name();
-  renderer_info.vendor = get_vendor_name();
-  renderer_info.version = get_version();
+  renderer_info.renderer = gl::get_renderer_name();
+  renderer_info.vendor = gl::get_vendor_name();
+  renderer_info.version = gl::get_version();
 
   const auto camera_entity =
       make_camera(scene, "Camera", Vec3 {0, 0, 3}, Vec3 {0, 0, -1});
@@ -89,9 +89,9 @@ void OpenGLBackend::render_scene(const Scene& scene,
 {
   // Reset options
   const auto& rendering_options = scene.get<RenderingOptions>();
-  set_option(GL_DEPTH_TEST, rendering_options.test(RenderingOption::DepthTest));
-  set_option(GL_CULL_FACE, rendering_options.test(RenderingOption::FaceCulling));
-  set_option(GL_BLEND, rendering_options.test(RenderingOption::Blending));
+  gl::set_option(GL_DEPTH_TEST, rendering_options.test(RenderingOption::DepthTest));
+  gl::set_option(GL_CULL_FACE, rendering_options.test(RenderingOption::FaceCulling));
+  gl::set_option(GL_BLEND, rendering_options.test(RenderingOption::Blending));
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   SDL_GL_SetSwapInterval(rendering_options.test(RenderingOption::VSync) ? 1 : 0);
@@ -124,7 +124,7 @@ void OpenGLBackend::render_scene(const Scene& scene,
     render_models(scene, projection, view, dispatcher);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    Framebuffer::unbind();
+    gl::Framebuffer::unbind();
     GRAVEL_GL_CHECK_ERRORS();
   }
 }
@@ -158,11 +158,11 @@ void OpenGLBackend::render_models(const Scene& scene,
 
   const auto& gizmos_options = scene.get<GizmosOptions>();
 
-  for (auto [entity, transform, model] : scene.each<Transform, Model>()) {
+  for (auto [entity, transform, model] : scene.each<Transform, gl::Model>()) {
     const auto model_transform = transform.to_model_matrix();
 
     for (const auto& mesh : model.meshes) {
-      const auto& material = scene.get<Material>(mesh.material);
+      const auto& material = scene.get<gl::Material>(mesh.material);
       const auto model_matrix = model_transform * mesh.transform;
 
       auto& matrix_buffer = mRenderer.get_matrix_buffer();
@@ -199,7 +199,7 @@ void OpenGLBackend::render_models(const Scene& scene,
 void OpenGLBackend::set_environment_texture([[maybe_unused]] Scene& scene,
                                             const Path& path)
 {
-  mEnvTexture = Texture2D::load_rgb_f32(path);
+  mEnvTexture = gl::Texture2D::load_rgb_f32(path);
 }
 
 void OpenGLBackend::load_model(Scene& scene, const Path& path)
@@ -207,7 +207,7 @@ void OpenGLBackend::load_model(Scene& scene, const Path& path)
   static int index = 0;
 
   const auto model_entity = scene.make_node(fmt::format("Model {}", index));
-  assign_model(scene, model_entity, path);
+  gl::assign_model(scene, model_entity, path);
 
   ++index;
 }
@@ -218,4 +218,4 @@ auto OpenGLBackend::get_primary_framebuffer_handle() -> void*
   return bitcast<void*>(id);
 }
 
-}  // namespace gravel::gl
+}  // namespace gravel

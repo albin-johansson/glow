@@ -10,7 +10,7 @@ auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend
 {
   switch (api) {
     case GraphicsApi::OpenGL:
-      return std::make_unique<gl::OpenGLBackend>(window);
+      return std::make_unique<OpenGLBackend>(window);
 
     case GraphicsApi::Vulkan:
       return std::make_unique<vk::VulkanBackend>();
