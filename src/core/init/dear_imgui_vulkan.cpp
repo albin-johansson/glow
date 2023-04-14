@@ -22,9 +22,6 @@ DearImGuiVulkan::~DearImGuiVulkan()
 
 void DearImGuiVulkan::recreate_font_textures()
 {
-  // FIXME we need ImGui to provide ImGui_ImplVulkan_DestroyFontsTexture, open issue?
-  //  ImGui_ImplVulkan_DestroyFontsTexture();
-
   vk::execute_immediately([](VkCommandBuffer cmd_buffer) {
     ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
   });

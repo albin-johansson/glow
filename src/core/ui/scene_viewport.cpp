@@ -97,10 +97,9 @@ void show_performance_overlay()
   const ImVec2 next_pivot {1.0f, 0.0f};
 
   ImGui::SetNextWindowPos(next_pos, ImGuiCond_Always, next_pivot);
-  ImGui::SetNextWindowViewport(ImGui::GetWindowViewport()->ID);
   ImGui::SetNextWindowBgAlpha(0.5f);
 
-  const auto window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+  const auto window_flags = ImGuiWindowFlags_NoDecoration |
                             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav |
                             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove |
                             ImGuiWindowFlags_NoFocusOnAppearing;
@@ -123,10 +122,10 @@ void show_performance_overlay()
 
 void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispatcher)
 {
-  ImGuiWindowClass wc {};
-  wc.DockNodeFlagsOverrideSet =
-      ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
-  ImGui::SetNextWindowClass(&wc);
+//  ImGuiWindowClass wc {};
+//  wc.DockNodeFlagsOverrideSet =
+//      ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDockingOverMe;
+//  ImGui::SetNextWindowClass(&wc);
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
 

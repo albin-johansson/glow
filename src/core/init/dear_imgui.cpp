@@ -51,7 +51,7 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
   }
 
   auto& io = ImGui::GetIO();
-  io.ConfigFlags |= static_cast<ImGuiConfigFlags>(ImGuiConfigFlags_DockingEnable);
+  // io.ConfigFlags |= static_cast<ImGuiConfigFlags>(ImGuiConfigFlags_DockingEnable);
 
   if (api == GraphicsApi::OpenGL) {
     mGL.emplace(window);
@@ -74,11 +74,6 @@ DearImGui::~DearImGui()
 
 void DearImGui::reload_fonts()
 {
-  if (mVK.has_value()) {
-    // FIXME this cannot be done until ImGui offers way to delete uploaded font textures
-    return;
-  }
-
   spdlog::debug("[GUI] Reloading fonts...");
 
   auto& io = ImGui::GetIO();

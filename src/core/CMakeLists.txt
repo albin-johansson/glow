@@ -33,7 +33,7 @@ target_link_libraries(libgravel
                       fmt::fmt
                       glad::glad
                       glm::glm
-                      imgui::imgui
+                      imgui
                       imguizmo::imguizmo
                       magic_enum::magic_enum
                       OpenGL::GL

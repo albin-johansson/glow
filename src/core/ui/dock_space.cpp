@@ -7,6 +7,7 @@ namespace gravel {
 
 void update_dock_space(const bool restore_layout)
 {
+#if 0
   const auto root_dock_id = ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
   if (restore_layout) {
@@ -25,6 +26,7 @@ void update_dock_space(const bool restore_layout)
       ImGui::DockBuilderFinish(id);
     }
   }
+#endif
 }
 
 }  // namespace gravel

@@ -1,0 +1,4 @@
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/albin-johansson/imgui
+	branch = vulkan-destroy-fonts-texture
