@@ -5,7 +5,7 @@ if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif ()
 
-project(gravel LANGUAGES CXX)
+project(glow LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,10 +16,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 endif ()
 
-set(GRAVEL_ASSET_DIR "${PROJECT_SOURCE_DIR}/assets")
-set(GRAVEL_LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
+set(GLOW_ASSET_DIR "${PROJECT_SOURCE_DIR}/assets")
+set(GLOW_LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
 
-include(cmake/gravel.cmake)
+include(cmake/glow.cmake)
 
 # System dependencies
 find_package(OpenGL REQUIRED)

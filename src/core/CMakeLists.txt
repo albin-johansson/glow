@@ -1,30 +1,30 @@
-project(gravel-core LANGUAGES CXX)
+project(glow-core LANGUAGES CXX)
 
-file(GLOB_RECURSE GRAVEL_CORE_SOURCE_FILES
+file(GLOB_RECURSE GLOW_CORE_SOURCE_FILES
      CONFIGURE_DEPENDS
      **/*.cpp
      **/*.hpp
      )
 
-add_library(libgravel ${GRAVEL_CORE_SOURCE_FILES})
+add_library(libglow ${GLOW_CORE_SOURCE_FILES})
 
-set_target_properties(libgravel PROPERTIES
+set_target_properties(libglow PROPERTIES
                       PREFIX ""
                       )
 
-gravel_configure_compile_options(libgravel)
+glow_configure_compile_options(libglow)
 
-target_include_directories(libgravel
+target_include_directories(libglow
                            PUBLIC
                            ${PROJECT_SOURCE_DIR}
 
                            SYSTEM PUBLIC
-                           ${GRAVEL_LIB_DIR}
+                           ${GLOW_LIB_DIR}
                            ${Stb_INCLUDE_DIR}
                            ${VULKAN_INCLUDE_DIR}
                            )
 
-target_link_libraries(libgravel
+target_link_libraries(libglow
                       PUBLIC
                       argparse::argparse
                       assimp::assimp
@@ -43,4 +43,4 @@ target_link_libraries(libgravel
                       unofficial::vulkan-memory-allocator::vulkan-memory-allocator
                       )
 
-target_precompile_headers(libgravel PRIVATE ${GRAVEL_PRECOMPILED_HEADERS})
+target_precompile_headers(libglow PRIVATE ${GLOW_PRECOMPILED_HEADERS})

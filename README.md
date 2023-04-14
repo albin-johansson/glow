@@ -1,6 +1,6 @@
-# Gravel
+# Glow
 
-[![CI](https://github.com/albin-johansson/gravel/actions/workflows/ci.yml/badge.svg)](https://github.com/albin-johansson/gravel/actions/workflows/ci.yml)
+[![CI](https://github.com/albin-johansson/glow/actions/workflows/ci.yml/badge.svg)](https://github.com/albin-johansson/glow/actions/workflows/ci.yml)
 
 A work in progress 3D graphics engine, developed for fun.
 
@@ -41,7 +41,7 @@ Information on Vcpkg triplets can be found [here](https://github.com/microsoft/v
 ## Usage
 
 ```
-Usage: gravel [options]
+Usage: glow [options]
 Options:
    --api, -a        'OpenGL' or 'Vulkan', defaults to 'OpenGL' (optional)
    --env, -e        Path to an environment texture to load at startup (optional)
@@ -53,16 +53,16 @@ Some examples are provided below.
 
 ```shell
 # Use default graphics API, and no initial environment texture or models
-> ./gravel
+> ./glow
 
 # Use a specific graphics API 
-> ./gravel --api Vulkan
+> ./glow --api Vulkan
 
 # Disable all logging output
-> ./gravel --log 0
+> ./glow --log 0
 
 # Load an environment texture and several models
-> ./gravel --env textures/env.hdr --models models/teapot.dae models/kettle.fbx
+> ./glow --env textures/env.hdr --models models/teapot.dae models/kettle.fbx
 ```
 
 ## Dependencies
@@ -77,7 +77,7 @@ See [vcpkg.json](vcpkg.json) for the full Vcpkg manifest file.
 * [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
 * [glad](https://github.com/Dav1dde/glad)
 * [glm](https://github.com/g-truc/glm)
-* [Dear ImGui](https://github.com/ocornut/imgui)
+* [Dear ImGui](https://github.com/ocornut/imgui) (with modifications from [this](https://github.com/albin-johansson/imgui) fork)
 * [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders)
 * [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
 * [Magic Enum C++](https://github.com/Neargye/magic_enum)

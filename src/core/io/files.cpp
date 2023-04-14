@@ -18,7 +18,7 @@ struct SDLPathDeleter final {
 
 [[nodiscard]] auto determine_persistent_file_dir() -> Path
 {
-  Unique<char, SDLPathDeleter> raw_path {SDL_GetPrefPath("albin-johansson", "gravel")};
+  Unique<char, SDLPathDeleter> raw_path {SDL_GetPrefPath("albin-johansson", "glow")};
 
   if (!raw_path) {
     throw Error {fmt::format("[IO] Could not determine persistent file directory: {}",

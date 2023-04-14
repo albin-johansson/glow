@@ -1,21 +1,21 @@
-project(gravel-app LANGUAGES CXX)
+project(glow-app LANGUAGES CXX)
 
-add_executable(gravel main.cpp)
-add_dependencies(gravel libgravel)
+add_executable(glow main.cpp)
+add_dependencies(glow libglow)
 
-gravel_configure_compile_options(gravel)
+glow_configure_compile_options(glow)
 
-target_include_directories(gravel PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(gravel
+target_include_directories(glow PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(glow
                       PRIVATE
-                      libgravel
+                      libglow
                       $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
                       )
 
-target_precompile_headers(gravel REUSE_FROM libgravel)
+target_precompile_headers(glow REUSE_FROM libglow)
 
 if (WIN32)
-  gravel_copy_directory_post_build(gravel ${GRAVEL_ASSET_DIR} "${CMAKE_CURRENT_BINARY_DIR}/assets")
+  glow_copy_directory_post_build(glow ${GLOW_ASSET_DIR} "${CMAKE_CURRENT_BINARY_DIR}/assets")
 else ()
-  gravel_symlink_directory_post_build(gravel ${GRAVEL_ASSET_DIR} "${CMAKE_CURRENT_BINARY_DIR}/assets")
+  glow_symlink_directory_post_build(glow ${GLOW_ASSET_DIR} "${CMAKE_CURRENT_BINARY_DIR}/assets")
 endif ()

@@ -68,7 +68,7 @@ void WindowDeleter::operator()(SDL_Window* window) noexcept
 }
 
 Window::Window(const GraphicsApi api)
-    : mWindow {SDL_CreateWindow("Gravel",
+    : mWindow {SDL_CreateWindow("Glow",
                                 SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED,
                                 1000,
@@ -82,7 +82,7 @@ Window::Window(const GraphicsApi api)
   gWindow = mWindow.get();
   use_win32_dark_title_bar(mWindow.get());
 
-  const auto title = fmt::format("Gravel [{}]", magic_enum::enum_name(api));
+  const auto title = fmt::format("Glow [{}]", magic_enum::enum_name(api));
   SDL_SetWindowTitle(mWindow.get(), title.c_str());
 }
 

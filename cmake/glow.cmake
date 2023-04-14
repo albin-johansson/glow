@@ -1,19 +1,19 @@
 
-function(gravel_copy_directory_post_build target from to)
+function(glow_copy_directory_post_build target from to)
   add_custom_command(TARGET ${target} POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -E copy_directory
                      ${from}
                      ${to})
 endfunction()
 
-function(gravel_symlink_directory_post_build target from to)
+function(glow_symlink_directory_post_build target from to)
   add_custom_command(TARGET ${target} POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -E create_symlink
                      ${from}
                      ${to})
 endfunction()
 
-set(GRAVEL_COMPILE_DEFINITIONS
+set(GLOW_COMPILE_DEFINITIONS
     BOOST_ENABLE_ASSERT_DEBUG_HANDLER
     BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
     GLM_ENABLE_EXPERIMENTAL
@@ -28,10 +28,10 @@ set(GRAVEL_COMPILE_DEFINITIONS
 # presence of an Apple Silicon processor.
 if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin" AND
     CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
-list(APPEND GRAVEL_COMPILE_DEFINITIONS GRAVEL_USE_VULKAN_SUBSET)
+list(APPEND GLOW_COMPILE_DEFINITIONS GRAVEL_USE_VULKAN_SUBSET)
 endif ()
 
-function(gravel_configure_compile_options target)
+function(glow_configure_compile_options target)
   if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${target}
                            PRIVATE
@@ -55,10 +55,10 @@ function(gravel_configure_compile_options target)
                            )
   endif ()
 
-  target_compile_definitions(${target} PRIVATE ${GRAVEL_COMPILE_DEFINITIONS})
+  target_compile_definitions(${target} PRIVATE ${GLOW_COMPILE_DEFINITIONS})
 endfunction()
 
-set(GRAVEL_STANDARD_CPP_HEADERS
+set(GLOW_STANDARD_CPP_HEADERS
     <algorithm>
     <array>
     <charconv>
@@ -98,36 +98,36 @@ set(GRAVEL_STANDARD_CPP_HEADERS
     <vector>
     )
 
-set(GRAVEL_PRECOMPILED_HEADERS "${GRAVEL_STANDARD_CPP_HEADERS}")
+set(GLOW_PRECOMPILED_HEADERS "${GLOW_STANDARD_CPP_HEADERS}")
 
 set(IMGUI_SOURCES
-    "${GRAVEL_LIB_DIR}/imgui/imconfig.h"
-    "${GRAVEL_LIB_DIR}/imgui/imgui.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/imgui.h"
-    "${GRAVEL_LIB_DIR}/imgui/imgui_demo.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/imgui_draw.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/imgui_internal.h"
-    "${GRAVEL_LIB_DIR}/imgui/imgui_tables.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/imgui_widgets.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/imstb_rectpack.h"
-    "${GRAVEL_LIB_DIR}/imgui/imstb_textedit.h"
-    "${GRAVEL_LIB_DIR}/imgui/imstb_truetype.h"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_sdl2.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_sdl2.h"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_opengl3.h"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_vulkan.cpp"
-    "${GRAVEL_LIB_DIR}/imgui/backends/imgui_impl_vulkan.h"
+    "${GLOW_LIB_DIR}/imgui/imconfig.h"
+    "${GLOW_LIB_DIR}/imgui/imgui.cpp"
+    "${GLOW_LIB_DIR}/imgui/imgui.h"
+    "${GLOW_LIB_DIR}/imgui/imgui_demo.cpp"
+    "${GLOW_LIB_DIR}/imgui/imgui_draw.cpp"
+    "${GLOW_LIB_DIR}/imgui/imgui_internal.h"
+    "${GLOW_LIB_DIR}/imgui/imgui_tables.cpp"
+    "${GLOW_LIB_DIR}/imgui/imgui_widgets.cpp"
+    "${GLOW_LIB_DIR}/imgui/imstb_rectpack.h"
+    "${GLOW_LIB_DIR}/imgui/imstb_textedit.h"
+    "${GLOW_LIB_DIR}/imgui/imstb_truetype.h"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_sdl2.cpp"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_sdl2.h"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_opengl3.h"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_vulkan.cpp"
+    "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_vulkan.h"
     )
 
 add_library(imgui "${IMGUI_SOURCES}")
 
-target_compile_definitions(imgui PRIVATE ${GRAVEL_COMPILE_DEFINITIONS})
+target_compile_definitions(imgui PRIVATE ${GLOW_COMPILE_DEFINITIONS})
 
 target_include_directories(imgui
                            SYSTEM PUBLIC
-                           "${GRAVEL_LIB_DIR}/imgui"
-                           "${GRAVEL_LIB_DIR}/imgui/backends"
+                           "${GLOW_LIB_DIR}/imgui"
+                           "${GLOW_LIB_DIR}/imgui/backends"
                            )
 
 target_link_libraries(imgui
