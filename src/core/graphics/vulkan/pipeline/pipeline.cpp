@@ -169,7 +169,9 @@ auto create_pipeline_depth_stencil_state() -> VkPipelineDepthStencilStateCreateI
 auto create_pipeline_color_blend_attachment_state(const bool enabled,
                                                   const VkBlendOp op,
                                                   const VkBlendFactor src_factor,
-                                                  const VkBlendFactor dst_factor)
+                                                  const VkBlendFactor dst_factor,
+                                                  const VkBlendFactor src_alpha_factor,
+                                                  const VkBlendFactor dst_alpha_factor)
     -> VkPipelineColorBlendAttachmentState
 {
   const VkPipelineColorBlendAttachmentState color_blend_attachment_state {
@@ -179,8 +181,8 @@ auto create_pipeline_color_blend_attachment_state(const bool enabled,
       .dstColorBlendFactor = dst_factor,
       .colorBlendOp = op,
 
-      .srcAlphaBlendFactor = src_factor,
-      .dstAlphaBlendFactor = dst_factor,
+      .srcAlphaBlendFactor = src_alpha_factor,
+      .dstAlphaBlendFactor = dst_alpha_factor,
       .alphaBlendOp = op,
 
       .colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |

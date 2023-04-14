@@ -63,10 +63,13 @@ class PipelineBuilder final {
 
   auto shaders(const char* vertex_path, const char* fragment_path) -> Self&;
 
-  auto vertex_input_binding(uint32 binding, uint32 stride) -> Self&;
+  auto vertex_input_binding(uint32 binding,
+                            uint32 stride,
+                            VkVertexInputRate rate = VK_VERTEX_INPUT_RATE_VERTEX)
+      -> Self&;
 
-  auto vertex_attribute(uint32 binding, uint32 location,
-                              VkFormat format, uint32 offset) -> Self&;
+  auto vertex_attribute(uint32 binding, uint32 location, VkFormat format, uint32 offset)
+      -> Self&;
 
   auto rasterization(VkPolygonMode polygon_mode, VkCullModeFlags cull_mode) -> Self&;
 
@@ -77,7 +80,9 @@ class PipelineBuilder final {
   auto blending(bool enabled,
                 VkBlendOp op = VK_BLEND_OP_ADD,
                 VkBlendFactor src_factor = VK_BLEND_FACTOR_ONE,
-                VkBlendFactor dst_factor = VK_BLEND_FACTOR_ZERO) -> Self&;
+                VkBlendFactor dst_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+                VkBlendFactor src_alpha_factor = VK_BLEND_FACTOR_ONE,
+                VkBlendFactor dst_alpha_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA) -> Self&;
 
   [[nodiscard]] auto build(VkRenderPass pass, VkPipelineLayout layout) const
       -> VkPipeline;

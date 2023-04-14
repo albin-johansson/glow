@@ -158,13 +158,14 @@ auto PipelineBuilder::shaders(const char* vertex_path, const char* fragment_path
   return *this;
 }
 
-auto PipelineBuilder::vertex_input_binding(const uint32 binding, const uint32 stride)
-    -> PipelineBuilder::Self&
+auto PipelineBuilder::vertex_input_binding(const uint32 binding,
+                                           const uint32 stride,
+                                           const VkVertexInputRate rate) -> Self&
 {
   mVertexInputBindings.push_back(VkVertexInputBindingDescription {
       .binding = binding,
       .stride = stride,
-      .inputRate = VK_VERTEX_INPUT_RATE_VERTEX,
+      .inputRate = rate,
   });
 
   return *this;
@@ -207,10 +208,17 @@ auto PipelineBuilder::input_assembly(const VkPrimitiveTopology topology) -> Self
 auto PipelineBuilder::blending(const bool enabled,
                                const VkBlendOp op,
                                const VkBlendFactor src_factor,
-                               const VkBlendFactor dst_factor) -> Self&
+                               const VkBlendFactor dst_factor,
+                               const VkBlendFactor src_alpha_factor,
+                               const VkBlendFactor dst_alpha_factor) -> Self&
 {
   mColorBlendAttachmentState =
-      create_pipeline_color_blend_attachment_state(enabled, op, src_factor, dst_factor);
+      create_pipeline_color_blend_attachment_state(enabled,
+                                                   op,
+                                                   src_factor,
+                                                   dst_factor,
+                                                   src_alpha_factor,
+                                                   dst_alpha_factor);
   mColorBlendState = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
 

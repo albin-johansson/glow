@@ -30,11 +30,13 @@ namespace gravel::vk {
 [[nodiscard]] auto create_pipeline_depth_stencil_state()
     -> VkPipelineDepthStencilStateCreateInfo;
 
-[[nodiscard]] auto create_pipeline_color_blend_attachment_state(bool enabled,
-                                                                VkBlendOp op,
-                                                                VkBlendFactor src_factor,
-                                                                VkBlendFactor dst_factor)
-    -> VkPipelineColorBlendAttachmentState;
+[[nodiscard]] auto create_pipeline_color_blend_attachment_state(
+    bool enabled,
+    VkBlendOp op,
+    VkBlendFactor src_factor,
+    VkBlendFactor dst_factor,
+    VkBlendFactor src_alpha_factor,
+    VkBlendFactor dst_alpha_factor) -> VkPipelineColorBlendAttachmentState;
 
 /// Returns an array of vertex binding descriptions for the usual Vertex type.
 [[nodiscard]] auto create_vertex_binding_descriptions(uint32 binding)
