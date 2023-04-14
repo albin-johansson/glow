@@ -14,6 +14,7 @@
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/frame.hpp"
 #include "graphics/vulkan/image/sampler.hpp"
+#include "graphics/vulkan/imgui.hpp"
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/pipeline/descriptor_pool.hpp"
@@ -78,8 +79,7 @@ class VulkanBackend final : public Backend {
   vk::RenderPass mRenderPass;
   vk::Sampler mSampler;
   vk::PipelineCache mPipelineCache;
-  vk::PipelineCache mImGuiPipelineCache;
-  vk::DescriptorPool mImGuiDescriptorPool;
+  vk::ImGuiData mImGuiData;
   vk::CommandPool mCommandPool;
   vk::DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   vk::PipelineLayoutBuilder mPipelineLayoutBuilder;
@@ -96,7 +96,6 @@ class VulkanBackend final : public Backend {
 
   void create_shading_pipeline();
   void create_frame_data();
-  void prepare_imgui_for_vulkan();
 
   void update_static_matrix_buffer(const Camera& camera,
                                    const Transform& camera_transform);

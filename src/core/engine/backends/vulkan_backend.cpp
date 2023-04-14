@@ -31,20 +31,6 @@
 namespace gravel {
 namespace {
 
-inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
-    {VK_DESCRIPTOR_TYPE_SAMPLER, 8},
-    {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 32},
-    {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 8},
-    {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 8},
-    {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 8},
-    {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 8},
-    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 32},
-    {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 8},
-    {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 8},
-    {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 8},
-    {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 8},
-};
-
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
 {
   GRAVEL_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
@@ -70,11 +56,7 @@ VulkanBackend::VulkanBackend()
       mRenderPass {mSwapchain.get_image_format()},
       mSampler {vk::create_sampler()},
       mPipelineCache {vk::create_pipeline_cache()},
-      mImGuiPipelineCache {vk::create_pipeline_cache()},
-      mImGuiDescriptorPool {1'000,
-                            kImGuiDescriptorPoolSizes,
-                            array_length(kImGuiDescriptorPoolSizes),
-                            VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT},
+      mImGuiData {},
       mPipelineBuilder {mPipelineCache.get()}
 {
   create_shading_pipeline();
@@ -133,7 +115,7 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
-  prepare_imgui_for_vulkan();
+  vk::init_imgui(mImGuiData, mRenderPass.get(), mSwapchain.get_image_count());
 
   scene.add<vk::ImageCache>();
 
@@ -152,36 +134,6 @@ void VulkanBackend::on_init(Scene& scene)
 
   auto& camera_context = scene.get<CameraContext>();
   camera_context.active_camera = camera_entity;
-}
-
-void VulkanBackend::prepare_imgui_for_vulkan()
-{
-  const auto graphics_queue_family_index =
-      vk::get_queue_family_indices(vk::get_gpu(), vk::get_surface())
-          .graphics_family.value();
-
-  ImGui_ImplVulkan_InitInfo info {};
-  info.Instance = mInstance.get();
-  info.PhysicalDevice = mGPU;
-  info.Device = mDevice.get();
-  info.QueueFamily = graphics_queue_family_index;
-  info.Queue = vk::get_graphics_queue();
-  info.PipelineCache = mImGuiPipelineCache.get();
-  info.DescriptorPool = mImGuiDescriptorPool.get();
-  info.Subpass = 0;
-  info.MinImageCount = vk::kMaxFramesInFlight;
-  info.ImageCount = vk::kMaxFramesInFlight;
-  info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-  info.Allocator = nullptr;
-  info.CheckVkResultFn = [](const VkResult result) {
-    GRAVEL_VK_CALL(result, "[VK] ImGui Vulkan backend error");
-  };
-
-  if (!ImGui_ImplVulkan_Init(&info, mRenderPass.get())) {
-    throw Error {"[VK] Could not initialize ImGui Vulkan backend"};
-  }
-
-  DearImGuiVulkan::recreate_font_textures();
 }
 
 void VulkanBackend::on_quit()
