@@ -33,6 +33,8 @@ class Swapchain final {
 
   [[nodiscard]] auto get_current_framebuffer() -> Framebuffer&;
 
+  [[nodiscard]] auto get_image_count() const -> uint32;
+
   [[nodiscard]] auto get() -> VkSwapchainKHR { return mSwapchain; }
   [[nodiscard]] auto get_image_format() const -> VkFormat { return mImageFormat; }
   [[nodiscard]] auto get_image_extent() const -> VkExtent2D { return mImageExtent; }

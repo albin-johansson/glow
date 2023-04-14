@@ -12,6 +12,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/swapchain/framebuffer.hpp"
+#include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/window.hpp"
 
@@ -265,6 +266,11 @@ auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
 auto Swapchain::get_current_framebuffer() -> Framebuffer&
 {
   return mFramebuffers.at(static_cast<usize>(mImageIndex));
+}
+
+auto Swapchain::get_image_count() const -> uint32
+{
+  return u32_size(mFramebuffers);
 }
 
 }  // namespace gravel::vk
