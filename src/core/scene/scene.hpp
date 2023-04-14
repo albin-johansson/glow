@@ -75,6 +75,7 @@ class Scene final {
 
  private:
   Registry mRegistry;
+  // TODO spatial data structure for scene objects that stores entities
 };
 
 }  // namespace gravel
