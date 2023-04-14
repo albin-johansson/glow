@@ -108,9 +108,6 @@ class VulkanBackend final : public Backend {
                     const Transform& transform,
                     const vk::Model& model);
 
-  /// Submits rendering commands to the graphics queue.
-  void submit_commands();
-
   void present_image();
 };
 

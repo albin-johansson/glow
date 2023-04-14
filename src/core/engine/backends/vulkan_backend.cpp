@@ -307,25 +307,21 @@ void VulkanBackend::end_frame()
   vkCmdEndRenderPass(frame.command_buffer);
   vk::end_command_buffer(frame.command_buffer);
 
-  submit_commands();
-  present_image();
-
-  mFrameIndex = (mFrameIndex + 1) % vk::kMaxFramesInFlight;
-}
-
-void VulkanBackend::submit_commands()
-{
-  auto& frame = mFrames.at(mFrameIndex);
-
-  // Wait on the image_available_semaphore before command buffer execution,
-  // and signal the render_finished_semaphore and in_flight_fence after the command buffer
-  // is executed.
+  // Submits rendering commands to the graphics queue. Waits on the
+  // image_available_semaphore before executing the command buffer, and signals
+  // render_finished_semaphore and in_flight_fence after the commands are executed.
   vk::submit_to_queue(vk::get_graphics_queue(),
                       frame.command_buffer,
                       frame.image_available_semaphore.get(),
                       VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
                       frame.render_finished_semaphore.get(),
                       frame.in_flight_fence.get());
+
+  // Presents the current framebuffer to the swapchain.
+  present_image();
+
+  // Move on to the next frame.
+  mFrameIndex = (mFrameIndex + 1) % vk::kMaxFramesInFlight;
 }
 
 void VulkanBackend::present_image()
