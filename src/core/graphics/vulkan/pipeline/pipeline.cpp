@@ -3,9 +3,15 @@
 #include <cstddef>  // offsetof
 
 #include "graphics/vertex.hpp"
+#include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
 namespace gravel::vk {
+
+void PipelineDeleter::operator()(VkPipeline pipeline) noexcept
+{
+  vkDestroyPipeline(get_device(), pipeline, nullptr);
+}
 
 auto create_pipeline_cache(VkDevice device) -> VkPipelineCache
 {

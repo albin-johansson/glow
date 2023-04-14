@@ -15,11 +15,13 @@
 #include "graphics/vulkan/frame.hpp"
 #include "graphics/vulkan/image/sampler.hpp"
 #include "graphics/vulkan/instance.hpp"
-#include "graphics/vulkan/managed.hpp"
 #include "graphics/vulkan/model.hpp"
 #include "graphics/vulkan/pipeline/descriptor_pool.hpp"
+#include "graphics/vulkan/pipeline/descriptor_set_layout.hpp"
+#include "graphics/vulkan/pipeline/pipeline.hpp"
 #include "graphics/vulkan/pipeline/pipeline_builder.hpp"
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
+#include "graphics/vulkan/pipeline/pipeline_layout.hpp"
 #include "graphics/vulkan/render_pass.hpp"
 #include "graphics/vulkan/shader_buffers.hpp"
 #include "graphics/vulkan/surface.hpp"
@@ -119,4 +121,4 @@ class VulkanBackend final : public Backend {
   void present_image();
 };
 
-}  // namespace gravel::vk
+}  // namespace gravel
