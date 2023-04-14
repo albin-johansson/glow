@@ -10,7 +10,12 @@
 
 namespace gravel::vk {
 
-Allocator::Allocator()
+void AllocatorDeleter::operator()(VmaAllocator allocator) noexcept
+{
+  vmaDestroyAllocator(allocator);
+}
+
+auto create_allocator() -> Allocator
 {
   GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
   GRAVEL_ASSERT(get_gpu() != VK_NULL_HANDLE);
@@ -21,14 +26,12 @@ Allocator::Allocator()
   create_info.physicalDevice = get_gpu();
   create_info.device = get_device();
 
-  GRAVEL_VK_CALL(vmaCreateAllocator(&create_info, &mAllocator),
+  VmaAllocator allocator = VK_NULL_HANDLE;
+  GRAVEL_VK_CALL(vmaCreateAllocator(&create_info, &allocator),
                  "[VK] Could not create allocator");
-  set_allocator(mAllocator);
-}
+  set_allocator(allocator);
 
-Allocator::~Allocator() noexcept
-{
-  vmaDestroyAllocator(mAllocator);
+  return Allocator {allocator};
 }
 
 }  // namespace gravel::vk

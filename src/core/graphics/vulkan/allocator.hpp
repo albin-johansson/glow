@@ -3,27 +3,17 @@
 #include <vk_mem_alloc.h>
 #include <vulkan/vulkan.h>
 
-#include "common/predef.hpp"
+#include "common/type/memory.hpp"
 
 namespace gravel::vk {
 
-/// Wrapper around the dedicated Vulkan memory allocator.
-///
-/// Note, the instance, physical device, and logical device must all have been initialized
-/// before creating an allocator.
-class Allocator final {
- public:
-  GRAVEL_DELETE_COPY(Allocator);
-  GRAVEL_DELETE_MOVE(Allocator);
-
-  Allocator();
-
-  ~Allocator() noexcept;
-
-  [[nodiscard]] auto get() -> VmaAllocator { return mAllocator; }
-
- private:
-  VmaAllocator mAllocator;
+struct AllocatorDeleter final {
+  void operator()(VmaAllocator allocator) noexcept;
 };
+
+/// Represents a dedicated Vulkan memory allocator.
+using Allocator = Unique<VmaAllocator_T, AllocatorDeleter>;
+
+[[nodiscard]] auto create_allocator() -> Allocator;
 
 }  // namespace gravel::vk

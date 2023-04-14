@@ -60,8 +60,17 @@ inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
 }  // namespace
 
 VulkanBackend::VulkanBackend()
-    : mGPU {select_gpu()},
+    : mInstance {vk::create_instance()},
+      mDebugMessenger {kDebugBuild ? vk::create_debug_messenger() : nullptr},
+      mSurface {vk::create_surface()},
+      mGPU {select_gpu()},
+      mDevice {vk::create_device()},
+      mAllocator {vk::create_allocator()},
+      mSwapchain {},
       mRenderPass {mSwapchain.get_image_format()},
+      mSampler {vk::create_sampler()},
+      mPipelineCache {vk::create_pipeline_cache()},
+      mImGuiPipelineCache {vk::create_pipeline_cache()},
       mImGuiDescriptorPool {1'000,
                             kImGuiDescriptorPoolSizes,
                             array_length(kImGuiDescriptorPoolSizes),

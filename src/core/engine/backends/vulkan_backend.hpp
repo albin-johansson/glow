@@ -68,35 +68,29 @@ class VulkanBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
-  vk::Instance mInstance {vk::create_instance()};
-  vk::DebugMessenger mDebugMessenger {kDebugBuild ? vk::create_debug_messenger()
-                                                  : nullptr};
-  vk::Surface mSurface {vk::create_surface()};
-  VkPhysicalDevice mGPU {VK_NULL_HANDLE};
-  vk::Device mDevice {vk::create_device()};
+  vk::Instance mInstance;
+  vk::DebugMessenger mDebugMessenger;
+  vk::Surface mSurface;
+  VkPhysicalDevice mGPU;
+  vk::Device mDevice;
   vk::Allocator mAllocator;
   vk::Swapchain mSwapchain;
   vk::RenderPass mRenderPass;
-  vk::Sampler mSampler {vk::create_sampler()};
-  vk::PipelineCache mPipelineCache {vk::create_pipeline_cache()};
-  vk::PipelineCache mImGuiPipelineCache {vk::create_pipeline_cache()};
+  vk::Sampler mSampler;
+  vk::PipelineCache mPipelineCache;
+  vk::PipelineCache mImGuiPipelineCache;
   vk::DescriptorPool mImGuiDescriptorPool;
   vk::CommandPool mCommandPool;
-
   vk::DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
   vk::PipelineLayoutBuilder mPipelineLayoutBuilder;
   vk::PipelineBuilder mPipelineBuilder;
-
   vk::DescriptorSetLayout mShadingDescriptorSetLayout;
   vk::PipelineLayout mShadingPipelineLayout;
   vk::Pipeline mShadingPipeline;
-
   Vector<vk::FrameData> mFrames;
   usize mFrameIndex {0};
-
   vk::MaterialBuffer mMaterialBuffer;
   vk::StaticMatrices mStaticMatrices;
-
   bool mQuit {false};
   bool mResizedFramebuffer : 1 {false};
 
