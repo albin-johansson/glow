@@ -22,7 +22,6 @@
       ]
     },
     "glm",
-    "imguizmo",
     "magic-enum",
     {
       "name": "sdl2",

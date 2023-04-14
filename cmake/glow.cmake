@@ -118,6 +118,18 @@ set(IMGUI_SOURCES
     "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_opengl3.h"
     "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_vulkan.cpp"
     "${GLOW_LIB_DIR}/imgui/backends/imgui_impl_vulkan.h"
+
+    "${GLOW_LIB_DIR}/ImGuizmo/GraphEditor.cpp"
+    "${GLOW_LIB_DIR}/ImGuizmo/GraphEditor.h"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImCurveEdit.cpp"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImCurveEdit.h"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImGradient.cpp"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImGradient.h"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImGuizmo.cpp"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImGuizmo.h"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImSequencer.cpp"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImSequencer.h"
+    "${GLOW_LIB_DIR}/ImGuizmo/ImZoomSlider.h"
     )
 
 add_library(imgui "${IMGUI_SOURCES}")
@@ -128,6 +140,7 @@ target_include_directories(imgui
                            SYSTEM PUBLIC
                            "${GLOW_LIB_DIR}/imgui"
                            "${GLOW_LIB_DIR}/imgui/backends"
+                           "${GLOW_LIB_DIR}/ImGuizmo"
                            )
 
 target_link_libraries(imgui

@@ -2,3 +2,6 @@
 	path = lib/imgui
 	url = https://github.com/albin-johansson/imgui
 	branch = vulkan-destroy-fonts-texture
+[submodule "lib/ImGuizmo"]
+	path = lib/ImGuizmo
+	url = https://github.com/albin-johansson/ImGuizmo

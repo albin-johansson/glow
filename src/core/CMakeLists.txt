@@ -34,7 +34,6 @@ target_link_libraries(libglow
                       glad::glad
                       glm::glm
                       imgui
-                      imguizmo::imguizmo
                       magic_enum::magic_enum
                       OpenGL::GL
                       spdlog::spdlog
