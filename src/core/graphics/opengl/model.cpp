@@ -12,7 +12,7 @@
 #include "io/texture_loader.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 namespace {
 
 [[nodiscard]] auto create_texture(TextureCache& cache, Path path) -> Maybe<uint>
@@ -115,4 +115,4 @@ void assign_model(Scene& scene, const Entity entity, const Path& path)
   }
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

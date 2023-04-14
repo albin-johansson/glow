@@ -2,7 +2,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Simple type that encodes to possible values: success or failure.
 /// Intended to be used to communicate non-fatal errors in void functions.
@@ -41,4 +41,4 @@ class Result final {
 inline constexpr Result kSuccess = Result::make_success();
 inline constexpr Result kFailure = Result::make_failure();
 
-}  // namespace gravel
+}  // namespace glow

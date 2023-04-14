@@ -2,7 +2,7 @@
 
 #include "graphics/graphics_api.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Simple RAII wrapper around an SDL instance.
 class SDL final {
@@ -15,4 +15,4 @@ class SDL final {
   GraphicsApi mAPI {};
 };
 
-}  // namespace gravel
+}  // namespace glow

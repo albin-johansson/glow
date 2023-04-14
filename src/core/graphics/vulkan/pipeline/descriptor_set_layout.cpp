@@ -2,11 +2,11 @@
 
 #include "graphics/vulkan/context.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void DescriptorSetLayoutDeleter::operator()(VkDescriptorSetLayout layout) noexcept
 {
   vkDestroyDescriptorSetLayout(get_device(), layout, nullptr);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

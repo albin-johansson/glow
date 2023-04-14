@@ -13,7 +13,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 void print_relevant_device_properties(VkPhysicalDevice gpu)
@@ -128,4 +128,4 @@ auto create_device() -> Device
   return Device {device};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

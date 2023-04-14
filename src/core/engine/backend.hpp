@@ -11,7 +11,7 @@
 #include "common/type/path.hpp"
 #include "graphics/graphics_api.hpp"
 
-namespace gravel {
+namespace glow {
 
 GRAVEL_FORWARD_DECLARE_C(Scene);
 
@@ -45,4 +45,4 @@ class Backend {
 
 [[nodiscard]] auto create_backend(SDL_Window* window, GraphicsApi api) -> Unique<Backend>;
 
-}  // namespace gravel
+}  // namespace glow

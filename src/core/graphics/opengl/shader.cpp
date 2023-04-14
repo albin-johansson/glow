@@ -7,7 +7,7 @@
 #include "graphics/opengl/util.hpp"
 #include "io/files.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Shader::Shader(const ShaderType type)
     : mID {glCreateShader(convert_shader_type(type))}
@@ -74,4 +74,4 @@ auto Shader::compile_file(const Path& path) -> Result
   }
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

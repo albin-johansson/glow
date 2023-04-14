@@ -4,7 +4,7 @@
 #include "engine/backends/opengl_backend.hpp"
 #include "engine/backends/vulkan_backend.hpp"
 
-namespace gravel {
+namespace glow {
 
 auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend>
 {
@@ -20,4 +20,4 @@ auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend
   }
 }
 
-}  // namespace gravel
+}  // namespace glow

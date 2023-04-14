@@ -2,11 +2,11 @@
 
 #include "graphics/vulkan/context.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void PipelineLayoutDeleter::operator()(VkPipelineLayout layout) noexcept
 {
   vkDestroyPipelineLayout(get_device(), layout, nullptr);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

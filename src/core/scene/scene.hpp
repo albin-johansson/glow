@@ -5,7 +5,7 @@
 #include "common/type/pair.hpp"
 #include "common/type/string.hpp"
 
-namespace gravel {
+namespace glow {
 
 GRAVEL_FORWARD_DECLARE_S(Camera);
 
@@ -78,4 +78,4 @@ class Scene final {
   // TODO spatial data structure for scene objects that stores entities
 };
 
-}  // namespace gravel
+}  // namespace glow

@@ -2,7 +2,7 @@
 
 #include <fmt/format.h>
 
-namespace gravel::vk {
+namespace glow::vk {
 
 auto to_version_string(const uint32 version) -> String
 {
@@ -28,4 +28,4 @@ auto get_driver_version(VkPhysicalDevice gpu) -> String
   return to_version_string(properties.driverVersion);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

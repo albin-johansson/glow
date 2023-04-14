@@ -24,7 +24,7 @@
 #include "ui/gizmos.hpp"
 #include "util/bits.hpp"
 
-namespace gravel {
+namespace glow {
 
 OpenGLBackend::OpenGLBackend(SDL_Window* window)
     : mRenderer {window}
@@ -218,4 +218,4 @@ auto OpenGLBackend::get_primary_framebuffer_handle() -> void*
   return bitcast<void*>(id);
 }
 
-}  // namespace gravel
+}  // namespace glow

@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 class Framebuffer final {
  public:
@@ -30,4 +30,4 @@ class Framebuffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

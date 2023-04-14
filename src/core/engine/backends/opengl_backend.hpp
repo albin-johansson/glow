@@ -17,7 +17,7 @@
 #include "graphics/opengl/uniform_buffer.hpp"
 #include "ui/gizmos.hpp"
 
-namespace gravel {
+namespace glow {
 
 class OpenGLBackend final : public Backend {
  public:
@@ -62,4 +62,4 @@ class OpenGLBackend final : public Backend {
                      Dispatcher& dispatcher);
 };
 
-}  // namespace gravel
+}  // namespace glow

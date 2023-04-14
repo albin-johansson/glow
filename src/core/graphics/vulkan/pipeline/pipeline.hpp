@@ -6,7 +6,7 @@
 #include "common/type/array.hpp"
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct PipelineDeleter final {
   void operator()(VkPipeline pipeline) noexcept;
@@ -53,4 +53,4 @@ using Pipeline = Unique<VkPipeline_T, PipelineDeleter>;
 [[nodiscard]] auto create_vertex_attribute_descriptions()
     -> Array<VkVertexInputAttributeDescription, 3>;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

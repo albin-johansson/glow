@@ -5,7 +5,7 @@
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 /// Holds matrices that remain constant over a single frame.
 /// \note this struct assumes the std140 layout!
@@ -46,4 +46,4 @@ struct MaterialBuffer final {
   int32 has_emission_tex {false};
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

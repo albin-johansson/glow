@@ -8,7 +8,7 @@
 #include "common/type/map.hpp"
 #include "common/type/string.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 inline constexpr const char* kApiHelp = "graphics API that will be used";
@@ -106,4 +106,4 @@ auto parse_command_line_args(const int argc, char** argv) -> Maybe<CommandLineAr
   return args;
 }
 
-}  // namespace gravel
+}  // namespace glow

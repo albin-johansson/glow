@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace gravel::vk {
+namespace glow::vk {
 
 /// Submits a command buffer to a queue for execution.
 ///
@@ -23,4 +23,4 @@ void submit_to_queue(VkQueue queue,
 /// Waits (blocks the calling thread) until the work in a queue has been completed.
 void wait_on_queue(VkQueue queue);
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

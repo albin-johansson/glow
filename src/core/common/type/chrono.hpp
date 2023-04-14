@@ -2,7 +2,7 @@
 
 #include <chrono>  // system_clock, milliseconds, microseconds, nanoseconds
 
-namespace gravel {
+namespace glow {
 
 namespace chrono = std::chrono;
 
@@ -16,4 +16,4 @@ using TimePoint = Clock::time_point;
 using Duration = Clock::duration;
 using TimeRep = Clock::rep;
 
-}  // namespace gravel
+}  // namespace glow

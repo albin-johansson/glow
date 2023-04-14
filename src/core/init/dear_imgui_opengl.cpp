@@ -5,7 +5,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel {
+namespace glow {
 
 DearImGuiOpenGL::DearImGuiOpenGL(SDL_Window* window)
 {
@@ -30,4 +30,4 @@ void DearImGuiOpenGL::recreate_font_textures()
   ImGui_ImplOpenGL3_CreateFontsTexture();
 }
 
-}  // namespace gravel
+}  // namespace glow

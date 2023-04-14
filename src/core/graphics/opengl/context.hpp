@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 struct ContextDeleter final {
   void operator()(void* context) noexcept;
@@ -20,4 +20,4 @@ class Context final {
   Unique<void, ContextDeleter> mContext;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

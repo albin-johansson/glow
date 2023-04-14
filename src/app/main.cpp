@@ -10,17 +10,15 @@
 #include "engine/engine.hpp"
 #include "io/command_line_parser.hpp"
 
-namespace grv = gravel;
-
 auto main(const int argc, char* argv[]) -> int
 {
   try {
-    std::set_terminate(&grv::on_terminate);
+    std::set_terminate(&glow::on_terminate);
 
     spdlog::set_pattern("%^[%L][%T.%e]%$ %v");
     spdlog::flush_on(spdlog::level::critical);
 
-    const auto command_line_args = grv::parse_command_line_args(argc, argv);
+    const auto command_line_args = glow::parse_command_line_args(argc, argv);
     if (!command_line_args) {
       return EXIT_FAILURE;
     }
@@ -31,8 +29,8 @@ auto main(const int argc, char* argv[]) -> int
     const auto api = command_line_args->api;
     spdlog::info("[Main] Using {} as the graphics API", magic_enum::enum_name(api));
 
-    grv::Engine engine {api};
-    engine.set_backend(grv::create_backend(engine.get_window(), api));
+    glow::Engine engine {api};
+    engine.set_backend(glow::create_backend(engine.get_window(), api));
     engine.init();
 
     if (command_line_args->env_path) {
@@ -48,7 +46,7 @@ auto main(const int argc, char* argv[]) -> int
     engine.start();
     return EXIT_SUCCESS;
   }
-  catch (const grv::Error& err) {
+  catch (const glow::Error& err) {
     spdlog::critical("[Main] Unhandled exception: {}\n{}", err.what(), err.trace());
     return EXIT_FAILURE;
   }

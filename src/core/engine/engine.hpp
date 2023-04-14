@@ -14,7 +14,7 @@
 #include "scene/scene.hpp"
 #include "ui/events.hpp"
 
-namespace gravel {
+namespace glow {
 
 GRAVEL_FORWARD_DECLARE_C(Backend);
 
@@ -107,4 +107,4 @@ class Engine final {
   [[nodiscard]] auto query_counter() const -> float64;
 };
 
-}  // namespace gravel
+}  // namespace glow

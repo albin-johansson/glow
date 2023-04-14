@@ -4,7 +4,7 @@
 #include "common/primitives.hpp"
 #include "graphics/opengl/buffer_usage.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents an OpenGL element (or index) buffer object (EBO).
 class IndexBuffer final {
@@ -47,4 +47,4 @@ class IndexBuffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

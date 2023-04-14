@@ -2,7 +2,7 @@
 
 #include "common/type/math.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Generic transform component for scene nodes.
 struct Transform final {
@@ -21,4 +21,4 @@ struct TransformOptions final {
   bool use_scale {true};
 };
 
-}  // namespace gravel
+}  // namespace glow

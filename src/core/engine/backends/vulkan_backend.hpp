@@ -33,7 +33,7 @@
 #include "scene/transform.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel {
+namespace glow {
 
 class VulkanBackend final : public Backend {
  public:
@@ -111,4 +111,4 @@ class VulkanBackend final : public Backend {
   void present_image();
 };
 
-}  // namespace gravel
+}  // namespace glow

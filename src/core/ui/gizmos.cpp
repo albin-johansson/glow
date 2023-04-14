@@ -10,7 +10,7 @@
 #include "scene/transform.hpp"
 #include "ui/events.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto convert_gizmo_operation(const GizmoOperation operation)
@@ -81,4 +81,4 @@ void show_model_control_gizmo(const GizmosOptions& options,
   }
 }
 
-}  // namespace gravel
+}  // namespace glow

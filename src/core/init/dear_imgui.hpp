@@ -8,7 +8,7 @@
 #include "init/dear_imgui_opengl.hpp"
 #include "init/dear_imgui_vulkan.hpp"
 
-namespace gravel {
+namespace glow {
 
 class DearImGui final {
   inline static constexpr float kMinFontSize = 9;
@@ -37,4 +37,4 @@ class DearImGui final {
   float mFontSize {kDefFontSize};
 };
 
-}  // namespace gravel
+}  // namespace glow

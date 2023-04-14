@@ -1,6 +1,6 @@
 #include "descriptor.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 auto create_descriptor_buffer_write(const uint32 binding,
                                     const VkDescriptorType type,
@@ -40,4 +40,4 @@ auto create_descriptor_image_write(const uint32 binding,
   };
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

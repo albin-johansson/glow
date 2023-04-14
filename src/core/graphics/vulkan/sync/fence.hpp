@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct FenceDeleter final {
   void operator()(VkFence fence) noexcept;
@@ -21,4 +21,4 @@ void reset_fence(VkFence fence);
 /// Blocks the calling thread until the fence gets signaled.
 void wait_fence(VkFence fence);
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

@@ -28,7 +28,7 @@
 #include "init/dear_imgui_vulkan.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
@@ -412,4 +412,4 @@ auto VulkanBackend::get_primary_framebuffer_handle() -> void*
   return nullptr;
 }
 
-}  // namespace gravel
+}  // namespace glow

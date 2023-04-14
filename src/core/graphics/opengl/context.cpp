@@ -5,7 +5,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 void ContextDeleter::operator()(void* context) noexcept
 {
@@ -24,4 +24,4 @@ Context::Context(SDL_Window* window)
   }
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

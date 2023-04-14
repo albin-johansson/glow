@@ -9,7 +9,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/memory.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 struct SDLPathDeleter final {
@@ -85,4 +85,4 @@ auto get_persistent_file_dir() -> const Path&
   return dir;
 }
 
-}  // namespace gravel
+}  // namespace glow

@@ -1,6 +1,6 @@
 #include "engine_initializer.hpp"
 
-namespace gravel {
+namespace glow {
 
 EngineInitializer::EngineInitializer(const GraphicsApi api)
     : mSDL {api},
@@ -13,4 +13,4 @@ EngineInitializer::EngineInitializer(const GraphicsApi api)
   mImGui.emplace(mWindow.get_handle(), api);
 }
 
-}  // namespace gravel
+}  // namespace glow

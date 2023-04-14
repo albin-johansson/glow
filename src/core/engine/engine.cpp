@@ -20,7 +20,7 @@
 #include "ui/scene_tree_dock.hpp"
 #include "ui/scene_viewport.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto determine_refresh_rate() -> float64
@@ -435,4 +435,4 @@ auto Engine::query_counter() const -> float64
   return static_cast<float64>(SDL_GetPerformanceCounter()) / mCounterFreq;
 }
 
-}  // namespace gravel
+}  // namespace glow

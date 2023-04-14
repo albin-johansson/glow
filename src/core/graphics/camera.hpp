@@ -7,7 +7,7 @@
 #include "common/type/string.hpp"
 #include "graphics/graphics_api.hpp"
 
-namespace gravel {
+namespace glow {
 
 GRAVEL_FORWARD_DECLARE_S(Transform);
 GRAVEL_FORWARD_DECLARE_C(Scene);
@@ -58,4 +58,4 @@ void rotate_camera(const Camera& camera,
                                   const Transform& transform,
                                   GraphicsApi api) -> Mat4;
 
-}  // namespace gravel
+}  // namespace glow

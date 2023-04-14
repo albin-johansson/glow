@@ -8,7 +8,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void AllocatorDeleter::operator()(VmaAllocator allocator) noexcept
 {
@@ -34,4 +34,4 @@ auto create_allocator() -> Allocator
   return Allocator {allocator};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

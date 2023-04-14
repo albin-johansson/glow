@@ -5,7 +5,7 @@
 #include "graphics/opengl/vertex_array.hpp"
 #include "graphics/opengl/vertex_buffer.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Utility class for rendering quads (rectangles).
 class Quad final {
@@ -36,4 +36,4 @@ class Quad final {
   IndexBuffer mEBO;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

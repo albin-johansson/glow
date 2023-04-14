@@ -5,7 +5,7 @@
 #include "graphics/vulkan/queue.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 [[nodiscard]] auto record_one_time_commands() -> VkCommandBuffer
@@ -62,4 +62,4 @@ void execute_immediately(const UnaryCmdBufferFunc& func)
   execute_one_time_commands(cmd_buffer);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

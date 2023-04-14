@@ -7,7 +7,7 @@
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 void set_hints_for_opengl()
@@ -76,4 +76,4 @@ SDL::~SDL()
   SDL_Quit();
 }
 
-}  // namespace gravel
+}  // namespace glow

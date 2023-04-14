@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct SurfaceDeleter final {
   void operator()(VkSurfaceKHR surface) noexcept;
@@ -14,4 +14,4 @@ using Surface = Unique<VkSurfaceKHR_T, SurfaceDeleter>;
 
 [[nodiscard]] auto create_surface() -> Surface;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

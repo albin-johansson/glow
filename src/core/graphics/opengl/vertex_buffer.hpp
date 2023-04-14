@@ -4,7 +4,7 @@
 #include "common/primitives.hpp"
 #include "graphics/opengl/buffer_usage.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents an OpenGL vertex buffer object (VBO).
 class VertexBuffer final {
@@ -48,4 +48,4 @@ class VertexBuffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

@@ -6,7 +6,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 using UnaryCmdBufferFunc = std::function<void(VkCommandBuffer)>;
 
@@ -20,4 +20,4 @@ void end_command_buffer(VkCommandBuffer command_buffer);
 /// Records a one time command buffer, and executes it (and waits for it to complete).
 void execute_immediately(const UnaryCmdBufferFunc& func);
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

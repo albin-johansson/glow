@@ -3,7 +3,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void SamplerDeleter::operator()(VkSampler sampler) noexcept
 {
@@ -55,4 +55,4 @@ auto create_sampler() -> Sampler
   return Sampler {sampler};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

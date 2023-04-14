@@ -8,7 +8,7 @@
 #include "graphics/opengl/util.hpp"
 #include "graphics/vertex.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Quad::Quad(const Vec3& bl, const Vec3& br, const Vec3& tr, const Vec3& tl)
 {
@@ -76,4 +76,4 @@ void Quad::draw_without_depth_test()
   }
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

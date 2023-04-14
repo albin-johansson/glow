@@ -10,7 +10,7 @@
 #include "graphics/opengl/quad.hpp"
 #include "graphics/opengl/uniform_buffer.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 GRAVEL_FORWARD_DECLARE_C(Texture2D);
 GRAVEL_FORWARD_DECLARE_S(Mesh);
@@ -66,4 +66,4 @@ class Renderer final {
   void load_shading_program();
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

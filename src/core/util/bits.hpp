@@ -3,7 +3,7 @@
 #include <cstring>      // memcpy
 #include <type_traits>  // is_trivially_copyable_v, is_trivially_constructible_v
 
-namespace gravel {
+namespace glow {
 
 template <typename To, typename From>
   requires(sizeof(To) == sizeof(From) &&          //
@@ -17,4 +17,4 @@ template <typename To, typename From>
   return to;
 }
 
-}  // namespace gravel
+}  // namespace glow

@@ -3,7 +3,7 @@
 #include "common/primitives.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void submit_to_queue(VkQueue queue,
                      VkCommandBuffer cmd_buffer,
@@ -42,4 +42,4 @@ void wait_on_queue(VkQueue queue)
   GRAVEL_VK_CALL(vkQueueWaitIdle(queue), "[VK] Could not wait on queue");
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

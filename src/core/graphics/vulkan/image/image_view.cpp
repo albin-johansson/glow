@@ -5,7 +5,7 @@
 #include "graphics/vulkan/image/image.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 ImageView::ImageView(VkImage image,
                      const VkFormat image_format,
@@ -79,4 +79,4 @@ auto ImageView::operator=(ImageView&& other) noexcept -> ImageView&
   return *this;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

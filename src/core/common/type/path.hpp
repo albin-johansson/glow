@@ -2,10 +2,10 @@
 
 #include <filesystem>  // path
 
-namespace gravel {
+namespace glow {
 
 namespace fs = std::filesystem;
 
 using Path = fs::path;
 
-}  // namespace gravel
+}  // namespace glow

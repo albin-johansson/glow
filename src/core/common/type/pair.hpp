@@ -2,9 +2,9 @@
 
 #include <utility>  // pair
 
-namespace gravel {
+namespace glow {
 
 template <typename T, typename U>
 using Pair = std::pair<T, U>;
 
-}  // namespace gravel
+}  // namespace glow

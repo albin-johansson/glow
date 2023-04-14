@@ -9,7 +9,7 @@
 #include "graphics/graphics_api.hpp"
 #include "graphics/vertex.hpp"
 
-namespace gravel {
+namespace glow {
 
 struct MaterialData final {
   String name;
@@ -61,4 +61,4 @@ struct ModelData final {
 /// \param api the graphics API that will be used to render the model.
 [[nodiscard]] auto load_model_data(const Path& path, GraphicsApi api) -> Maybe<ModelData>;
 
-}  // namespace gravel
+}  // namespace glow

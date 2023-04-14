@@ -5,7 +5,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 RenderPass::RenderPass(const VkFormat swapchain_image_format)
 {
@@ -144,4 +144,4 @@ void RenderPass::begin(VkCommandBuffer command_buffer,
                        VK_SUBPASS_CONTENTS_INLINE);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

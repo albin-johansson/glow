@@ -11,11 +11,11 @@
 #include "graphics/opengl/vertex_array.hpp"
 #include "graphics/opengl/vertex_buffer.hpp"
 
-namespace gravel {
+namespace glow {
 GRAVEL_FORWARD_DECLARE_C(Scene);
-}  // namespace gravel
+}  // namespace glow
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// OpenGL material component.
 struct Material final {
@@ -46,4 +46,4 @@ struct Model final {
 /// Loads and assigns an OpenGL model component to an entity.
 void assign_model(Scene& scene, Entity entity, const Path& path);
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

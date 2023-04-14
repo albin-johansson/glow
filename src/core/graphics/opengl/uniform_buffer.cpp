@@ -7,7 +7,7 @@
 #include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 UniformBuffer::UniformBuffer()
 {
@@ -98,4 +98,4 @@ void UniformBuffer::update_data(const ssize offset,
   GRAVEL_GL_CHECK_ERRORS();
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

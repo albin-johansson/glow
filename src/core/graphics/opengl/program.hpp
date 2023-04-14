@@ -11,7 +11,7 @@
 #include "common/type/string.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 GRAVEL_FORWARD_DECLARE_C(Shader);
 
@@ -131,4 +131,4 @@ class Program final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

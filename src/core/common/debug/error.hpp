@@ -5,7 +5,7 @@
 #include "common/predef.hpp"
 #include "common/type/string.hpp"
 
-namespace gravel {
+namespace glow {
 
 class Error final : public std::exception {
  public:
@@ -23,4 +23,4 @@ class Error final : public std::exception {
 /// Custom terminate handler.
 [[noreturn]] GRAVEL_NOINLINE void on_terminate();
 
-}  // namespace gravel
+}  // namespace glow

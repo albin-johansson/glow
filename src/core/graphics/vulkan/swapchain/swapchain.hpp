@@ -10,7 +10,7 @@
 #include "graphics/vulkan/image/image_view.hpp"
 #include "graphics/vulkan/swapchain/framebuffer.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 class Swapchain final {
  public:
@@ -58,4 +58,4 @@ class Swapchain final {
   void create_depth_buffer();
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

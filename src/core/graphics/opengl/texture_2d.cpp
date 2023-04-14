@@ -6,7 +6,7 @@
 #include "graphics/opengl/util.hpp"
 #include "io/texture_loader.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Texture2D::Texture2D()
 {
@@ -145,4 +145,4 @@ void Texture2D::set_anisotropic_filtering(const bool enable)
   GRAVEL_GL_CHECK_ERRORS();
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

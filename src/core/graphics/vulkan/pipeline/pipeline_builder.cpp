@@ -7,7 +7,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 auto DescriptorSetLayoutBuilder::reset() -> Self&
 {
@@ -311,4 +311,4 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
   return pipeline;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

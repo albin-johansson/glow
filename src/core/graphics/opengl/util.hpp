@@ -8,7 +8,7 @@
 #include "graphics/opengl/buffer_usage.hpp"
 #include "graphics/shader_type.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 auto check_errors() -> bool;
 auto check_errors(const char* file, int line) -> bool;
@@ -31,15 +31,15 @@ void set_option(uint option, bool value);
 [[nodiscard]] auto get_version() -> String;
 [[nodiscard]] auto get_glsl_version() -> String;
 
-}  // namespace gravel::gl
+}  // namespace glow::gl
 
 #if GRAVEL_DEBUG_BUILD
-#define GRAVEL_GL_CHECK_ERRORS()                        \
-  do {                                                  \
-    if (gravel::gl::check_errors(__FILE__, __LINE__)) { \
-      GRAVEL_DEBUG_BREAK;                               \
-      std::exit(EXIT_FAILURE);                          \
-    }                                                   \
+#define GRAVEL_GL_CHECK_ERRORS()                      \
+  do {                                                \
+    if (glow::gl::check_errors(__FILE__, __LINE__)) { \
+      GRAVEL_DEBUG_BREAK;                             \
+      std::exit(EXIT_FAILURE);                        \
+    }                                                 \
   } while (false)
 #else
 #define GRAVEL_GL_CHECK_ERRORS() \

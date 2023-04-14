@@ -3,7 +3,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-namespace gravel {
+namespace glow {
 
 void update_dock_space(const bool restore_layout)
 {
@@ -29,4 +29,4 @@ void update_dock_space(const bool restore_layout)
 #endif
 }
 
-}  // namespace gravel
+}  // namespace glow

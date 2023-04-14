@@ -8,7 +8,7 @@
 #include "common/hash.hpp"
 #include "common/type/math.hpp"
 
-namespace gravel {
+namespace glow {
 
 struct Vertex final {
   Vec3 position {};
@@ -18,12 +18,12 @@ struct Vertex final {
   [[nodiscard]] auto operator==(const Vertex&) const -> bool = default;
 };
 
-}  // namespace gravel
+}  // namespace glow
 
 template <>
-struct std::hash<gravel::Vertex> final {
-  [[nodiscard]] auto operator()(const gravel::Vertex& vertex) const -> std::size_t
+struct std::hash<glow::Vertex> final {
+  [[nodiscard]] auto operator()(const glow::Vertex& vertex) const -> std::size_t
   {
-    return gravel::hash_combine(vertex.position, vertex.normal, vertex.tex_coords);
+    return glow::hash_combine(vertex.position, vertex.normal, vertex.tex_coords);
   }
 };

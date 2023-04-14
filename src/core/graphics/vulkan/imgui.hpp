@@ -8,7 +8,7 @@
 #include "graphics/vulkan/pipeline/descriptor_pool.hpp"
 #include "graphics/vulkan/pipeline/pipeline_cache.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
     {VK_DESCRIPTOR_TYPE_SAMPLER, 8},
@@ -35,4 +35,4 @@ struct ImGuiData final {
 /// Initializes the ImGui Vulkan backend.
 void init_imgui(ImGuiData& data, VkRenderPass render_pass, uint32 swapchain_images);
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

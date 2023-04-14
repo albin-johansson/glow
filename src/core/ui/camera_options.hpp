@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gravel {
+namespace glow {
 
 /// Context component for input-related camera settings.
 struct CameraOptions final {
@@ -8,4 +8,4 @@ struct CameraOptions final {
   float sensitivity {1};  ///< View sensitivity factor.
 };
 
-}  // namespace gravel
+}  // namespace glow

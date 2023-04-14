@@ -7,7 +7,7 @@
 #include "common/type/vector.hpp"
 #include "graphics/graphics_api.hpp"
 
-namespace gravel {
+namespace glow {
 
 using LogLevel = spdlog::level::level_enum;
 
@@ -21,4 +21,4 @@ struct CommandLineArgs final {
 [[nodiscard]] auto parse_command_line_args(int argc, char* argv[])
     -> Maybe<CommandLineArgs>;
 
-}  // namespace gravel
+}  // namespace glow

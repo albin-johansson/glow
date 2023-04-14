@@ -5,7 +5,7 @@
 #include "common/type/math.hpp"
 #include "common/type/ecs.hpp"
 
-namespace gravel {
+namespace glow {
 
 GRAVEL_FORWARD_DECLARE_S(Transform);
 
@@ -33,4 +33,4 @@ void show_model_control_gizmo(const GizmosOptions& options,
                               const Transform& transform,
                               Dispatcher& dispatcher);
 
-}  // namespace gravel
+}  // namespace glow

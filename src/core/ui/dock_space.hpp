@@ -1,7 +1,7 @@
 #pragma once
 
-namespace gravel {
+namespace glow {
 
 void update_dock_space(bool restore_layout);
 
-}  // namespace gravel
+}  // namespace glow

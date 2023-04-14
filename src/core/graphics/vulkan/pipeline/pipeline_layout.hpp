@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct PipelineLayoutDeleter final {
   void operator()(VkPipelineLayout layout) noexcept;
@@ -12,4 +12,4 @@ struct PipelineLayoutDeleter final {
 
 using PipelineLayout = Unique<VkPipelineLayout_T, PipelineLayoutDeleter>;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

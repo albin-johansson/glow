@@ -7,7 +7,7 @@
 #include "graphics/opengl/shader.hpp"
 #include "graphics/opengl/util.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Program::Program()
     : mID {glCreateProgram()}
@@ -313,4 +313,4 @@ auto Program::get_uniform_count() const -> int
   return uniform_count;
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

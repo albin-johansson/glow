@@ -1,6 +1,6 @@
 #include "shader_buffers.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 auto StaticMatrices::descriptor_buffer_info(VkBuffer buffer) -> VkDescriptorBufferInfo
 {
@@ -44,4 +44,4 @@ auto DynamicMatrices::push_constant_range(const uint32 offset,
   };
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

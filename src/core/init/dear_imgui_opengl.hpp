@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel {
+namespace glow {
 
 class DearImGuiOpenGL final {
  public:
@@ -18,4 +18,4 @@ class DearImGuiOpenGL final {
   void recreate_font_textures();
 };
 
-}  // namespace gravel
+}  // namespace glow

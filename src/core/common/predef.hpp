@@ -82,7 +82,7 @@
 #define GRAVEL_FORWARD_DECLARE_C(Class) class Class
 #define GRAVEL_FORWARD_DECLARE_S(Class) struct Class
 
-namespace gravel {
+namespace glow {
 
 inline constexpr uint32 kVersion = GRAVEL_VERSION;
 
@@ -93,4 +93,4 @@ inline constexpr bool kIsMacOS = GRAVEL_OS_MACOS;
 inline constexpr bool kIsWindows = GRAVEL_OS_WINDOWS;
 inline constexpr bool kIsLinux = GRAVEL_OS_LINUX;
 
-}  // namespace gravel
+}  // namespace glow

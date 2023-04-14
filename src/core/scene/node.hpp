@@ -3,7 +3,7 @@
 #include "common/type/ecs.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Scene node component.
 struct Node final {
@@ -14,4 +14,4 @@ struct Node final {
 /// Tag component for nodes that are descendants of another node.
 struct ChildNode final {};
 
-}  // namespace gravel
+}  // namespace glow

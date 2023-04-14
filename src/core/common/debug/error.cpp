@@ -7,7 +7,7 @@
 #include <boost/stacktrace/stacktrace.hpp>
 #include <spdlog/spdlog.h>
 
-namespace gravel {
+namespace glow {
 
 namespace bst = boost::stacktrace;
 
@@ -43,4 +43,4 @@ void on_terminate()
   std::abort();
 }
 
-}  // namespace gravel
+}  // namespace glow

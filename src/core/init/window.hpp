@@ -5,7 +5,7 @@
 #include "common/type/memory.hpp"
 #include "graphics/graphics_api.hpp"
 
-namespace gravel {
+namespace glow {
 
 struct WindowDeleter final {
   void operator()(SDL_Window* window) noexcept;
@@ -24,4 +24,4 @@ class Window final {
 
 [[nodiscard]] auto get_window() noexcept -> SDL_Window*;
 
-}  // namespace gravel
+}  // namespace glow

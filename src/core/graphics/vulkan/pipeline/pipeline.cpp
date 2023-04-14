@@ -6,7 +6,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void PipelineDeleter::operator()(VkPipeline pipeline) noexcept
 {
@@ -242,4 +242,4 @@ auto create_vertex_attribute_descriptions() -> Array<VkVertexInputAttributeDescr
   return vertex_attribute_descriptions;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

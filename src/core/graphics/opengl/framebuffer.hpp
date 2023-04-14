@@ -5,7 +5,7 @@
 #include "common/type/math.hpp"
 #include "graphics/opengl/texture_2d.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents an OpenGL framebuffer object, providing a color and depth buffer.
 class Framebuffer final {
@@ -66,4 +66,4 @@ class Framebuffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

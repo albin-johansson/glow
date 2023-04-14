@@ -2,7 +2,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Context component for environment backdrop.
 struct EnvironmentOptions final {
@@ -11,4 +11,4 @@ struct EnvironmentOptions final {
   bool use_gamma_correction {true};
 };
 
-}  // namespace gravel
+}  // namespace glow

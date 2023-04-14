@@ -6,7 +6,7 @@
 #include "common/type/maybe.hpp"
 #include "common/type/path.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents a two-dimensional OpenGL texture.
 class Texture2D final {
@@ -78,4 +78,4 @@ class Texture2D final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

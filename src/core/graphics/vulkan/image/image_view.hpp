@@ -5,7 +5,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 GRAVEL_FORWARD_DECLARE_C(Image);
 
@@ -35,4 +35,4 @@ class ImageView final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

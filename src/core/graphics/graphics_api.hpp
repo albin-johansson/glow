@@ -1,10 +1,10 @@
 #pragma once
 
-namespace gravel {
+namespace glow {
 
 enum class GraphicsApi {
   OpenGL,
   Vulkan
 };
 
-}  // namespace gravel
+}  // namespace glow

@@ -4,7 +4,7 @@
 #include "common/primitives.hpp"
 #include "graphics/opengl/buffer_usage.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 class Buffer final {
  public:
@@ -43,4 +43,4 @@ class Buffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

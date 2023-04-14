@@ -6,7 +6,7 @@
 #include "common/type/path.hpp"
 #include "graphics/shader_type.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /**
  * Represents an OpenGL shader object.
@@ -41,4 +41,4 @@ class Shader final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

@@ -4,7 +4,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 inline constexpr usize kMaxFramesInFlight = 2;
 
@@ -24,4 +24,4 @@ inline constexpr const char* kRequiredDeviceExtensions[] {
 #endif  // GRAVEL_USE_VULKAN_SUBSET
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

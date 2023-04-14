@@ -16,7 +16,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/window.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 [[nodiscard]] auto pick_swap_surface_format(const Vector<VkSurfaceFormatKHR>& formats)
@@ -273,4 +273,4 @@ auto Swapchain::get_image_count() const -> uint32
   return u32_size(mFramebuffers);
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

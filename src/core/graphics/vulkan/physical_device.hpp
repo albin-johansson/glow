@@ -6,7 +6,7 @@
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct QueueFamilyIndices final {
   Maybe<uint32> graphics_family;
@@ -49,4 +49,4 @@ struct SwapchainSupport final {
 [[nodiscard]] auto get_suitable_physical_device(VkInstance instance, VkSurfaceKHR surface)
     -> VkPhysicalDevice;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

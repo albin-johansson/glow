@@ -4,7 +4,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 DescriptorPool::DescriptorPool(const uint32 max_sets,
                                const VkDescriptorPoolSize* pool_sizes,
@@ -76,4 +76,4 @@ auto DescriptorPool::allocate(VkDescriptorSetLayout layout) -> VkDescriptorSet
   return descriptor_set;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

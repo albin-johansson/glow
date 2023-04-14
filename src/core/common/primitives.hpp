@@ -3,7 +3,7 @@
 #include <cstddef>  // byte, size_t, ptrdiff_t
 #include <cstdint>  // uint{}_t, int{}_t, uintptr_t
 
-namespace gravel {
+namespace glow {
 
 using Byte = std::byte;
 
@@ -31,4 +31,4 @@ using float64 = double;
 static_assert(sizeof(float32) == 4);
 static_assert(sizeof(float64) == 8);
 
-}  // namespace gravel
+}  // namespace glow

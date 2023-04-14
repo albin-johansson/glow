@@ -4,7 +4,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "util/arrays.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 Framebuffer::Framebuffer(VkRenderPass render_pass,
                          VkImageView image_view,
@@ -71,4 +71,4 @@ auto Framebuffer::operator=(Framebuffer&& other) noexcept -> Framebuffer&
   return *this;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

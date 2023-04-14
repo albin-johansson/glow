@@ -7,7 +7,7 @@
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
 
-namespace gravel {
+namespace glow {
 
 auto make_camera(Scene& scene, String name, const Vec3& position, const Vec3& direction)
     -> Entity
@@ -76,4 +76,4 @@ auto to_view_matrix(const Camera& camera,
   }
 }
 
-}  // namespace gravel
+}  // namespace glow

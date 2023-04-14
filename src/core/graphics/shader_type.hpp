@@ -1,10 +1,10 @@
 #pragma once
 
-namespace gravel {
+namespace glow {
 
 enum class ShaderType {
   Vertex,
   Fragment
 };
 
-}  // namespace gravel
+}  // namespace glow

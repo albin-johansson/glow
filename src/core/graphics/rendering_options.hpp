@@ -4,7 +4,7 @@
 #include "common/primitives.hpp"
 #include "common/type/map.hpp"
 
-namespace gravel {
+namespace glow {
 
 enum class RenderingOption {
   VSync,
@@ -25,4 +25,4 @@ struct RenderingOptions final {
   }
 };
 
-}  // namespace gravel
+}  // namespace glow

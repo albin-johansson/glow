@@ -14,7 +14,7 @@
 #include "graphics/opengl/util.hpp"
 #include "texture_2d.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 namespace {
 
 void compile_and_link_program(Program& program,
@@ -155,4 +155,4 @@ void Renderer::render_shaded_mesh(const Mesh& mesh, const Material& material)
   glDrawElements(GL_TRIANGLES, mesh.index_count, GL_UNSIGNED_INT, nullptr);
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

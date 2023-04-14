@@ -11,7 +11,7 @@
 #include "io/model_loader.hpp"
 #include "scene/scene.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 [[nodiscard]] auto load_image_if_missing(const Path& model_dir,
@@ -101,4 +101,4 @@ void assign_model(Scene& scene, const Entity entity, const Path& path)
   }
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

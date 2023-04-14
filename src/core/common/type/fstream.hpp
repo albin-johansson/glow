@@ -2,9 +2,9 @@
 
 #include <fstream>  // ifstream, ofstream
 
-namespace gravel {
+namespace glow {
 
 using IfStream = std::ifstream;
 using OfStream = std::ofstream;
 
-}  // namespace gravel
+}  // namespace glow

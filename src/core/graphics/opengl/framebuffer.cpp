@@ -7,7 +7,7 @@
 #include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Framebuffer::Framebuffer()
 {
@@ -143,4 +143,4 @@ auto Framebuffer::get_size() const -> const Vec2i&
   return mSize;
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

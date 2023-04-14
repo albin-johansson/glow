@@ -6,7 +6,7 @@
 #include "common/type/memory.hpp"
 #include "common/type/path.hpp"
 
-namespace gravel {
+namespace glow {
 
 enum class TextureFormat {
   Byte,
@@ -36,4 +36,4 @@ struct TextureData final {
                                      TextureFormat format,
                                      TextureChannels channels) -> Maybe<TextureData>;
 
-}  // namespace gravel
+}  // namespace glow

@@ -14,7 +14,7 @@
 
 #endif  // GRAVEL_OS_WINDOWS
 
-namespace gravel {
+namespace glow {
 namespace {
 
 inline SDL_Window* gWindow = nullptr;
@@ -91,4 +91,4 @@ auto get_window() noexcept -> SDL_Window*
   return gWindow;
 }
 
-}  // namespace gravel
+}  // namespace glow

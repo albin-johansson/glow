@@ -5,7 +5,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "io/files.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void ShaderModuleDeleter::operator()(VkShaderModule shader) noexcept
 {
@@ -32,4 +32,4 @@ auto create_shader_module(const Path& shader_path) -> ShaderModule
   return ShaderModule {shader};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

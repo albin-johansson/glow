@@ -17,7 +17,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "io/texture_loader.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 /// Used to determine access flags for layout transitions.
@@ -342,4 +342,4 @@ auto load_image_2d(const void* data,
   return image;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

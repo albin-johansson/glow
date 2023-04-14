@@ -5,7 +5,7 @@
 #include "common/debug/assert.hpp"
 #include "graphics/opengl/util.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 VertexBuffer::VertexBuffer()
 {
@@ -65,4 +65,4 @@ void VertexBuffer::upload_data(const usize data_size,
   GRAVEL_GL_CHECK_ERRORS();
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

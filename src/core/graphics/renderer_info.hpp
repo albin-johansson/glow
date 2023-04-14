@@ -3,7 +3,7 @@
 #include "common/type/maybe.hpp"
 #include "common/type/string.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Context component with information about a renderer backend.
 struct RendererInfo final {
@@ -13,4 +13,4 @@ struct RendererInfo final {
   String version;   ///< Version or revision number.
 };
 
-}  // namespace gravel
+}  // namespace glow

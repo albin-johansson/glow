@@ -10,7 +10,7 @@
 #include "common/debug/error.hpp"
 #include "common/type/map.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 namespace {
 
 inline const HashMap<uint, const char*> kErrorMessages = {
@@ -182,4 +182,4 @@ auto get_glsl_version() -> String
   return to_string(glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

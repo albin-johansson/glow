@@ -2,8 +2,8 @@
 
 #include <entt/signal/dispatcher.hpp>
 
-namespace gravel {
+namespace glow {
 
 using Dispatcher = entt::dispatcher;
 
-}  // namespace gravel
+}  // namespace glow

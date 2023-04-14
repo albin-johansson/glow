@@ -7,7 +7,7 @@
 #include "common/type/memory.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct CommandPoolDeleter final {
   void operator()(VkCommandPool pool) noexcept;
@@ -37,4 +37,4 @@ class CommandPool final {
 [[nodiscard]] auto allocate_command_buffers(VkCommandPool command_pool, uint32 count)
     -> Vector<VkCommandBuffer>;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

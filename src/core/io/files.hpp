@@ -6,7 +6,7 @@
 #include "common/type/string.hpp"
 #include "common/type/vector.hpp"
 
-namespace gravel {
+namespace glow {
 
 enum class FileType {
   Text,
@@ -25,4 +25,4 @@ enum class FileType {
 
 [[nodiscard]] auto get_persistent_file_dir() -> const Path&;
 
-}  // namespace gravel
+}  // namespace glow

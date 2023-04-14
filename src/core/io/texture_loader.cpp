@@ -8,7 +8,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto convert_texture_channels(const TextureChannels format) -> int
@@ -76,4 +76,4 @@ auto load_texture_data(const Path& path,
   }
 }
 
-}  // namespace gravel
+}  // namespace glow

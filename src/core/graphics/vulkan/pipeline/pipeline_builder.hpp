@@ -8,7 +8,7 @@
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/pipeline/shader_module.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 class DescriptorSetLayoutBuilder final {
  public:
@@ -108,4 +108,4 @@ class PipelineBuilder final {
   Maybe<VkPipelineColorBlendStateCreateInfo> mColorBlendState;
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

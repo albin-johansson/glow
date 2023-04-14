@@ -6,7 +6,7 @@
 #include "graphics/opengl/util.hpp"
 #include "util/bits.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 VertexArray::VertexArray()
 {
@@ -73,4 +73,4 @@ void VertexArray::init_attr(const uint location,
   GRAVEL_GL_CHECK_ERRORS();
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

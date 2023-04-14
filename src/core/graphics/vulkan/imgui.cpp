@@ -9,7 +9,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/dear_imgui_vulkan.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void init_imgui(ImGuiData& data, VkRenderPass render_pass, const uint32 swapchain_images)
 {
@@ -40,4 +40,4 @@ void init_imgui(ImGuiData& data, VkRenderPass render_pass, const uint32 swapchai
   DearImGuiVulkan::recreate_font_textures();
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

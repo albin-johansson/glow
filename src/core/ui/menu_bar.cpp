@@ -9,7 +9,7 @@
 #include "scene/scene.hpp"
 #include "ui/events.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 void show_file_menu(const Scene&, Dispatcher& dispatcher)
@@ -209,4 +209,4 @@ void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
   }
 }
 
-}  // namespace gravel
+}  // namespace glow

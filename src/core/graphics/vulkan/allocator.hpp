@@ -5,7 +5,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct AllocatorDeleter final {
   void operator()(VmaAllocator allocator) noexcept;
@@ -16,4 +16,4 @@ using Allocator = Unique<VmaAllocator_T, AllocatorDeleter>;
 
 [[nodiscard]] auto create_allocator() -> Allocator;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

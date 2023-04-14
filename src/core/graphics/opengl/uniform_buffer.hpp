@@ -4,7 +4,7 @@
 #include "common/primitives.hpp"
 #include "graphics/opengl/buffer_usage.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents an OpenGL uniform buffer object (UBO).
 class UniformBuffer final {
@@ -74,4 +74,4 @@ class UniformBuffer final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

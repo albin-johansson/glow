@@ -16,7 +16,7 @@
 #include "ui/camera_options.hpp"
 #include "ui/gizmos.hpp"
 
-namespace gravel {
+namespace glow {
 
 Scene::Scene()
 {
@@ -90,4 +90,4 @@ auto Scene::get_active_camera() const -> Pair<Entity, const Camera&>
   return {camera_context.active_camera, camera};
 }
 
-}  // namespace gravel
+}  // namespace glow

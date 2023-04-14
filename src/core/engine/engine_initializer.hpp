@@ -7,7 +7,7 @@
 #include "init/sdl.hpp"
 #include "init/window.hpp"
 
-namespace gravel {
+namespace glow {
 
 /// Handles the initialization of fundamental resources.
 class EngineInitializer final {
@@ -24,4 +24,4 @@ class EngineInitializer final {
   Maybe<DearImGui> mImGui;
 };
 
-}  // namespace gravel
+}  // namespace glow

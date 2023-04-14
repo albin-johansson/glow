@@ -13,7 +13,7 @@
 #include "ui/events.hpp"
 #include "ui/gizmos.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 void show_generic_viewport_context_menu(const Scene& scene, Dispatcher& dispatcher)
@@ -165,4 +165,4 @@ void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispa
   ImGui::End();
 }
 
-}  // namespace gravel
+}  // namespace glow

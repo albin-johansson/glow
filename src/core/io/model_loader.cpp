@@ -8,7 +8,7 @@
 
 #include "common/type/chrono.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto convert_color(const aiColor4D& color) -> Vec3
@@ -198,4 +198,4 @@ auto load_model_data(const Path& path, const GraphicsApi api) -> Maybe<ModelData
   return model;
 }
 
-}  // namespace gravel
+}  // namespace glow

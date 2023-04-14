@@ -7,7 +7,7 @@
 #include "common/type/vector.hpp"
 #include "graphics/opengl/util.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 Buffer::Buffer(const uint type)
     : mType {type}
@@ -121,4 +121,4 @@ auto Buffer::is_uniform_buffer() const -> bool
   return mType == GL_UNIFORM_BUFFER;
 }
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

@@ -9,11 +9,11 @@
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/buffer.hpp"
 
-namespace gravel {
+namespace glow {
 GRAVEL_FORWARD_DECLARE_C(Scene);
-}  // namespace gravel
+}  // namespace glow
 
-namespace gravel::vk {
+namespace glow::vk {
 
 /// Vulkan material component.
 struct Material final {
@@ -47,4 +47,4 @@ struct Model final {
 /// Loads and assigns a Vulkan model component to an entity.
 void assign_model(Scene& scene, Entity entity, const Path& path);
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

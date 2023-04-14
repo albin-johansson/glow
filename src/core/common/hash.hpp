@@ -4,7 +4,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel {
+namespace glow {
 
 template <typename T>
 void hash_combine(usize& seed, const T& val)
@@ -20,4 +20,4 @@ void hash_combine(usize& seed, const T& val)
   return seed;
 }
 
-}  // namespace gravel
+}  // namespace glow

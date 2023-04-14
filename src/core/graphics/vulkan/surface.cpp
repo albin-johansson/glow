@@ -8,7 +8,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "init/window.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void SurfaceDeleter::operator()(VkSurfaceKHR surface) noexcept
 {
@@ -29,4 +29,4 @@ auto create_surface() -> Surface
   return Surface {surface};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

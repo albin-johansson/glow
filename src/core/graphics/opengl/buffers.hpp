@@ -3,7 +3,7 @@
 #include "common/primitives.hpp"
 #include "common/type/math.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// This struct corresponds to a std140 layout uniform block.
 struct EnvironmentBuffer final {
@@ -34,4 +34,4 @@ struct MaterialBuffer final {
   int32 has_emission_tex {false};
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

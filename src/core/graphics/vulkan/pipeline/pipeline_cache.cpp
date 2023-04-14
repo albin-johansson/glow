@@ -4,7 +4,7 @@
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void PipelineCacheDeleter::operator()(VkPipelineCache cache) noexcept
 {
@@ -30,4 +30,4 @@ auto create_pipeline_cache() -> PipelineCache
   return PipelineCache {cache};
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

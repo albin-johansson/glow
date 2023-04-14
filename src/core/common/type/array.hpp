@@ -4,9 +4,9 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel {
+namespace glow {
 
 template <typename T, usize N>
 using Array = std::array<T, N>;
 
-}  // namespace gravel
+}  // namespace glow

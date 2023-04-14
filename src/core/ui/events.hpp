@@ -6,7 +6,7 @@
 #include "graphics/rendering_options.hpp"
 #include "ui/gizmos.hpp"
 
-namespace gravel {
+namespace glow {
 
 struct QuitEvent final {};
 struct RestoreLayoutEvent final {};
@@ -94,4 +94,4 @@ struct ToggleRenderingOptionEvent final {
   RenderingOption option {};
 };
 
-}  // namespace gravel
+}  // namespace glow

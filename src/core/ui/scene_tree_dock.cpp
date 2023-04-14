@@ -14,7 +14,7 @@
 #include "scene/transform.hpp"
 #include "ui/events.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 [[nodiscard]] auto show_drag_input(const char* label,
@@ -152,4 +152,4 @@ void show_scene_tree_dock(const Scene& scene, Dispatcher& dispatcher)
   ImGui::End();
 }
 
-}  // namespace gravel
+}  // namespace glow

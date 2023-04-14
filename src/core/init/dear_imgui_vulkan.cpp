@@ -6,7 +6,7 @@
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
 
-namespace gravel {
+namespace glow {
 
 DearImGuiVulkan::DearImGuiVulkan(SDL_Window* window)
 {
@@ -29,4 +29,4 @@ void DearImGuiVulkan::recreate_font_textures()
   ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
 
-}  // namespace gravel
+}  // namespace glow

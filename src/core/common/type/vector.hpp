@@ -4,7 +4,7 @@
 
 #include "common/primitives.hpp"
 
-namespace gravel {
+namespace glow {
 
 template <typename T>
 using Vector = std::vector<T>;
@@ -15,4 +15,4 @@ template <typename T>
   return vector.size() * sizeof(T);
 }
 
-}  // namespace gravel
+}  // namespace glow

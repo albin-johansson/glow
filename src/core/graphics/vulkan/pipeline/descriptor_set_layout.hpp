@@ -4,7 +4,7 @@
 
 #include "common/type/memory.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 struct DescriptorSetLayoutDeleter final {
   void operator()(VkDescriptorSetLayout layout) noexcept;
@@ -12,4 +12,4 @@ struct DescriptorSetLayoutDeleter final {
 
 using DescriptorSetLayout = Unique<VkDescriptorSetLayout_T, DescriptorSetLayoutDeleter>;
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

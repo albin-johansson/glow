@@ -3,7 +3,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 
-namespace gravel::gl {
+namespace glow::gl {
 
 /// Represents an OpenGL vertex array object (VAO).
 class VertexArray final {
@@ -53,4 +53,4 @@ class VertexArray final {
   void dispose() noexcept;
 };
 
-}  // namespace gravel::gl
+}  // namespace glow::gl

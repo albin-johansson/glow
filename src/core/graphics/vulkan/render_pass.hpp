@@ -4,7 +4,7 @@
 
 #include "common/predef.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 GRAVEL_FORWARD_DECLARE_C(Framebuffer);
 
@@ -27,4 +27,4 @@ class RenderPass final {
   VkRenderPass mRenderPass {VK_NULL_HANDLE};
 };
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

@@ -8,7 +8,7 @@
 
 #include "common/debug/error.hpp"
 
-namespace gravel {
+namespace glow {
 namespace {
 
 inline constexpr ImWchar kFontIconRange[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
@@ -219,4 +219,4 @@ void DearImGui::reset_font_size()
   reload_fonts();
 }
 
-}  // namespace gravel
+}  // namespace glow

@@ -10,7 +10,7 @@
 #include "graphics/vulkan/instance.hpp"
 #include "graphics/vulkan/util/constants.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 namespace {
 
 [[nodiscard]] auto rate_gpu(VkPhysicalDevice gpu) -> int
@@ -207,4 +207,4 @@ auto get_suitable_physical_device(VkInstance instance, VkSurfaceKHR surface)
   return best_gpu;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk

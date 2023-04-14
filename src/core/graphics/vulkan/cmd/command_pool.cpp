@@ -5,7 +5,7 @@
 #include "graphics/vulkan/physical_device.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
-namespace gravel::vk {
+namespace glow::vk {
 
 void CommandPoolDeleter::operator()(VkCommandPool pool) noexcept
 {
@@ -37,12 +37,12 @@ CommandPool::CommandPool()
 
 auto CommandPool::allocate_command_buffer() -> VkCommandBuffer
 {
-  return gravel::vk::allocate_command_buffer(mCommandPool.get());
+  return glow::vk::allocate_command_buffer(mCommandPool.get());
 }
 
-auto CommandPool::allocate_command_buffers(uint32 count) -> Vector<VkCommandBuffer>
+auto CommandPool::allocate_command_buffers(const uint32 count) -> Vector<VkCommandBuffer>
 {
-  return gravel::vk::allocate_command_buffers(mCommandPool.get(), count);
+  return glow::vk::allocate_command_buffers(mCommandPool.get(), count);
 }
 
 auto allocate_command_buffer(VkCommandPool command_pool) -> VkCommandBuffer
@@ -82,4 +82,4 @@ auto allocate_command_buffers(VkCommandPool command_pool, const uint32 count)
   return cmd_buffers;
 }
 
-}  // namespace gravel::vk
+}  // namespace glow::vk
