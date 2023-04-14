@@ -298,23 +298,13 @@ auto load_image_2d(const Path& path, const VkFormat format, const VkImageUsageFl
     const auto width = static_cast<uint32>(data->size.x);
     const auto height = static_cast<uint32>(data->size.y);
 
-    const VkExtent3D image_extent {width, height, 1};
     const uint64 data_size = width * height * 4;
 
-    auto staging_buffer = Buffer::staging(data_size, 0);
-    staging_buffer.set_data(data->pixels.get(), data_size);
-
-    Image image {VK_IMAGE_TYPE_2D, image_extent, format, usage};
-
-    // Optimize layout for the buffer transfer, and copy data from staging buffer
-    image.change_layout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    image.copy_from_buffer(staging_buffer.get());
-
-    // Generate mipmaps
-    image.generate_mipmaps();
-
-    GRAVEL_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-    GRAVEL_ASSERT(image.get_format() == format);
+    auto image = load_image_2d(data->pixels.get(),
+                               data_size,
+                               VkExtent2D {width, height},
+                               format,
+                               usage);
 
     const auto end_time = Clock::now();
     spdlog::debug("[VK] Loaded image in {}",
@@ -324,6 +314,32 @@ auto load_image_2d(const Path& path, const VkFormat format, const VkImageUsageFl
   }
 
   return kNothing;
+}
+
+auto load_image_2d(const void* data,
+                   const uint64 data_size,
+                   const VkExtent2D size,
+                   const VkFormat format,
+                   const VkImageUsageFlags usage) -> Maybe<Image>
+{
+  const VkExtent3D image_extent {size.width, size.height, 1};
+
+  auto staging_buffer = Buffer::staging(data_size, 0);
+  staging_buffer.set_data(data, data_size);
+
+  Image image {VK_IMAGE_TYPE_2D, image_extent, format, usage};
+
+  // Optimize layout for the buffer transfer, and copy data from staging buffer
+  image.change_layout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  image.copy_from_buffer(staging_buffer.get());
+
+  // Generate mipmaps
+  image.generate_mipmaps();
+
+  GRAVEL_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  GRAVEL_ASSERT(image.get_format() == format);
+
+  return image;
 }
 
 }  // namespace gravel::vk

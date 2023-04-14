@@ -67,4 +67,11 @@ class Image final {
                                  VkFormat format,
                                  VkImageUsageFlags usage) -> Maybe<Image>;
 
+/// Creates a 2D image with the specified pixel data.
+[[nodiscard]] auto load_image_2d(const void* pixels,
+                                 uint64 data_size,
+                                 VkExtent2D size,
+                                 VkFormat format,
+                                 VkImageUsageFlags usage) -> Maybe<Image>;
+
 }  // namespace gravel::vk
