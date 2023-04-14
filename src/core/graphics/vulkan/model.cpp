@@ -14,12 +14,14 @@
 namespace gravel::vk {
 namespace {
 
-[[nodiscard]] auto load_image_if_missing(Maybe<Path> path, ImageCache& cache)
-    -> VkImageView
+[[nodiscard]] auto load_image_if_missing(const Path& model_dir,
+                                         Maybe<Path> path,
+                                         ImageCache& cache) -> VkImageView
 {
   if (path.has_value() && !cache.images.contains(*path)) {
-    if (auto image =
-            load_image_2d(*path, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_USAGE_SAMPLED_BIT)) {
+    if (auto image = load_image_2d(model_dir / *path,
+                                   VK_FORMAT_R8G8B8A8_SRGB,
+                                   VK_IMAGE_USAGE_SAMPLED_BIT)) {
       ImageView view {*image, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT};
       VkImageView result = view.get();
 
@@ -45,13 +47,10 @@ namespace {
 
   auto& cache = scene.get<ImageCache>();
 
-  if (VkImageView diffuse = load_image_if_missing(material_data.diffuse_tex, cache)) {
-    material.diffuse_tex = diffuse;
-  }
-
-  if (VkImageView specular = load_image_if_missing(material_data.specular_tex, cache)) {
-    material.specular_tex = specular;
-  }
+  material.diffuse_tex =
+      load_image_if_missing(model_dir, material_data.diffuse_tex, cache);
+  material.specular_tex =
+      load_image_if_missing(model_dir, material_data.specular_tex, cache);
 
   material.ambient = material_data.ambient;
   material.diffuse = material_data.diffuse;
