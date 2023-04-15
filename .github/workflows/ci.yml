@@ -59,6 +59,8 @@ jobs:
       VCPKG_DEFAULT_BINARY_CACHE: ${{github.workspace}}/vcpkg/bincache
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - name: Install system dependencies
         run: |
           sudo apt update
@@ -102,6 +104,8 @@ jobs:
       VCPKG_DEFAULT_BINARY_CACHE: ${{github.workspace}}\vcpkg\bincache
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - uses: ilammy/msvc-dev-cmd@v1.11.0
       - uses: lukka/get-cmake@latest
       - name: Prepare Vulkan SDK
