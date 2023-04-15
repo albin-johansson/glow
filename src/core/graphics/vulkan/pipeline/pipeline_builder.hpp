@@ -57,7 +57,7 @@ class PipelineBuilder final {
  public:
   using Self = PipelineBuilder;
 
-  explicit PipelineBuilder(VkPipelineCache cache = VK_NULL_HANDLE);
+  explicit PipelineBuilder(VkPipelineCache cache);
 
   auto reset() -> Self&;
 

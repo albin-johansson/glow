@@ -76,14 +76,11 @@ class VulkanBackend final : public Backend {
   vk::Device mDevice;
   vk::Allocator mAllocator;
   vk::Swapchain mSwapchain;
-  vk::RenderPass mRenderPass;
+  vk::RenderPassInfo mRenderPassInfo;
   vk::Sampler mSampler;
   vk::PipelineCache mPipelineCache;
   vk::ImGuiData mImGuiData;
   vk::CommandPool mCommandPool;
-  vk::DescriptorSetLayoutBuilder mDescriptorSetLayoutBuilder;
-  vk::PipelineLayoutBuilder mPipelineLayoutBuilder;
-  vk::PipelineBuilder mPipelineBuilder;
   vk::DescriptorSetLayout mShadingDescriptorSetLayout;
   vk::PipelineLayout mShadingPipelineLayout;
   vk::Pipeline mShadingPipeline;

@@ -36,11 +36,44 @@ namespace {
   GRAVEL_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
   GRAVEL_ASSERT(vk::get_surface() != VK_NULL_HANDLE);
 
-  VkPhysicalDevice gpu =
-      vk::get_suitable_physical_device(vk::get_instance(), vk::get_surface());
+  auto* gpu = vk::get_suitable_physical_device(vk::get_instance(), vk::get_surface());
   vk::set_gpu(gpu);
 
   return gpu;
+}
+
+[[nodiscard]] auto create_render_pass(const VkFormat swapchain_image_format)
+    -> vk::RenderPassInfo
+{
+  vk::RenderPassBuilder builder;
+
+  const auto external_subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                       VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+  const auto main_subpass_stages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT |
+                                   VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+  const auto main_subpass_access =
+      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+  builder
+      .attachment(swapchain_image_format,
+                  VK_IMAGE_LAYOUT_UNDEFINED,
+                  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+      .attachment(VK_FORMAT_D32_SFLOAT_S8_UINT,
+                  VK_IMAGE_LAYOUT_UNDEFINED,
+                  VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+      .begin_subpass()
+      .color_attachment(0)
+      .depth_attachment(1)
+      .end_subpass()
+      .dependency(VK_SUBPASS_EXTERNAL,
+                  0,
+                  external_subpass_stages,
+                  main_subpass_stages,
+                  0,
+                  main_subpass_access);
+
+  return builder.build();
 }
 
 }  // namespace
@@ -53,16 +86,15 @@ VulkanBackend::VulkanBackend()
       mDevice {vk::create_device()},
       mAllocator {vk::create_allocator()},
       mSwapchain {},
-      mRenderPass {mSwapchain.get_image_format()},
+      mRenderPassInfo {create_render_pass(mSwapchain.get_image_format())},
       mSampler {vk::create_sampler()},
       mPipelineCache {vk::create_pipeline_cache()},
-      mImGuiData {},
-      mPipelineBuilder {mPipelineCache.get()}
+      mImGuiData {}
 {
   create_shading_pipeline();
   create_frame_data();
 
-  mSwapchain.create_framebuffers(mRenderPass.get());
+  mSwapchain.create_framebuffers(mRenderPassInfo.pass.get());
 }
 
 VulkanBackend::~VulkanBackend() noexcept
@@ -72,21 +104,24 @@ VulkanBackend::~VulkanBackend() noexcept
 
 void VulkanBackend::create_shading_pipeline()
 {
-  mDescriptorSetLayoutBuilder.reset()
+  vk::DescriptorSetLayoutBuilder descriptor_set_layout_builder;
+  descriptor_set_layout_builder  //
       .use_push_descriptors()
       .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
       .descriptor(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT)
       .descriptor(5,
                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                   VK_SHADER_STAGE_FRAGMENT_BIT);
-  mShadingDescriptorSetLayout.reset(mDescriptorSetLayoutBuilder.build());
+  mShadingDescriptorSetLayout.reset(descriptor_set_layout_builder.build());
 
-  mPipelineLayoutBuilder.reset()
+  vk::PipelineLayoutBuilder pipeline_layout_builder;
+  pipeline_layout_builder  //
       .descriptor_set_layout(mShadingDescriptorSetLayout.get())
       .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
-  mShadingPipelineLayout.reset(mPipelineLayoutBuilder.build());
+  mShadingPipelineLayout.reset(pipeline_layout_builder.build());
 
-  mPipelineBuilder.reset()
+  vk::PipelineBuilder pipeline_builder {mPipelineCache.get()};
+  pipeline_builder
       .shaders("assets/shaders/vk/shading.vert.spv", "assets/shaders/vk/shading.frag.spv")
       .vertex_input_binding(0, sizeof(Vertex))
       .vertex_attribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position))
@@ -97,7 +132,7 @@ void VulkanBackend::create_shading_pipeline()
       .input_assembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
       .blending(false);
   mShadingPipeline.reset(
-      mPipelineBuilder.build(mRenderPass.get(), mShadingPipelineLayout.get()));
+      pipeline_builder.build(mRenderPassInfo.pass.get(), mShadingPipelineLayout.get()));
 }
 
 void VulkanBackend::create_frame_data()
@@ -115,7 +150,7 @@ void VulkanBackend::stop()
 
 void VulkanBackend::on_init(Scene& scene)
 {
-  vk::init_imgui(mImGuiData, mRenderPass.get(), mSwapchain.get_image_count());
+  vk::init_imgui(mImGuiData, mRenderPassInfo.pass.get(), mSwapchain.get_image_count());
 
   scene.add<vk::ImageCache>();
 
@@ -173,7 +208,7 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
 
   if (acquire_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
     spdlog::debug("[VK] Recreating outdated swapchain");
-    mSwapchain.recreate(mRenderPass.get());
+    mSwapchain.recreate(mRenderPassInfo.pass.get());
     return kFailure;
   }
   else if (acquire_image_result != VK_SUCCESS &&
@@ -192,9 +227,10 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
   vk::reset_command_buffer(frame.command_buffer);
   vk::begin_command_buffer(frame.command_buffer);
 
-  mRenderPass.begin(frame.command_buffer,
-                    mSwapchain.get_current_framebuffer().get(),
-                    mSwapchain.get_image_extent());
+  vk::cmd_begin_render_pass(frame.command_buffer,
+                            mRenderPassInfo,
+                            mSwapchain.get_current_framebuffer().get(),
+                            mSwapchain.get_image_extent());
 
   return kSuccess;
 }
@@ -335,7 +371,7 @@ void VulkanBackend::present_image()
       mResizedFramebuffer) {
     spdlog::debug("[VK] Recreating outdated or suboptimal swapchain");
     mResizedFramebuffer = false;
-    mSwapchain.recreate(mRenderPass.get());
+    mSwapchain.recreate(mRenderPassInfo.pass.get());
   }
   else if (present_result != VK_SUCCESS) {
     throw Error {"[VK] Could not present swapchain image"};
