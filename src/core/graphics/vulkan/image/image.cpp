@@ -26,6 +26,8 @@ const HashMap<VkImageLayout, VkAccessFlags> kTransitionAccessMap {
     {VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT},
     {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT},
     {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_ACCESS_SHADER_READ_BIT},
+    {VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+     VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT},
 };
 
 /// Used to determine pipeline stage flags for layout transitions.
@@ -34,7 +36,8 @@ const HashMap<VkImageLayout, VkPipelineStageFlags> kTransitionStageMap {
     {VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT},
     {VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_PIPELINE_STAGE_TRANSFER_BIT},
     {VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT},
-};
+    {VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+     VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}};
 
 void transition_image_layout(VkCommandBuffer command_buffer,
                              VkImage image,
@@ -43,6 +46,9 @@ void transition_image_layout(VkCommandBuffer command_buffer,
                              const uint32 level_count,
                              const uint32 base_level)
 {
+  GRAVEL_ASSERT(kTransitionAccessMap.contains(old_layout));
+  GRAVEL_ASSERT(kTransitionAccessMap.contains(new_layout));
+
   const auto src_access = kTransitionAccessMap.at(old_layout);
   const auto dst_access = kTransitionAccessMap.at(new_layout);
 
@@ -91,12 +97,18 @@ void transition_image_layout(VkCommandBuffer command_buffer,
 Image::Image(const VkImageType type,
              const VkExtent3D extent,
              const VkFormat format,
-             const VkImageUsageFlags usage)
+             const VkImageUsageFlags usage,
+             const uint32 mip_levels,
+             const VkSampleCountFlagBits samples)
     : mExtent {extent},
       mFormat {format},
-      mMipLevels {1 + static_cast<uint32>(
-                          std::floor(std::log2(std::max(extent.width, extent.height))))}
+      mSamples {samples},
+      mMipLevels {mip_levels}
 {
+  if (mSamples != VK_SAMPLE_COUNT_1_BIT) {
+    GRAVEL_ASSERT(mMipLevels == 1);
+  }
+
   GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_UNDEFINED);
   GRAVEL_ASSERT(mFormat != VK_FORMAT_UNDEFINED);
 
@@ -112,7 +124,7 @@ Image::Image(const VkImageType type,
       .mipLevels = mMipLevels,
       .arrayLayers = 1,
 
-      .samples = VK_SAMPLE_COUNT_1_BIT,
+      .samples = samples,
       .tiling = VK_IMAGE_TILING_OPTIMAL,
       .usage = usage | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
@@ -216,6 +228,7 @@ void Image::copy_from_buffer(VkBuffer buffer)
 
 void Image::generate_mipmaps()
 {
+  GRAVEL_ASSERT(mSamples | VK_SAMPLE_COUNT_1_BIT);
   GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
   execute_immediately([this](VkCommandBuffer cmd_buffer) {
@@ -288,6 +301,12 @@ void Image::generate_mipmaps()
   });
 }
 
+auto Image::max_mip_levels(const VkExtent3D extent) -> uint32
+{
+  const auto max_extent = std::max(extent.width, extent.height);
+  return 1 + static_cast<uint32>(std::floor(std::log2(max_extent)));
+}
+
 auto load_image_2d(const Path& path, const VkFormat format, const VkImageUsageFlags usage)
     -> Maybe<Image>
 {
@@ -327,13 +346,18 @@ auto load_image_2d(const void* data,
   auto staging_buffer = Buffer::staging(data_size, 0);
   staging_buffer.set_data(data, data_size);
 
-  Image image {VK_IMAGE_TYPE_2D, image_extent, format, usage};
+  Image image {VK_IMAGE_TYPE_2D,
+               image_extent,
+               format,
+               usage,
+               Image::max_mip_levels(image_extent),
+               VK_SAMPLE_COUNT_1_BIT};
 
   // Optimize layout for the buffer transfer, and copy data from staging buffer
   image.change_layout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
   image.copy_from_buffer(staging_buffer.get());
 
-  // Generate mipmaps
+  // Generate mipmaps, which will automatically change layout of all image levels
   image.generate_mipmaps();
 
   GRAVEL_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

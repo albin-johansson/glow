@@ -117,11 +117,13 @@ void Swapchain::create_depth_buffer()
   mDepthImage.emplace(VK_IMAGE_TYPE_2D,
                       VkExtent3D {mImageExtent.width, mImageExtent.height, 1},
                       VK_FORMAT_D32_SFLOAT_S8_UINT,
-                      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                      1,
+                      VK_SAMPLE_COUNT_1_BIT);
   mDepthImageView.emplace(mDepthImage->get(),
                           VK_FORMAT_D32_SFLOAT_S8_UINT,
                           VK_IMAGE_VIEW_TYPE_2D,
-                          VK_IMAGE_ASPECT_DEPTH_BIT);
+                          VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
 }
 
 void Swapchain::recreate(VkRenderPass render_pass)

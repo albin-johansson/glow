@@ -26,10 +26,14 @@ class Image final {
   /// \param extent the size of the image (use depth 1 for 2D images).
   /// \param format format the image pixel format, e.g. `VK_FORMAT_R8G8B8A8_SRGB`.
   /// \param usage image usage mask, e.g. `VK_IMAGE_USAGE_SAMPLED_BIT`.
-  explicit Image(VkImageType type,
-                 VkExtent3D extent,
-                 VkFormat format,
-                 VkImageUsageFlags usage);
+  /// \param mip_levels the desired amount of mip levels.
+  /// \param samples the amount of samples to store per texel.
+  Image(VkImageType type,
+        VkExtent3D extent,
+        VkFormat format,
+        VkImageUsageFlags usage,
+        uint32 mip_levels,
+        VkSampleCountFlagBits samples);
 
   ~Image() noexcept;
 
@@ -45,10 +49,16 @@ class Image final {
 
   void generate_mipmaps();
 
+  [[nodiscard]] static auto max_mip_levels(const VkExtent3D extent) -> uint32;
+
   [[nodiscard]] auto get() noexcept -> VkImage { return mImage; }
   [[nodiscard]] auto get_extent() const noexcept -> const VkExtent3D& { return mExtent; }
   [[nodiscard]] auto get_format() const noexcept -> VkFormat { return mFormat; }
   [[nodiscard]] auto get_layout() const noexcept -> VkImageLayout { return mLayout; }
+  [[nodiscard]] auto get_samples() const noexcept -> VkSampleCountFlagBits
+  {
+    return mSamples;
+  }
   [[nodiscard]] auto get_mip_levels() const noexcept -> uint32 { return mMipLevels; }
 
  private:
@@ -57,6 +67,7 @@ class Image final {
   VkExtent3D mExtent {};
   VkFormat mFormat {VK_FORMAT_UNDEFINED};
   VkImageLayout mLayout {VK_IMAGE_LAYOUT_UNDEFINED};
+  VkSampleCountFlagBits mSamples {};
   uint32 mMipLevels {1};
 
   void dispose() noexcept;
