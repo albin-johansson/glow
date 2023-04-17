@@ -6,9 +6,9 @@
 #include "common/primitives.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
+#include "graphics/vulkan/image/framebuffer.hpp"
 #include "graphics/vulkan/image/image.hpp"
 #include "graphics/vulkan/image/image_view.hpp"
-#include "graphics/vulkan/swapchain/framebuffer.hpp"
 
 namespace glow::vk {
 
@@ -31,7 +31,7 @@ class Swapchain final {
   /// Presents the current swapchain image to the presentation queue.
   auto present_image(VkSemaphore render_finished_semaphore) -> VkResult;
 
-  [[nodiscard]] auto get_current_framebuffer() -> Framebuffer&;
+  [[nodiscard]] auto get_current_framebuffer() -> VkFramebuffer;
 
   [[nodiscard]] auto get_image_count() const -> uint32;
 
@@ -47,7 +47,7 @@ class Swapchain final {
 
   Vector<VkImage> mImages;
   Vector<ImageView> mImageViews;
-  Vector<Framebuffer> mFramebuffers;
+  Vector<FramebufferPtr> mFramebuffers;
   uint32 mImageIndex {0};
 
   Maybe<Image> mDepthImage;

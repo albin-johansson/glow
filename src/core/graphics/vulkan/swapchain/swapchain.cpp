@@ -11,7 +11,6 @@
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/physical_device.hpp"
-#include "graphics/vulkan/swapchain/framebuffer.hpp"
 #include "graphics/vulkan/util/size.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/window.hpp"
@@ -225,10 +224,10 @@ void Swapchain::create_framebuffers(VkRenderPass render_pass)
   mFramebuffers.reserve(mImageViews.size());
 
   for (auto& image_view : mImageViews) {
-    mFramebuffers.emplace_back(render_pass,
-                               image_view.get(),
-                               mDepthImageView.value().get(),
-                               mImageExtent);
+    mFramebuffers.push_back(create_framebuffer(render_pass,
+                                               image_view.get(),
+                                               mDepthImageView.value().get(),
+                                               mImageExtent));
   }
 }
 
@@ -263,9 +262,9 @@ auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
   return vkQueuePresentKHR(get_presentation_queue(), &present_info);
 }
 
-auto Swapchain::get_current_framebuffer() -> Framebuffer&
+auto Swapchain::get_current_framebuffer() -> VkFramebuffer
 {
-  return mFramebuffers.at(static_cast<usize>(mImageIndex));
+  return mFramebuffers.at(static_cast<usize>(mImageIndex)).get();
 }
 
 auto Swapchain::get_image_count() const -> uint32
