@@ -60,6 +60,12 @@ auto RenderPassBuilder::dependency(const uint32 src_subpass,
   return *this;
 }
 
+auto RenderPassBuilder::dependency(const VkSubpassDependency& subpass_dependency) -> Self&
+{
+  mDependencies.push_back(subpass_dependency);
+  return *this;
+}
+
 auto RenderPassBuilder::begin_subpass() -> Self&
 {
   GRAVEL_ASSERT_MSG(!mCurrentSubpass.has_value(),

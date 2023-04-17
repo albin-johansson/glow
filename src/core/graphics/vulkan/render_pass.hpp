@@ -51,6 +51,8 @@ class RenderPassBuilder final {
                   VkAccessFlags src_access = 0,
                   VkAccessFlags dst_access = 0) -> Self&;
 
+  auto dependency(const VkSubpassDependency& subpass_dependency) -> Self&;
+
   /// Marks the start of a new subpass, call this every time a new subpass is described.
   auto begin_subpass() -> Self&;
 
