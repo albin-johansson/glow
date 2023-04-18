@@ -68,8 +68,8 @@ auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
   };
 
   VkDescriptorSetLayout layout = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateDescriptorSetLayout(get_device(), &info, nullptr, &layout),
-                 "[VK] Could not create descriptor set layout");
+  GLOW_VK_CALL(vkCreateDescriptorSetLayout(get_device(), &info, nullptr, &layout),
+               "[VK] Could not create descriptor set layout");
 
   return layout;
 }
@@ -115,8 +115,8 @@ auto PipelineLayoutBuilder::build() const -> VkPipelineLayout
   };
 
   VkPipelineLayout layout = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreatePipelineLayout(get_device(), &create_info, nullptr, &layout),
-                 "[VK] Could not create pipeline layout");
+  GLOW_VK_CALL(vkCreatePipelineLayout(get_device(), &create_info, nullptr, &layout),
+               "[VK] Could not create pipeline layout");
 
   return layout;
 }
@@ -300,13 +300,13 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
   };
 
   VkPipeline pipeline = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateGraphicsPipelines(get_device(),
-                                           mCache,
-                                           1,
-                                           &create_info,
-                                           nullptr,
-                                           &pipeline),
-                 "[VK] Could not create pipeline");
+  GLOW_VK_CALL(vkCreateGraphicsPipelines(get_device(),
+                                         mCache,
+                                         1,
+                                         &create_info,
+                                         nullptr,
+                                         &pipeline),
+               "[VK] Could not create pipeline");
 
   return pipeline;
 }

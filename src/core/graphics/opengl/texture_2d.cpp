@@ -20,7 +20,7 @@ Texture2D::Texture2D()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   unbind();
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 Texture2D::~Texture2D() noexcept
@@ -88,19 +88,19 @@ auto Texture2D::load_rgb_f32(const Path& path) -> Maybe<Texture2D>
 void Texture2D::bind() const
 {
   glBindTexture(GL_TEXTURE_2D, mID);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Texture2D::bind(const uint id)
 {
   glBindTexture(GL_TEXTURE_2D, id);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Texture2D::unbind()
 {
   glBindTexture(GL_TEXTURE_2D, 0);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Texture2D::set_data(const int detail_level,
@@ -110,7 +110,7 @@ void Texture2D::set_data(const int detail_level,
                          const Vec2i& size,
                          const void* pixel_data)
 {
-  GRAVEL_ASSERT(get_bound_texture() == mID);
+  GLOW_ASSERT(get_bound_texture() == mID);
   glTexImage2D(GL_TEXTURE_2D,
                detail_level,
                texture_format,
@@ -120,17 +120,17 @@ void Texture2D::set_data(const int detail_level,
                pixel_format,
                type,
                pixel_data);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Texture2D::generate_mipmap()
 {
-  GRAVEL_ASSERT(get_bound_texture() == mID);
+  GLOW_ASSERT(get_bound_texture() == mID);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
   glGenerateMipmap(GL_TEXTURE_2D);
 
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Texture2D::set_anisotropic_filtering(const bool enable)
@@ -142,7 +142,7 @@ void Texture2D::set_anisotropic_filtering(const bool enable)
   }
 
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, level);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 }  // namespace glow::gl

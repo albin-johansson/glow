@@ -10,7 +10,7 @@ namespace glow::gl {
 /// Represents an OpenGL framebuffer object, providing a color and depth buffer.
 class Framebuffer final {
  public:
-  GRAVEL_DELETE_COPY(Framebuffer);
+  GLOW_DELETE_COPY(Framebuffer);
 
   /**
    * Creates a framebuffer object (including texture objects), but does not bind it.

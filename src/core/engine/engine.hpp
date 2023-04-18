@@ -16,7 +16,7 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_C(Backend);
+GLOW_FORWARD_DECLARE_C(Backend);
 
 class Engine final {
  public:

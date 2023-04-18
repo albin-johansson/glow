@@ -9,7 +9,7 @@ namespace glow::gl {
 /// Represents an OpenGL vertex buffer object (VBO).
 class VertexBuffer final {
  public:
-  GRAVEL_DELETE_COPY(VertexBuffer);
+  GLOW_DELETE_COPY(VertexBuffer);
 
   /// Creates a VBO instance, but does not bind it.
   VertexBuffer();

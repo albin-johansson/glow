@@ -18,9 +18,9 @@ auto create_framebuffer(VkRenderPass render_pass,
                         VkImageView depth_buffer,
                         const VkExtent2D& extent) -> FramebufferPtr
 {
-  GRAVEL_ASSERT(render_pass != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(color_buffer != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(depth_buffer != VK_NULL_HANDLE);
+  GLOW_ASSERT(render_pass != VK_NULL_HANDLE);
+  GLOW_ASSERT(color_buffer != VK_NULL_HANDLE);
+  GLOW_ASSERT(depth_buffer != VK_NULL_HANDLE);
 
   const VkImageView attachments[] = {
       color_buffer,
@@ -40,8 +40,8 @@ auto create_framebuffer(VkRenderPass render_pass,
   };
 
   VkFramebuffer framebuffer = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateFramebuffer(get_device(), &create_info, nullptr, &framebuffer),
-                 "[VK] Could not create framebuffer");
+  GLOW_VK_CALL(vkCreateFramebuffer(get_device(), &create_info, nullptr, &framebuffer),
+               "[VK] Could not create framebuffer");
 
   return FramebufferPtr {framebuffer};
 }

@@ -129,115 +129,115 @@ auto Program::set_uniform_block_binding(const char* name, const int binding) -> 
 void Program::set_uniform(const int location, const bool b)
 {
   glProgramUniform1i(mID, location, b ? GL_TRUE : GL_FALSE);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const int i)
 {
   glProgramUniform1i(mID, location, i);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const float f)
 {
   glProgramUniform1f(mID, location, f);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec2& vec)
 {
   glProgramUniform2f(mID, location, vec.x, vec.y);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec2i& vec)
 {
   glProgramUniform2i(mID, location, vec.x, vec.y);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec3& vec)
 {
   glProgramUniform3f(mID, location, vec.x, vec.y, vec.z);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec3i& vec)
 {
   glProgramUniform3i(mID, location, vec.x, vec.y, vec.z);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec4& vec)
 {
   glProgramUniform4f(mID, location, vec.x, vec.y, vec.z, vec.w);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Vec4i& vec)
 {
   glProgramUniform4i(mID, location, vec.x, vec.y, vec.z, vec.w);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Mat3& mat)
 {
   glProgramUniformMatrix3fv(mID, location, 1, GL_FALSE, glm::value_ptr(mat));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform(const int location, const Mat4& mat)
 {
   glProgramUniformMatrix4fv(mID, location, 1, GL_FALSE, glm::value_ptr(mat));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const int* array)
 {
   glProgramUniform1iv(mID, location, static_cast<GLsizei>(count), array);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const float* array)
 {
   glProgramUniform1fv(mID, location, static_cast<GLsizei>(count), array);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec2* array)
 {
   glProgramUniform2fv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec2i* array)
 {
   glProgramUniform2iv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec3* array)
 {
   glProgramUniform3fv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec3i* array)
 {
   glProgramUniform3iv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec4* array)
 {
   glProgramUniform4fv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Program::set_uniform_array(const int location, const ssize count, const Vec4i* array)
 {
   glProgramUniform4iv(mID, location, static_cast<GLsizei>(count), glm::value_ptr(*array));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 auto Program::get_uniform_location(const char* name) const -> Maybe<int>
@@ -267,7 +267,7 @@ auto Program::get_uniform_block_size(const int block_index) const -> Maybe<int>
 {
   int block_size = -1;
   glGetActiveUniformBlockiv(mID, block_index, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 
   if (block_size != -1) {
     return block_size;

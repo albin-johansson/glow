@@ -16,8 +16,8 @@ class DearImGui final {
   inline static constexpr float kMaxFontSize = 37;
 
  public:
-  GRAVEL_DELETE_COPY(DearImGui);
-  GRAVEL_DELETE_MOVE(DearImGui);
+  GLOW_DELETE_COPY(DearImGui);
+  GLOW_DELETE_MOVE(DearImGui);
 
   DearImGui(SDL_Window* window, GraphicsApi api);
 

@@ -24,8 +24,8 @@ auto create_pipeline_cache(VkDevice device) -> VkPipelineCache
   };
 
   VkPipelineCache cache = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreatePipelineCache(device, &create_info, nullptr, &cache),
-                 "[VK] Could not create pipeline cache");
+  GLOW_VK_CALL(vkCreatePipelineCache(device, &create_info, nullptr, &cache),
+               "[VK] Could not create pipeline cache");
 
   return cache;
 }

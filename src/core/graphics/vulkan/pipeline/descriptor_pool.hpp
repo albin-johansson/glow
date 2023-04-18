@@ -9,7 +9,7 @@ namespace glow::vk {
 
 class DescriptorPool final {
  public:
-  GRAVEL_DELETE_COPY(DescriptorPool);
+  GLOW_DELETE_COPY(DescriptorPool);
 
   DescriptorPool(uint32 max_sets,
                  const VkDescriptorPoolSize* pool_sizes,

@@ -41,7 +41,7 @@ Buffer::Buffer(Buffer&& other) noexcept
 
 auto Buffer::operator=(Buffer&& other) noexcept -> Buffer&
 {
-  GRAVEL_ASSERT(mType == other.mType);
+  GLOW_ASSERT(mType == other.mType);
 
   if (this != &other) {
     dispose();
@@ -58,29 +58,29 @@ auto Buffer::operator=(Buffer&& other) noexcept -> Buffer&
 void Buffer::bind() const
 {
   glBindBuffer(mType, mID);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Buffer::unbind() const
 {
   glBindBuffer(mType, 0);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Buffer::bind_block(const int binding)
 {
-  GRAVEL_ASSERT(mType == GL_UNIFORM_BUFFER);
+  GLOW_ASSERT(mType == GL_UNIFORM_BUFFER);
 
   glBindBufferBase(mType, binding, mID);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Buffer::unbind_block(const int binding)
 {
-  GRAVEL_ASSERT(mType == GL_UNIFORM_BUFFER);
+  GLOW_ASSERT(mType == GL_UNIFORM_BUFFER);
 
   glBindBufferBase(mType, binding, 0);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Buffer::reserve(const ssize data_size, const BufferUsage usage)
@@ -97,13 +97,13 @@ void Buffer::set_data(const void* data, const ssize data_size, const BufferUsage
                static_cast<GLsizeiptr>(data_size),
                data,
                convert_buffer_usage(usage));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Buffer::set_subdata(const ssize offset, const void* data, const ssize data_size)
 {
   glBufferSubData(mType, offset, data_size, data);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 auto Buffer::is_vertex_buffer() const -> bool

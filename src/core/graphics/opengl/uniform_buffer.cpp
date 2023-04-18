@@ -47,30 +47,30 @@ void UniformBuffer::dispose() noexcept
 void UniformBuffer::bind() const
 {
   glBindBuffer(GL_UNIFORM_BUFFER, mID);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void UniformBuffer::unbind()
 {
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void UniformBuffer::bind_block(const int binding)
 {
   glBindBufferBase(GL_UNIFORM_BUFFER, binding, mID);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void UniformBuffer::unbind_block(const int binding)
 {
   glBindBufferBase(GL_UNIFORM_BUFFER, binding, 0);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void UniformBuffer::reserve_space(const ssize data_size, const BufferUsage usage)
 {
-  GRAVEL_ASSERT(mID == get_bound_uniform_buffer());
+  GLOW_ASSERT(mID == get_bound_uniform_buffer());
 
   std::vector<Byte> buffer;
   buffer.resize(static_cast<usize>(data_size));
@@ -82,20 +82,20 @@ void UniformBuffer::set_data(const ssize data_size,
                              const void* data,
                              const BufferUsage usage)
 {
-  GRAVEL_ASSERT(mID == get_bound_uniform_buffer());
+  GLOW_ASSERT(mID == get_bound_uniform_buffer());
 
   glBufferData(GL_UNIFORM_BUFFER, data_size, data, convert_buffer_usage(usage));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void UniformBuffer::update_data(const ssize offset,
                                 const ssize data_size,
                                 const void* data)
 {
-  GRAVEL_ASSERT(mID == get_bound_uniform_buffer());
+  GLOW_ASSERT(mID == get_bound_uniform_buffer());
 
   glBufferSubData(GL_UNIFORM_BUFFER, offset, data_size, data);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 }  // namespace glow::gl

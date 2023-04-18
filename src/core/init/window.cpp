@@ -7,12 +7,12 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 
-#if GRAVEL_OS_WINDOWS
+#if GLOW_OS_WINDOWS
 
 #include <SDL2/SDL_syswm.h>
 #include <dwmapi.h>
 
-#endif  // GRAVEL_OS_WINDOWS
+#endif  // GLOW_OS_WINDOWS
 
 namespace glow {
 namespace {
@@ -41,7 +41,7 @@ struct ObjectDeleter final {
 
 void use_win32_dark_title_bar(SDL_Window* window)
 {
-#if GRAVEL_OS_WINDOWS
+#if GLOW_OS_WINDOWS
   SDL_SysWMinfo wm_info {};
   SDL_VERSION(&wm_info.version);
 
@@ -56,7 +56,7 @@ void use_win32_dark_title_bar(SDL_Window* window)
       func(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &mode, sizeof mode);
     }
   }
-#endif  // GRAVEL_OS_WINDOWS
+#endif  // GLOW_OS_WINDOWS
 }
 
 }  // namespace

@@ -11,7 +11,7 @@ namespace glow::gl {
 /// Represents a two-dimensional OpenGL texture.
 class Texture2D final {
  public:
-  GRAVEL_DELETE_COPY(Texture2D);
+  GLOW_DELETE_COPY(Texture2D);
 
   /**
    * Creates a 2D texture.

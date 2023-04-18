@@ -12,9 +12,9 @@
 
 namespace glow::gl {
 
-GRAVEL_FORWARD_DECLARE_C(Texture2D);
-GRAVEL_FORWARD_DECLARE_S(Mesh);
-GRAVEL_FORWARD_DECLARE_S(Material);
+GLOW_FORWARD_DECLARE_C(Texture2D);
+GLOW_FORWARD_DECLARE_S(Mesh);
+GLOW_FORWARD_DECLARE_S(Material);
 
 class Renderer final {
  public:

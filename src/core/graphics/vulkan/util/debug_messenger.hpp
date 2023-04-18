@@ -10,8 +10,8 @@ struct DebugMessengerDeleter final {
   void operator()(VkDebugUtilsMessengerEXT messenger) noexcept;
 };
 
-using DebugMessenger = Unique<VkDebugUtilsMessengerEXT_T, DebugMessengerDeleter>;
+using DebugMessengerPtr = Unique<VkDebugUtilsMessengerEXT_T, DebugMessengerDeleter>;
 
-[[nodiscard]] auto create_debug_messenger() -> DebugMessenger;
+[[nodiscard]] auto create_debug_messenger() -> DebugMessengerPtr;
 
 }  // namespace glow::vk

@@ -11,9 +11,9 @@ void PipelineCacheDeleter::operator()(VkPipelineCache cache) noexcept
   vkDestroyPipelineCache(get_device(), cache, nullptr);
 }
 
-auto create_pipeline_cache() -> PipelineCache
+auto create_pipeline_cache() -> PipelineCachePtr
 {
-  GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
   const VkPipelineCacheCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO,
@@ -24,10 +24,10 @@ auto create_pipeline_cache() -> PipelineCache
   };
 
   VkPipelineCache cache = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreatePipelineCache(get_device(), &create_info, nullptr, &cache),
-                 "[VK] Could not create pipeline cache");
+  GLOW_VK_CALL(vkCreatePipelineCache(get_device(), &create_info, nullptr, &cache),
+               "[VK] Could not create pipeline cache");
 
-  return PipelineCache {cache};
+  return PipelineCachePtr {cache};
 }
 
 }  // namespace glow::vk

@@ -30,7 +30,7 @@ void init_imgui(ImGuiData& data, VkRenderPass render_pass, const uint32 swapchai
   info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
   info.Allocator = nullptr;
   info.CheckVkResultFn = [](const VkResult result) {
-    GRAVEL_VK_CALL(result, "[VK] ImGui Vulkan backend error");
+    GLOW_VK_CALL(result, "[VK] ImGui Vulkan backend error");
   };
 
   if (!ImGui_ImplVulkan_Init(&info, render_pass)) {

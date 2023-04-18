@@ -7,11 +7,11 @@
 
 namespace glow::vk {
 
-GRAVEL_FORWARD_DECLARE_C(Image);
+GLOW_FORWARD_DECLARE_C(Image);
 
 class ImageView final {
  public:
-  GRAVEL_DELETE_COPY(ImageView);
+  GLOW_DELETE_COPY(ImageView);
 
   ImageView(VkImage image,
             VkFormat image_format,

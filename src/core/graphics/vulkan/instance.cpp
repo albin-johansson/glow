@@ -25,9 +25,9 @@ namespace {
   extensions.resize(extension_count);
   SDL_Vulkan_GetInstanceExtensions(window, &extension_count, extensions.data());
 
-#ifdef GRAVEL_USE_VULKAN_SUBSET
+#ifdef GLOW_USE_VULKAN_SUBSET
   extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-#endif  // GRAVEL_USE_VULKAN_SUBSET
+#endif  // GLOW_USE_VULKAN_SUBSET
 
   if constexpr (kDebugBuild) {
     extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -49,7 +49,7 @@ void InstanceDeleter::operator()(VkInstance instance) noexcept
   vkDestroyInstance(instance, nullptr);
 }
 
-auto create_instance() -> Instance
+auto create_instance() -> InstancePtr
 {
   spdlog::debug("[VK] Creating Vulkan instance...");
 
@@ -80,10 +80,10 @@ auto create_instance() -> Instance
       .ppEnabledExtensionNames = extension_names.data(),
   };
 
-#ifdef GRAVEL_USE_VULKAN_SUBSET
+#ifdef GLOW_USE_VULKAN_SUBSET
   // Allow implementations that only provide a subset of the Vulkan spec, e.g. MoltenVK.
   instance_create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-#endif  // GRAVEL_USE_VULKAN_SUBSET
+#endif  // GLOW_USE_VULKAN_SUBSET
 
   if constexpr (kDebugBuild) {
     spdlog::debug("[VK] Enabling validation layers");
@@ -94,8 +94,8 @@ auto create_instance() -> Instance
   }
 
   VkInstance instance = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &instance),
-                 "[VK] Could not create instance");
+  GLOW_VK_CALL(vkCreateInstance(&instance_create_info, nullptr, &instance),
+               "[VK] Could not create instance");
   set_instance(instance);
 
   auto& functions = get_extension_functions();
@@ -116,7 +116,7 @@ auto create_instance() -> Instance
                 functions.vkCmdPushDescriptorSetWithTemplateKHR,
                 "vkCmdPushDescriptorSetWithTemplateKHR");
 
-  return Instance {instance};
+  return InstancePtr {instance};
 }
 
 }  // namespace glow::vk

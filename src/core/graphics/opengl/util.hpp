@@ -33,16 +33,16 @@ void set_option(uint option, bool value);
 
 }  // namespace glow::gl
 
-#if GRAVEL_DEBUG_BUILD
-#define GRAVEL_GL_CHECK_ERRORS()                      \
+#if GLOW_DEBUG_BUILD
+#define GLOW_GL_CHECK_ERRORS()                        \
   do {                                                \
     if (glow::gl::check_errors(__FILE__, __LINE__)) { \
-      GRAVEL_DEBUG_BREAK;                             \
+      GLOW_DEBUG_BREAK;                               \
       std::exit(EXIT_FAILURE);                        \
     }                                                 \
   } while (false)
 #else
-#define GRAVEL_GL_CHECK_ERRORS() \
-  do {                           \
+#define GLOW_GL_CHECK_ERRORS() \
+  do {                         \
   } while (false)
-#endif  // GRAVEL_DEBUG_BUILD
+#endif  // GLOW_DEBUG_BUILD

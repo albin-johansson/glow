@@ -7,7 +7,7 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_S(Camera);
+GLOW_FORWARD_DECLARE_S(Camera);
 
 class Scene final {
  public:

@@ -10,7 +10,7 @@
 
 namespace glow::vk {
 
-GRAVEL_FORWARD_DECLARE_C(Framebuffer);
+GLOW_FORWARD_DECLARE_C(Framebuffer);
 
 struct RenderPassDeleter final {
   void operator()(VkRenderPass render_pass) noexcept;

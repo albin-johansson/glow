@@ -41,13 +41,13 @@ Buffer::Buffer(const uint64 size,
       .priority = 0,
   };
 
-  GRAVEL_VK_CALL(vmaCreateBuffer(get_allocator(),
-                                 &buffer_info,
-                                 &allocation_info,
-                                 &mBuffer,
-                                 &mAllocation,
-                                 nullptr),
-                 "[VK] Could not create buffer");
+  GLOW_VK_CALL(vmaCreateBuffer(get_allocator(),
+                               &buffer_info,
+                               &allocation_info,
+                               &mBuffer,
+                               &mAllocation,
+                               nullptr),
+               "[VK] Could not create buffer");
 }
 
 auto Buffer::staging(const uint64 size, const VkBufferUsageFlags buffer_usage) -> Buffer
@@ -100,7 +100,7 @@ Buffer::~Buffer()
 void Buffer::dispose() noexcept
 {
   if (mBuffer != VK_NULL_HANDLE) {
-    GRAVEL_ASSERT(mAllocation != VK_NULL_HANDLE);
+    GLOW_ASSERT(mAllocation != VK_NULL_HANDLE);
 
     vmaDestroyBuffer(get_allocator(), mBuffer, mAllocation);
   }
@@ -133,8 +133,8 @@ void Buffer::set_data(const void* data, const usize data_size)
 {
   // Get a pointer to mapped memory so that we can update the buffer from the CPU
   void* mapped_data = nullptr;
-  GRAVEL_VK_CALL(vmaMapMemory(get_allocator(), mAllocation, &mapped_data),
-                 "[VK] Could not map memory");
+  GLOW_VK_CALL(vmaMapMemory(get_allocator(), mAllocation, &mapped_data),
+               "[VK] Could not map memory");
 
   // Transfer the data, making sure not to write too much data into the buffer
   const auto allocation_info = get_allocation_info();

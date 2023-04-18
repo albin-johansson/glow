@@ -12,7 +12,7 @@
 #include "graphics/opengl/vertex_buffer.hpp"
 
 namespace glow {
-GRAVEL_FORWARD_DECLARE_C(Scene);
+GLOW_FORWARD_DECLARE_C(Scene);
 }  // namespace glow
 
 namespace glow::gl {
@@ -39,7 +39,7 @@ struct Mesh final {
 
 /// OpenGL model component.
 struct Model final {
-  GRAVEL_MOVE_ONLY_COMPONENT(Model);
+  GLOW_MOVE_ONLY_COMPONENT(Model);
   Vector<Mesh> meshes;  ///< The meshes that constitute the model.
 };
 

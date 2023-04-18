@@ -101,7 +101,7 @@ Swapchain::~Swapchain()
 
 void Swapchain::create_image_views()
 {
-  GRAVEL_ASSERT(mImageViews.empty());
+  GLOW_ASSERT(mImageViews.empty());
   mImageViews.reserve(mImages.size());
 
   for (VkImage image : mImages) {
@@ -214,8 +214,8 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
   mImageExtent = create_info.imageExtent;
   mImageFormat = create_info.imageFormat;
 
-  GRAVEL_VK_CALL(vkCreateSwapchainKHR(get_device(), &create_info, nullptr, &mSwapchain),
-                 "[VK] Could not create swapchain");
+  GLOW_VK_CALL(vkCreateSwapchainKHR(get_device(), &create_info, nullptr, &mSwapchain),
+               "[VK] Could not create swapchain");
 
   mImages = get_swapchain_images(get_device(), mSwapchain);
 }

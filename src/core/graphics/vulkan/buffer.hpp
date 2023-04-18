@@ -11,7 +11,7 @@ namespace glow::vk {
 
 class Buffer final {
  public:
-  GRAVEL_DELETE_COPY(Buffer);
+  GLOW_DELETE_COPY(Buffer);
 
   Buffer(uint64 size,
          VkBufferUsageFlags buffer_usage,

@@ -6,13 +6,14 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/maybe.hpp"
+#include "common/type/memory.hpp"
 #include "common/type/path.hpp"
 
 namespace glow::vk {
 
 class Image final {
  public:
-  GRAVEL_DELETE_COPY(Image);
+  GLOW_DELETE_COPY(Image);
 
   /// Creates an empty GPU image.
   ///
@@ -70,7 +71,7 @@ class Image final {
   VkSampleCountFlagBits mSamples {};
   uint32 mMipLevels {1};
 
-  void dispose() noexcept;
+  void destroy() noexcept;
 };
 
 /// Creates a 2D image with the pixel data of the image the specified file path.

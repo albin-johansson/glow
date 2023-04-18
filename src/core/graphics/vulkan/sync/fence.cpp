@@ -21,7 +21,7 @@ void FenceDeleter::operator()(VkFence fence) noexcept
 
 auto create_fence(const bool signaled) -> Fence
 {
-  GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
   const VkFenceCreateFlags flags = signaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0;
 
@@ -32,21 +32,21 @@ auto create_fence(const bool signaled) -> Fence
   };
 
   VkFence fence = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateFence(get_device(), &create_info, nullptr, &fence),
-                 "[VK] Could not create fence");
+  GLOW_VK_CALL(vkCreateFence(get_device(), &create_info, nullptr, &fence),
+               "[VK] Could not create fence");
 
   return Fence {fence};
 }
 
 void reset_fence(VkFence fence)
 {
-  GRAVEL_VK_CALL(vkResetFences(get_device(), 1, &fence), "[VK] Could not reset fence");
+  GLOW_VK_CALL(vkResetFences(get_device(), 1, &fence), "[VK] Could not reset fence");
 }
 
 void wait_fence(VkFence fence)
 {
-  GRAVEL_VK_CALL(vkWaitForFences(get_device(), 1, &fence, VK_TRUE, kMaxU64),
-                 "[VK] Could not wait for fence");
+  GLOW_VK_CALL(vkWaitForFences(get_device(), 1, &fence, VK_TRUE, kMaxU64),
+               "[VK] Could not wait for fence");
 }
 
 }  // namespace glow::vk

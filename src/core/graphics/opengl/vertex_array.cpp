@@ -60,7 +60,7 @@ void VertexArray::init_attr(const uint location,
                             const usize offset,
                             const bool normalized)
 {
-  GRAVEL_ASSERT(get_bound_vertex_array() == mID);
+  GLOW_ASSERT(get_bound_vertex_array() == mID);
 
   glVertexAttribPointer(location,
                         value_count,
@@ -70,7 +70,7 @@ void VertexArray::init_attr(const uint location,
                         bitcast<void*>(offset));
   glEnableVertexAttribArray(location);
 
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 }  // namespace glow::gl

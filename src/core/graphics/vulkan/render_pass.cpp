@@ -68,8 +68,8 @@ auto RenderPassBuilder::dependency(const VkSubpassDependency& subpass_dependency
 
 auto RenderPassBuilder::begin_subpass() -> Self&
 {
-  GRAVEL_ASSERT_MSG(!mCurrentSubpass.has_value(),
-                    "Must call end_subpass after begin_subpass");
+  GLOW_ASSERT_MSG(!mCurrentSubpass.has_value(),
+                  "Must call end_subpass after begin_subpass");
 
   mSubpasses.emplace_back();
   mCurrentSubpass = mSubpasses.size() - 1;
@@ -79,8 +79,8 @@ auto RenderPassBuilder::begin_subpass() -> Self&
 
 auto RenderPassBuilder::end_subpass() -> Self&
 {
-  GRAVEL_ASSERT_MSG(mCurrentSubpass.has_value(),
-                    "Must call begin_subpass before end_subpass");
+  GLOW_ASSERT_MSG(mCurrentSubpass.has_value(),
+                  "Must call begin_subpass before end_subpass");
 
   auto& subpass = mSubpasses.at(mCurrentSubpass.value());
   subpass.description.colorAttachmentCount = u32_size(subpass.color_attachments);
@@ -140,8 +140,8 @@ auto RenderPassBuilder::input_attachment(const uint32 attachment) -> Self&
 auto RenderPassBuilder::depth_attachment(const uint32 attachment) -> Self&
 {
   auto& subpass = mSubpasses.at(mCurrentSubpass.value());
-  GRAVEL_ASSERT_MSG(!subpass.has_depth_attachment,
-                    "Depth attachment can only be assigned once");
+  GLOW_ASSERT_MSG(!subpass.has_depth_attachment,
+                  "Depth attachment can only be assigned once");
 
   subpass.has_depth_attachment = true;
   subpass.depth_attachment = VkAttachmentReference {
@@ -182,8 +182,8 @@ auto RenderPassBuilder::build() const -> RenderPassInfo
   };
 
   VkRenderPass render_pass = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateRenderPass(get_device(), &create_info, nullptr, &render_pass),
-                 "[VK] Could not create render pass");
+  GLOW_VK_CALL(vkCreateRenderPass(get_device(), &create_info, nullptr, &render_pass),
+               "[VK] Could not create render pass");
 
   RenderPassInfo info;
   info.pass.reset(render_pass);

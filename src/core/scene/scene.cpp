@@ -53,8 +53,8 @@ auto Scene::make_node(String name, const Entity parent) -> Entity
     parent_node.children.push_back(node_entity);
   }
 
-  GRAVEL_ASSERT(mRegistry.all_of<Identifier>(node_entity));
-  GRAVEL_ASSERT(mRegistry.all_of<Transform>(node_entity));
+  GLOW_ASSERT(mRegistry.all_of<Identifier>(node_entity));
+  GLOW_ASSERT(mRegistry.all_of<Transform>(node_entity));
 
   return node_entity;
 }

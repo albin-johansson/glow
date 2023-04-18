@@ -10,8 +10,8 @@ struct DeviceDeleter final {
   void operator()(VkDevice device) noexcept;
 };
 
-using Device = Unique<VkDevice_T, DeviceDeleter>;
+using DevicePtr = Unique<VkDevice_T, DeviceDeleter>;
 
-[[nodiscard]] auto create_device() -> Device;
+[[nodiscard]] auto create_device() -> DevicePtr;
 
 }  // namespace glow::vk

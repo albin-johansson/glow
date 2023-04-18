@@ -5,8 +5,8 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_C(Scene);
-GRAVEL_FORWARD_DECLARE_C(Backend);
+GLOW_FORWARD_DECLARE_C(Scene);
+GLOW_FORWARD_DECLARE_C(Backend);
 
 void show_scene_viewport(const Scene& scene, Backend& backend, Dispatcher& dispatcher);
 

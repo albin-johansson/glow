@@ -15,23 +15,24 @@ void AllocatorDeleter::operator()(VmaAllocator allocator) noexcept
   vmaDestroyAllocator(allocator);
 }
 
-auto create_allocator() -> Allocator
+auto create_allocator() -> AllocatorPtr
 {
-  GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(get_gpu() != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_instance() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_gpu() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
   VmaAllocatorCreateInfo create_info {};
   create_info.instance = get_instance();
   create_info.physicalDevice = get_gpu();
   create_info.device = get_device();
+  create_info.vulkanApiVersion = VK_API_VERSION_1_2;
 
   VmaAllocator allocator = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vmaCreateAllocator(&create_info, &allocator),
-                 "[VK] Could not create allocator");
+  GLOW_VK_CALL(vmaCreateAllocator(&create_info, &allocator),
+               "[VK] Could not create allocator");
   set_allocator(allocator);
 
-  return Allocator {allocator};
+  return AllocatorPtr {allocator};
 }
 
 }  // namespace glow::vk

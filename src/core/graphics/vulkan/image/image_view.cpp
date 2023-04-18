@@ -13,7 +13,7 @@ ImageView::ImageView(VkImage image,
                      const VkImageAspectFlags aspects,
                      const uint32 mip_levels)
 {
-  GRAVEL_ASSERT(image_format != VK_FORMAT_UNDEFINED);
+  GLOW_ASSERT(image_format != VK_FORMAT_UNDEFINED);
 
   const VkImageViewCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
@@ -38,8 +38,8 @@ ImageView::ImageView(VkImage image,
           },
   };
 
-  GRAVEL_VK_CALL(vkCreateImageView(get_device(), &create_info, nullptr, &mImageView),
-                 "[VK] Could not create image view");
+  GLOW_VK_CALL(vkCreateImageView(get_device(), &create_info, nullptr, &mImageView),
+               "[VK] Could not create image view");
 }
 
 ImageView::ImageView(Image& image,

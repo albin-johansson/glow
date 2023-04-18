@@ -9,7 +9,7 @@ namespace glow {
 
 class Error final : public std::exception {
  public:
-  GRAVEL_NOINLINE explicit Error(String msg);
+  GLOW_NOINLINE explicit Error(String msg);
 
   [[nodiscard]] auto what() const noexcept -> const char* override;
 
@@ -21,6 +21,6 @@ class Error final : public std::exception {
 };
 
 /// Custom terminate handler.
-[[noreturn]] GRAVEL_NOINLINE void on_terminate();
+[[noreturn]] GLOW_NOINLINE void on_terminate();
 
 }  // namespace glow

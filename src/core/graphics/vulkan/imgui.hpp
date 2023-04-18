@@ -25,7 +25,7 @@ inline constexpr VkDescriptorPoolSize kImGuiDescriptorPoolSizes[] = {
 };
 
 struct ImGuiData final {
-  PipelineCache pipeline_cache {create_pipeline_cache()};
+  PipelineCachePtr pipeline_cache {create_pipeline_cache()};
   DescriptorPool descriptor_pool {1'000,
                                   kImGuiDescriptorPoolSizes,
                                   std::size(kImGuiDescriptorPoolSizes),

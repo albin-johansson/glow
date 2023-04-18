@@ -10,8 +10,8 @@ struct SurfaceDeleter final {
   void operator()(VkSurfaceKHR surface) noexcept;
 };
 
-using Surface = Unique<VkSurfaceKHR_T, SurfaceDeleter>;
+using SurfacePtr = Unique<VkSurfaceKHR_T, SurfaceDeleter>;
 
-[[nodiscard]] auto create_surface() -> Surface;
+[[nodiscard]] auto create_surface() -> SurfacePtr;
 
 }  // namespace glow::vk

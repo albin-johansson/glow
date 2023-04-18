@@ -8,7 +8,7 @@ namespace glow::gl {
 /// Represents an OpenGL vertex array object (VAO).
 class VertexArray final {
  public:
-  GRAVEL_DELETE_COPY(VertexArray);
+  GLOW_DELETE_COPY(VertexArray);
 
   /// Creates a VAO instance, but does not bind it.
   VertexArray();

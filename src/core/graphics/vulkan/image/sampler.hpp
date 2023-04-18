@@ -10,8 +10,8 @@ struct SamplerDeleter final {
   void operator()(VkSampler sampler) noexcept;
 };
 
-using Sampler = Unique<VkSampler_T, SamplerDeleter>;
+using SamplerPtr = Unique<VkSampler_T, SamplerDeleter>;
 
-[[nodiscard]] auto create_sampler() -> Sampler;
+[[nodiscard]] auto create_sampler(VkSamplerAddressMode address_mode) -> SamplerPtr;
 
 }  // namespace glow::vk

@@ -7,90 +7,90 @@
 
 #include "common/primitives.hpp"
 
-#define GRAVEL_VERSION_MAJOR 0
-#define GRAVEL_VERSION_MINOR 1
-#define GRAVEL_VERSION_PATCH 0
+#define GLOW_VERSION_MAJOR 0
+#define GLOW_VERSION_MINOR 1
+#define GLOW_VERSION_PATCH 0
 
-#define GRAVEL_VERSION \
-  BOOST_VERSION_NUMBER(GRAVEL_VERSION_MAJOR, GRAVEL_VERSION_MINOR, GRAVEL_VERSION_PATCH)
+#define GLOW_VERSION \
+  BOOST_VERSION_NUMBER(GLOW_VERSION_MAJOR, GLOW_VERSION_MINOR, GLOW_VERSION_PATCH)
 
 // clang-format off
-#define GRAVEL_VERSION_STRING           \
-  BOOST_STRINGIZE(GRAVEL_VERSION_MAJOR) "." \
-  BOOST_STRINGIZE(GRAVEL_VERSION_MINOR) "." \
-  BOOST_STRINGIZE(GRAVEL_VERSION_PATCH)
+#define GLOW_VERSION_STRING           \
+  BOOST_STRINGIZE(GLOW_VERSION_MAJOR) "." \
+  BOOST_STRINGIZE(GLOW_VERSION_MINOR) "." \
+  BOOST_STRINGIZE(GLOW_VERSION_PATCH)
 // clang-format on
 
 #ifdef NDEBUG
-#define GRAVEL_DEBUG_BUILD 0
-#define GRAVEL_RELEASE_BUILD 1
+#define GLOW_DEBUG_BUILD 0
+#define GLOW_RELEASE_BUILD 1
 #else
-#define GRAVEL_DEBUG_BUILD 1
-#define GRAVEL_RELEASE_BUILD 0
+#define GLOW_DEBUG_BUILD 1
+#define GLOW_RELEASE_BUILD 0
 #endif  // NDEBUG
 
 // Compiler detection
-#define GRAVEL_COMPILER_MSVC BOOST_COMP_MSVC
-#define GRAVEL_COMPILER_CLANG BOOST_COMP_CLANG
-#define GRAVEL_COMPILER_GCC BOOST_COMP_GNUC
+#define GLOW_COMPILER_MSVC BOOST_COMP_MSVC
+#define GLOW_COMPILER_CLANG BOOST_COMP_CLANG
+#define GLOW_COMPILER_GCC BOOST_COMP_GNUC
 
 // OS detection
-#define GRAVEL_OS_WINDOWS BOOST_OS_WINDOWS
-#define GRAVEL_OS_LINUX BOOST_OS_LINUX
-#define GRAVEL_OS_MACOS BOOST_OS_MACOS
+#define GLOW_OS_WINDOWS BOOST_OS_WINDOWS
+#define GLOW_OS_LINUX BOOST_OS_LINUX
+#define GLOW_OS_MACOS BOOST_OS_MACOS
 
 // Attributes
-#define GRAVEL_NOINLINE BOOST_NOINLINE
+#define GLOW_NOINLINE BOOST_NOINLINE
 
-#if GRAVEL_OS_WINDOWS
-#define GRAVEL_DEBUG_BREAK \
-  do {                     \
+#if GLOW_OS_WINDOWS
+#define GLOW_DEBUG_BREAK \
+  do {                   \
   } while (false)
 #elif __has_builtin(__builtin_debugtrap)
-#define GRAVEL_DEBUG_BREAK __builtin_debugtrap()
+#define GLOW_DEBUG_BREAK __builtin_debugtrap()
 #else
-#define GRAVEL_DEBUG_BREAK \
-  do {                     \
+#define GLOW_DEBUG_BREAK \
+  do {                   \
   } while (false)
 #endif
 
 // clang-format off
-#define GRAVEL_DEFAULT_COPY(Class) \
+#define GLOW_DEFAULT_COPY(Class) \
   Class(const Class&) = default;   \
   auto operator=(const Class&) -> Class& = default
 
-#define GRAVEL_DELETE_COPY(Class) \
+#define GLOW_DELETE_COPY(Class) \
   Class(const Class&) = delete;   \
   auto operator=(const Class&) -> Class& = delete
 
-#define GRAVEL_DEFAULT_MOVE(Class) \
+#define GLOW_DEFAULT_MOVE(Class) \
   Class(Class&&) noexcept = default;        \
   auto operator=(Class&&) noexcept -> Class& = default
 
-#define GRAVEL_DELETE_MOVE(Class) \
+#define GLOW_DELETE_MOVE(Class) \
   Class(Class&&) noexcept = delete;        \
   auto operator=(Class&&) noexcept -> Class& = delete
 // clang-format on
 
 // Convenience macro used to work around issues with move-only components.
-#define GRAVEL_MOVE_ONLY_COMPONENT(Class) \
-  Class() = default;                      \
-  ~Class() = default;                     \
-  GRAVEL_DEFAULT_MOVE(Class);             \
-  GRAVEL_DELETE_COPY(Class)
+#define GLOW_MOVE_ONLY_COMPONENT(Class) \
+  Class() = default;                    \
+  ~Class() = default;                   \
+  GLOW_DEFAULT_MOVE(Class);             \
+  GLOW_DELETE_COPY(Class)
 
-#define GRAVEL_FORWARD_DECLARE_C(Class) class Class
-#define GRAVEL_FORWARD_DECLARE_S(Class) struct Class
+#define GLOW_FORWARD_DECLARE_C(Class) class Class
+#define GLOW_FORWARD_DECLARE_S(Class) struct Class
 
 namespace glow {
 
-inline constexpr uint32 kVersion = GRAVEL_VERSION;
+inline constexpr uint32 kVersion = GLOW_VERSION;
 
-inline constexpr bool kDebugBuild = GRAVEL_DEBUG_BUILD;
-inline constexpr bool kReleaseBuild = GRAVEL_RELEASE_BUILD;
+inline constexpr bool kDebugBuild = GLOW_DEBUG_BUILD;
+inline constexpr bool kReleaseBuild = GLOW_RELEASE_BUILD;
 
-inline constexpr bool kIsMacOS = GRAVEL_OS_MACOS;
-inline constexpr bool kIsWindows = GRAVEL_OS_WINDOWS;
-inline constexpr bool kIsLinux = GRAVEL_OS_LINUX;
+inline constexpr bool kIsMacOS = GLOW_OS_MACOS;
+inline constexpr bool kIsWindows = GLOW_OS_WINDOWS;
+inline constexpr bool kIsLinux = GLOW_OS_LINUX;
 
 }  // namespace glow

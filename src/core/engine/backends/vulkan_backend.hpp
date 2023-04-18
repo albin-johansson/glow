@@ -37,8 +37,8 @@ namespace glow {
 
 class VulkanBackend final : public Backend {
  public:
-  GRAVEL_DELETE_COPY(VulkanBackend);
-  GRAVEL_DELETE_MOVE(VulkanBackend);
+  GLOW_DELETE_COPY(VulkanBackend);
+  GLOW_DELETE_MOVE(VulkanBackend);
 
   VulkanBackend();
 
@@ -69,18 +69,18 @@ class VulkanBackend final : public Backend {
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
-  vk::Instance mInstance;
-  vk::DebugMessenger mDebugMessenger;
-  vk::Surface mSurface;
+  vk::InstancePtr mInstance;
+  vk::DebugMessengerPtr mDebugMessenger;
+  vk::SurfacePtr mSurface;
   VkPhysicalDevice mGPU;
-  vk::Device mDevice;
-  vk::Allocator mAllocator;
+  vk::DevicePtr mDevice;
+  vk::AllocatorPtr mAllocator;
   vk::Swapchain mSwapchain;
   vk::RenderPassInfo mRenderPassInfo;
-  vk::Sampler mSampler;
-  vk::PipelineCache mPipelineCache;
+  vk::SamplerPtr mSampler;
+  vk::PipelineCachePtr mPipelineCache;
   vk::ImGuiData mImGuiData;
-  vk::CommandPool mCommandPool;
+  vk::CommandPoolPtr mCommandPool;
   vk::DescriptorSetLayout mShadingDescriptorSetLayout;
   vk::PipelineLayout mShadingPipelineLayout;
   vk::Pipeline mShadingPipeline;

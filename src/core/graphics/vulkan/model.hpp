@@ -10,7 +10,7 @@
 #include "graphics/vulkan/buffer.hpp"
 
 namespace glow {
-GRAVEL_FORWARD_DECLARE_C(Scene);
+GLOW_FORWARD_DECLARE_C(Scene);
 }  // namespace glow
 
 namespace glow::vk {
@@ -28,7 +28,7 @@ struct Material final {
 /// Vulkan mesh component.
 /// TODO use one buffer for the vertex and index data
 struct Mesh final {
-  GRAVEL_MOVE_ONLY_COMPONENT(Mesh);
+  GLOW_MOVE_ONLY_COMPONENT(Mesh);
 
   Mat4 transform {1.0f};          ///< Transform matrix relative to parent model.
   Maybe<Buffer> vertex_buffer;    ///< Associated vertex buffer.
@@ -39,7 +39,7 @@ struct Mesh final {
 
 /// Vulkan model component.
 struct Model final {
-  GRAVEL_MOVE_ONLY_COMPONENT(Model);
+  GLOW_MOVE_ONLY_COMPONENT(Model);
 
   Vector<Mesh> meshes;
 };

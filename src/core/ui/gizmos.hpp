@@ -7,7 +7,7 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_S(Transform);
+GLOW_FORWARD_DECLARE_S(Transform);
 
 enum class GizmoOperation {
   Translate,

@@ -13,12 +13,12 @@
 
 namespace glow::gl {
 
-GRAVEL_FORWARD_DECLARE_C(Shader);
+GLOW_FORWARD_DECLARE_C(Shader);
 
 /// Represents an OpenGL shader program.
 class Program final {
  public:
-  GRAVEL_DELETE_COPY(Program);
+  GLOW_DELETE_COPY(Program);
 
   /// Creates a shader program without any attached shaders.
   Program();

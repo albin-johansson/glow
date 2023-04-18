@@ -9,7 +9,7 @@ namespace glow::gl {
 /// Represents an OpenGL element (or index) buffer object (EBO).
 class IndexBuffer final {
  public:
-  GRAVEL_DELETE_COPY(IndexBuffer);
+  GLOW_DELETE_COPY(IndexBuffer);
 
   /// Creates an index buffer, but does not bind it.
   IndexBuffer();

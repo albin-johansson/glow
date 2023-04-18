@@ -11,7 +11,7 @@ DescriptorPool::DescriptorPool(const uint32 max_sets,
                                const uint32 pool_size_count,
                                const VkDescriptorPoolCreateFlags flags)
 {
-  GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
   const VkDescriptorPoolCreateInfo pool_info {
       .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
@@ -25,8 +25,8 @@ DescriptorPool::DescriptorPool(const uint32 max_sets,
       .pPoolSizes = pool_sizes,
   };
 
-  GRAVEL_VK_CALL(vkCreateDescriptorPool(get_device(), &pool_info, nullptr, &mPool),
-                 "[VK] Could not create descriptor pool");
+  GLOW_VK_CALL(vkCreateDescriptorPool(get_device(), &pool_info, nullptr, &mPool),
+               "[VK] Could not create descriptor pool");
 }
 
 DescriptorPool::~DescriptorPool() noexcept
@@ -70,8 +70,8 @@ auto DescriptorPool::allocate(VkDescriptorSetLayout layout) -> VkDescriptorSet
   };
 
   VkDescriptorSet descriptor_set = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkAllocateDescriptorSets(get_device(), &allocate_info, &descriptor_set),
-                 "[VK] Could not allocate descriptor set");
+  GLOW_VK_CALL(vkAllocateDescriptorSets(get_device(), &allocate_info, &descriptor_set),
+               "[VK] Could not allocate descriptor set");
 
   return descriptor_set;
 }

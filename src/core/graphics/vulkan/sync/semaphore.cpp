@@ -13,7 +13,7 @@ void SemaphoreDeleter::operator()(VkSemaphore semaphore) noexcept
 
 auto create_semaphore() -> Semaphore
 {
-  GRAVEL_ASSERT(get_device() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
   const VkSemaphoreCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
@@ -22,8 +22,8 @@ auto create_semaphore() -> Semaphore
   };
 
   VkSemaphore semaphore = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateSemaphore(get_device(), &create_info, nullptr, &semaphore),
-                 "[VK] Could not create semaphore");
+  GLOW_VK_CALL(vkCreateSemaphore(get_device(), &create_info, nullptr, &semaphore),
+               "[VK] Could not create semaphore");
 
   return Semaphore {semaphore};
 }

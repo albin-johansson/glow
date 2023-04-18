@@ -16,7 +16,7 @@ namespace glow::gl {
  */
 class Shader final {
  public:
-  GRAVEL_DELETE_COPY(Shader);
+  GLOW_DELETE_COPY(Shader);
 
   /// Creates a shader of the specified type, without any associated code.
   explicit Shader(ShaderType type);

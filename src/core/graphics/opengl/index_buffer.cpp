@@ -56,13 +56,13 @@ void IndexBuffer::upload_data(const usize data_size,
                               const uint* data,
                               const BufferUsage usage)
 {
-  GRAVEL_ASSERT(get_bound_index_buffer() == mID);
+  GLOW_ASSERT(get_bound_index_buffer() == mID);
 
   glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                static_cast<GLsizeiptr>(data_size),
                data,
                convert_buffer_usage(usage));
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 }  // namespace glow::gl

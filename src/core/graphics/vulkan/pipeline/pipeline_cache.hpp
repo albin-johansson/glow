@@ -10,8 +10,8 @@ struct PipelineCacheDeleter final {
   void operator()(VkPipelineCache cache) noexcept;
 };
 
-using PipelineCache = Unique<VkPipelineCache_T, PipelineCacheDeleter>;
+using PipelineCachePtr = Unique<VkPipelineCache_T, PipelineCacheDeleter>;
 
-[[nodiscard]] auto create_pipeline_cache() -> PipelineCache;
+[[nodiscard]] auto create_pipeline_cache() -> PipelineCachePtr;
 
 }  // namespace glow::vk

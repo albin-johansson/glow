@@ -11,8 +11,8 @@ namespace glow::gl {
 struct TextureCache final {
   TextureCache() = default;
   ~TextureCache() = default;
-  GRAVEL_DELETE_COPY(TextureCache);
-  GRAVEL_DEFAULT_MOVE(TextureCache);
+  GLOW_DELETE_COPY(TextureCache);
+  GLOW_DEFAULT_MOVE(TextureCache);
 
   Map<Path, Texture2D> textures;
 };

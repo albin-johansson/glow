@@ -15,10 +15,10 @@ void SurfaceDeleter::operator()(VkSurfaceKHR surface) noexcept
   vkDestroySurfaceKHR(get_instance(), surface, nullptr);
 }
 
-auto create_surface() -> Surface
+auto create_surface() -> SurfacePtr
 {
-  GRAVEL_ASSERT(get_window() != nullptr);
-  GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_window() != nullptr);
+  GLOW_ASSERT(get_instance() != VK_NULL_HANDLE);
 
   VkSurfaceKHR surface = VK_NULL_HANDLE;
   if (!SDL_Vulkan_CreateSurface(get_window(), get_instance(), &surface)) {
@@ -26,7 +26,7 @@ auto create_surface() -> Surface
   }
 
   set_surface(surface);
-  return Surface {surface};
+  return SurfacePtr {surface};
 }
 
 }  // namespace glow::vk

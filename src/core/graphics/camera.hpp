@@ -9,8 +9,8 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_S(Transform);
-GRAVEL_FORWARD_DECLARE_C(Scene);
+GLOW_FORWARD_DECLARE_S(Transform);
+GLOW_FORWARD_DECLARE_C(Scene);
 
 /// Context component for tracking the active camera.
 struct CameraContext final {

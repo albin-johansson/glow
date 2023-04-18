@@ -109,7 +109,7 @@ void Renderer::bind_shading_program()
 
 void Renderer::unbind_shading_program()
 {
-  GRAVEL_ASSERT(get_bound_program() == mShadingProgram.get_id());
+  GLOW_ASSERT(get_bound_program() == mShadingProgram.get_id());
 
   VertexArray::unbind();
   Program::unbind();
@@ -138,7 +138,7 @@ void Renderer::render_environment(const Texture2D& texture)
 
 void Renderer::render_shaded_mesh(const Mesh& mesh, const Material& material)
 {
-  GRAVEL_ASSERT(get_bound_program() == mShadingProgram.get_id());
+  GLOW_ASSERT(get_bound_program() == mShadingProgram.get_id());
 
   mMatrixUBO.bind();
   mMatrixUBO.update_data(0, sizeof mMatrixBuffer, &mMatrixBuffer);

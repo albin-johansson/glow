@@ -33,8 +33,8 @@ namespace {
 
 [[nodiscard]] auto select_gpu() -> VkPhysicalDevice
 {
-  GRAVEL_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(vk::get_surface() != VK_NULL_HANDLE);
+  GLOW_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
+  GLOW_ASSERT(vk::get_surface() != VK_NULL_HANDLE);
 
   auto* gpu = vk::get_suitable_physical_device(vk::get_instance(), vk::get_surface());
   vk::set_gpu(gpu);
@@ -87,9 +87,11 @@ VulkanBackend::VulkanBackend()
       mAllocator {vk::create_allocator()},
       mSwapchain {},
       mRenderPassInfo {create_render_pass(mSwapchain.get_image_format())},
-      mSampler {vk::create_sampler()},
+      mSampler {vk::create_sampler(VK_SAMPLER_ADDRESS_MODE_REPEAT)},
       mPipelineCache {vk::create_pipeline_cache()},
-      mImGuiData {}
+      mImGuiData {},
+      mCommandPool {
+          vk::create_command_pool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)}
 {
   create_shading_pipeline();
   create_frame_data();
@@ -139,7 +141,7 @@ void VulkanBackend::create_frame_data()
 {
   for (usize index = 0; index < vk::kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
-    frame.command_buffer = mCommandPool.allocate_command_buffer();
+    frame.command_buffer = vk::allocate_command_buffer(mCommandPool.get());
   }
 }
 
@@ -229,7 +231,7 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
 
   vk::cmd_begin_render_pass(frame.command_buffer,
                             mRenderPassInfo,
-                            mSwapchain.get_current_framebuffer().get(),
+                            mSwapchain.get_current_framebuffer(),
                             mSwapchain.get_image_extent());
 
   return kSuccess;

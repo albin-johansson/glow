@@ -58,7 +58,7 @@ void Quad::draw()
   mVAO.bind();
 
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 
   VertexArray::unbind();
 }

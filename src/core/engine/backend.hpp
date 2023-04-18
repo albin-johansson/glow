@@ -13,7 +13,7 @@
 
 namespace glow {
 
-GRAVEL_FORWARD_DECLARE_C(Scene);
+GLOW_FORWARD_DECLARE_C(Scene);
 
 class Backend {
  public:

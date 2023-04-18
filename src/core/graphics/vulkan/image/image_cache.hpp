@@ -12,7 +12,7 @@ namespace glow::vk {
 
 /// Vulkan image cache context component.
 struct ImageCache final {
-  GRAVEL_MOVE_ONLY_COMPONENT(ImageCache);
+  GLOW_MOVE_ONLY_COMPONENT(ImageCache);
 
   Map<Path, Image> images;
   Map<VkImage, ImageView> views;

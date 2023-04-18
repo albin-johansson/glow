@@ -46,8 +46,8 @@ void transition_image_layout(VkCommandBuffer command_buffer,
                              const uint32 level_count,
                              const uint32 base_level)
 {
-  GRAVEL_ASSERT(kTransitionAccessMap.contains(old_layout));
-  GRAVEL_ASSERT(kTransitionAccessMap.contains(new_layout));
+  GLOW_ASSERT(kTransitionAccessMap.contains(old_layout));
+  GLOW_ASSERT(kTransitionAccessMap.contains(new_layout));
 
   const auto src_access = kTransitionAccessMap.at(old_layout);
   const auto dst_access = kTransitionAccessMap.at(new_layout);
@@ -106,11 +106,11 @@ Image::Image(const VkImageType type,
       mMipLevels {mip_levels}
 {
   if (mSamples != VK_SAMPLE_COUNT_1_BIT) {
-    GRAVEL_ASSERT(mMipLevels == 1);
+    GLOW_ASSERT(mMipLevels == 1);
   }
 
-  GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_UNDEFINED);
-  GRAVEL_ASSERT(mFormat != VK_FORMAT_UNDEFINED);
+  GLOW_ASSERT(mLayout == VK_IMAGE_LAYOUT_UNDEFINED);
+  GLOW_ASSERT(mFormat != VK_FORMAT_UNDEFINED);
 
   const VkImageCreateInfo image_info {
       .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
@@ -144,21 +144,21 @@ Image::Image(const VkImageType type,
       .priority = 0.0f,
   };
 
-  GRAVEL_VK_CALL(vmaCreateImage(get_allocator(),
-                                &image_info,
-                                &allocation_info,
-                                &mImage,
-                                &mAllocation,
-                                nullptr),
-                 "[VK] Could not create image");
+  GLOW_VK_CALL(vmaCreateImage(get_allocator(),
+                              &image_info,
+                              &allocation_info,
+                              &mImage,
+                              &mAllocation,
+                              nullptr),
+               "[VK] Could not create image");
 }
 
 Image::~Image() noexcept
 {
-  dispose();
+  destroy();
 }
 
-void Image::dispose() noexcept
+void Image::destroy() noexcept
 {
   if (mImage != VK_NULL_HANDLE) {
     vmaDestroyImage(get_allocator(), mImage, mAllocation);
@@ -171,6 +171,7 @@ Image::Image(Image&& other) noexcept
       mExtent {other.mExtent},
       mFormat {other.mFormat},
       mLayout {other.mLayout},
+      mSamples {other.mSamples},
       mMipLevels {other.mMipLevels}
 {
   other.mImage = VK_NULL_HANDLE;
@@ -180,13 +181,14 @@ Image::Image(Image&& other) noexcept
 auto Image::operator=(Image&& other) noexcept -> Image&
 {
   if (this != &other) {
-    dispose();
+    destroy();
 
     mImage = other.mImage;
     mAllocation = other.mAllocation;
     mExtent = other.mExtent;
     mFormat = other.mFormat;
     mLayout = other.mLayout;
+    mSamples = other.mSamples;
     mMipLevels = other.mMipLevels;
 
     other.mImage = VK_NULL_HANDLE;
@@ -228,8 +230,8 @@ void Image::copy_from_buffer(VkBuffer buffer)
 
 void Image::generate_mipmaps()
 {
-  GRAVEL_ASSERT(mSamples | VK_SAMPLE_COUNT_1_BIT);
-  GRAVEL_ASSERT(mLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+  GLOW_ASSERT(mSamples | VK_SAMPLE_COUNT_1_BIT);
+  GLOW_ASSERT(mLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
   execute_immediately([this](VkCommandBuffer cmd_buffer) {
     auto mip_width = static_cast<int32>(mExtent.width);
@@ -360,8 +362,8 @@ auto load_image_2d(const void* data,
   // Generate mipmaps, which will automatically change layout of all image levels
   image.generate_mipmaps();
 
-  GRAVEL_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-  GRAVEL_ASSERT(image.get_format() == format);
+  GLOW_ASSERT(image.get_layout() == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  GLOW_ASSERT(image.get_format() == format);
 
   return image;
 }

@@ -125,7 +125,7 @@ void OpenGLBackend::render_scene(const Scene& scene,
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     gl::Framebuffer::unbind();
-    GRAVEL_GL_CHECK_ERRORS();
+    GLOW_GL_CHECK_ERRORS();
   }
 }
 
@@ -191,7 +191,7 @@ void OpenGLBackend::render_models(const Scene& scene,
                              dispatcher);
   }
 
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 
   mRenderer.unbind_shading_program();
 }

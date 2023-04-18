@@ -12,8 +12,8 @@ struct AllocatorDeleter final {
 };
 
 /// Represents a dedicated Vulkan memory allocator.
-using Allocator = Unique<VmaAllocator_T, AllocatorDeleter>;
+using AllocatorPtr = Unique<VmaAllocator_T, AllocatorDeleter>;
 
-[[nodiscard]] auto create_allocator() -> Allocator;
+[[nodiscard]] auto create_allocator() -> AllocatorPtr;
 
 }  // namespace glow::vk

@@ -19,9 +19,9 @@ inline constexpr const char* kRequiredDeviceExtensions[] {
     VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME,
     VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
 
-#ifdef GRAVEL_USE_VULKAN_SUBSET
+#ifdef GLOW_USE_VULKAN_SUBSET
     "VK_KHR_portability_subset",
-#endif  // GRAVEL_USE_VULKAN_SUBSET
+#endif  // GLOW_USE_VULKAN_SUBSET
 };
 
 }  // namespace glow::vk

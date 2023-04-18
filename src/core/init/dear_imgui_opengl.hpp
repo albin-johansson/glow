@@ -8,8 +8,8 @@ namespace glow {
 
 class DearImGuiOpenGL final {
  public:
-  GRAVEL_DELETE_COPY(DearImGuiOpenGL);
-  GRAVEL_DELETE_MOVE(DearImGuiOpenGL);
+  GLOW_DELETE_COPY(DearImGuiOpenGL);
+  GLOW_DELETE_MOVE(DearImGuiOpenGL);
 
   explicit DearImGuiOpenGL(SDL_Window* window);
 

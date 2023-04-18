@@ -13,28 +13,16 @@ struct CommandPoolDeleter final {
   void operator()(VkCommandPool pool) noexcept;
 };
 
-using ManagedCommandPool = Unique<VkCommandPool_T, CommandPoolDeleter>;
+using CommandPoolPtr = Unique<VkCommandPool_T, CommandPoolDeleter>;
 
-class CommandPool final {
- public:
-  GRAVEL_DELETE_COPY(CommandPool);
-  GRAVEL_DEFAULT_MOVE(CommandPool);
+/// Creates a command pool for the graphics queue.
+[[nodiscard]] auto create_command_pool(VkCommandPoolCreateFlags flags) -> CommandPoolPtr;
 
-  CommandPool();
-
-  [[nodiscard]] auto allocate_command_buffer() -> VkCommandBuffer;
-
-  [[nodiscard]] auto allocate_command_buffers(uint32 count) -> Vector<VkCommandBuffer>;
-
-  [[nodiscard]] auto get() noexcept -> VkCommandPool { return mCommandPool.get(); }
-
- private:
-  ManagedCommandPool mCommandPool;
-};
-
-[[nodiscard]] auto allocate_command_buffer(VkCommandPool command_pool) -> VkCommandBuffer;
-
+/// Allocates a specific amount of command buffers from a pool.
 [[nodiscard]] auto allocate_command_buffers(VkCommandPool command_pool, uint32 count)
     -> Vector<VkCommandBuffer>;
+
+/// Allocates a single command buffer from a pool.
+[[nodiscard]] auto allocate_command_buffer(VkCommandPool command_pool) -> VkCommandBuffer;
 
 }  // namespace glow::vk

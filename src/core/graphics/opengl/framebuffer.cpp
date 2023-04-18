@@ -29,7 +29,7 @@ Framebuffer::Framebuffer()
   glDrawBuffer(GL_COLOR_ATTACHMENT0);
   unbind();
 
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 Framebuffer::~Framebuffer() noexcept
@@ -81,7 +81,7 @@ void Framebuffer::unbind()
 
 void Framebuffer::resize(const Vec2i size)
 {
-  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
+  GLOW_ASSERT(get_bound_framebuffer() == mID);
 
   if (mSize == size) {
     return;
@@ -101,25 +101,25 @@ void Framebuffer::resize(const Vec2i size)
                          nullptr);
 
   Texture2D::unbind();
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void Framebuffer::clear()
 {
-  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
-  GRAVEL_ASSERT_MSG(is_complete(), "Incomplete framebuffer used, remember to set size");
+  GLOW_ASSERT(get_bound_framebuffer() == mID);
+  GLOW_ASSERT_MSG(is_complete(), "Incomplete framebuffer used, remember to set size");
 
   glViewport(0, 0, mSize.x, mSize.y);
 
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  GRAVEL_GL_CHECK_ERRORS();
+  GLOW_GL_CHECK_ERRORS();
 }
 
 auto Framebuffer::is_complete() const -> bool
 {
-  GRAVEL_ASSERT(get_bound_framebuffer() == mID);
+  GLOW_ASSERT(get_bound_framebuffer() == mID);
   return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
 }
 

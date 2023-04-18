@@ -41,9 +41,9 @@ void DebugMessengerDeleter::operator()(VkDebugUtilsMessengerEXT messenger) noexc
   destroy_debug_messenger(get_instance(), messenger);
 }
 
-auto create_debug_messenger() -> DebugMessenger
+auto create_debug_messenger() -> DebugMessengerPtr
 {
-  GRAVEL_ASSERT(get_instance() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_instance() != VK_NULL_HANDLE);
 
   const VkDebugUtilsMessengerCreateInfoEXT create_info {
       .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
@@ -64,10 +64,10 @@ auto create_debug_messenger() -> DebugMessenger
   };
 
   VkDebugUtilsMessengerEXT messenger = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(create_debug_messenger(get_instance(), &create_info, &messenger),
-                 "[VK] Could not create debug messenger");
+  GLOW_VK_CALL(create_debug_messenger(get_instance(), &create_info, &messenger),
+               "[VK] Could not create debug messenger");
 
-  return DebugMessenger {messenger};
+  return DebugMessengerPtr {messenger};
 }
 
 }  // namespace glow::vk

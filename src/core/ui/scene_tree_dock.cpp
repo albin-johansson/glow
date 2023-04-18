@@ -102,7 +102,7 @@ void show_scene_node_widget(const Scene& scene,
                             const Entity entity,
                             Dispatcher& dispatcher)
 {
-  GRAVEL_ASSERT(scene.get_registry().all_of<Node>(entity));
+  GLOW_ASSERT(scene.get_registry().all_of<Node>(entity));
 
   ImGui::PushID(static_cast<int>(entity));
 

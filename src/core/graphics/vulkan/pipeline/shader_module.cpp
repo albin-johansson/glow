@@ -26,8 +26,8 @@ auto create_shader_module(const Path& shader_path) -> ShaderModule
   };
 
   VkShaderModule shader = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateShaderModule(get_device(), &create_info, nullptr, &shader),
-                 "[VK] Could not create shader module");
+  GLOW_VK_CALL(vkCreateShaderModule(get_device(), &create_info, nullptr, &shader),
+               "[VK] Could not create shader module");
 
   return ShaderModule {shader};
 }

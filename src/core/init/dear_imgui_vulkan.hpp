@@ -8,8 +8,8 @@ namespace glow {
 
 class DearImGuiVulkan final {
  public:
-  GRAVEL_DELETE_COPY(DearImGuiVulkan);
-  GRAVEL_DELETE_MOVE(DearImGuiVulkan);
+  GLOW_DELETE_COPY(DearImGuiVulkan);
+  GLOW_DELETE_MOVE(DearImGuiVulkan);
 
   explicit DearImGuiVulkan(SDL_Window* window);
 

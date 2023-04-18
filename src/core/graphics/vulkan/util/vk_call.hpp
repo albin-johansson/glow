@@ -12,9 +12,9 @@ namespace glow::vk {
 
 }  // namespace glow::vk
 
-#define GRAVEL_VK_CALL(Expr, ErrorMsg)                                             \
-  do {                                                                             \
-    if (const auto res = (Expr); res != VK_SUCCESS) {                              \
-      throw Error {fmt::format(ErrorMsg ": {}", glow::vk::stringify_result(res))}; \
-    }                                                                              \
+#define GLOW_VK_CALL(Expr, ErrorMsg)                                                     \
+  do {                                                                                   \
+    if (const auto res = (Expr); res != VK_SUCCESS) {                                    \
+      throw glow::Error {fmt::format(ErrorMsg ": {}", glow::vk::stringify_result(res))}; \
+    }                                                                                    \
   } while (false)

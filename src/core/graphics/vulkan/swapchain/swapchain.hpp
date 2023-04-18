@@ -14,8 +14,8 @@ namespace glow::vk {
 
 class Swapchain final {
  public:
-  GRAVEL_DELETE_COPY(Swapchain);
-  GRAVEL_DELETE_MOVE(Swapchain);
+  GLOW_DELETE_COPY(Swapchain);
+  GLOW_DELETE_MOVE(Swapchain);
 
   Swapchain();
 

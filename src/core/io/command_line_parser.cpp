@@ -43,7 +43,7 @@ inline const HashMap<int, LogLevel> kLogLevels {
 auto parse_command_line_args(const int argc, char** argv) -> Maybe<CommandLineArgs>
 {
   argparse::ArgumentParser parser {"glow",
-                                   GRAVEL_VERSION_STRING,
+                                   GLOW_VERSION_STRING,
                                    argparse::default_arguments::all};
 
   // clang-format off

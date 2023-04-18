@@ -10,15 +10,13 @@ void SamplerDeleter::operator()(VkSampler sampler) noexcept
   vkDestroySampler(get_device(), sampler, nullptr);
 }
 
-auto create_sampler() -> Sampler
+auto create_sampler(const VkSamplerAddressMode address_mode) -> SamplerPtr
 {
   VkPhysicalDeviceFeatures device_features {};
   vkGetPhysicalDeviceFeatures(get_gpu(), &device_features);
 
   VkPhysicalDeviceProperties device_properties {};
   vkGetPhysicalDeviceProperties(get_gpu(), &device_properties);
-
-  const VkSamplerAddressMode address_mode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
   const VkSamplerCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -49,10 +47,10 @@ auto create_sampler() -> Sampler
   };
 
   VkSampler sampler = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateSampler(get_device(), &create_info, nullptr, &sampler),
-                 "[VK] Could not create sampler");
+  GLOW_VK_CALL(vkCreateSampler(get_device(), &create_info, nullptr, &sampler),
+               "[VK] Could not create sampler");
 
-  return Sampler {sampler};
+  return SamplerPtr {sampler};
 }
 
 }  // namespace glow::vk

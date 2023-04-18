@@ -8,7 +8,7 @@ namespace glow::gl {
 
 class Buffer final {
  public:
-  GRAVEL_DELETE_COPY(Buffer);
+  GLOW_DELETE_COPY(Buffer);
 
   explicit Buffer(uint type);
 

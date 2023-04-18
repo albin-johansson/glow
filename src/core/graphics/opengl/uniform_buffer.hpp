@@ -9,7 +9,7 @@ namespace glow::gl {
 /// Represents an OpenGL uniform buffer object (UBO).
 class UniformBuffer final {
  public:
-  GRAVEL_DELETE_COPY(UniformBuffer);
+  GLOW_DELETE_COPY(UniformBuffer);
 
   /// Creates a UBO, but does not bind it.
   UniformBuffer();

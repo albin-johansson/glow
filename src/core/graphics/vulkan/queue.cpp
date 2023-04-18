@@ -33,13 +33,13 @@ void submit_to_queue(VkQueue queue,
       .pSignalSemaphores = &signal_semaphore,
   };
 
-  GRAVEL_VK_CALL(vkQueueSubmit(queue, 1, &submit_info, fence),
-                 "[VK] Could not submit command buffer to queue");
+  GLOW_VK_CALL(vkQueueSubmit(queue, 1, &submit_info, fence),
+               "[VK] Could not submit command buffer to queue");
 }
 
 void wait_on_queue(VkQueue queue)
 {
-  GRAVEL_VK_CALL(vkQueueWaitIdle(queue), "[VK] Could not wait on queue");
+  GLOW_VK_CALL(vkQueueWaitIdle(queue), "[VK] Could not wait on queue");
 }
 
 }  // namespace glow::vk

@@ -48,10 +48,10 @@ void DeviceDeleter::operator()(VkDevice device) noexcept
   vkDestroyDevice(device, nullptr);
 }
 
-auto create_device() -> Device
+auto create_device() -> DevicePtr
 {
-  GRAVEL_ASSERT(get_gpu() != VK_NULL_HANDLE);
-  GRAVEL_ASSERT(get_surface() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_gpu() != VK_NULL_HANDLE);
+  GLOW_ASSERT(get_surface() != VK_NULL_HANDLE);
 
   const auto queue_family_indices = get_queue_family_indices(get_gpu(), get_surface());
 
@@ -104,14 +104,14 @@ auto create_device() -> Device
       .pEnabledFeatures = &enabled_device_features,
   };
 
-  if constexpr (GRAVEL_DEBUG_BUILD) {
+  if constexpr (GLOW_DEBUG_BUILD) {
     device_create_info.enabledLayerCount = array_length(kValidationLayerNames);
     device_create_info.ppEnabledLayerNames = kValidationLayerNames;
   }
 
   VkDevice device = VK_NULL_HANDLE;
-  GRAVEL_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &device),
-                 "[VK] Could not create Vulkan device");
+  GLOW_VK_CALL(vkCreateDevice(get_gpu(), &device_create_info, nullptr, &device),
+               "[VK] Could not create Vulkan device");
   set_device(device);
 
   VkQueue graphics_queue = VK_NULL_HANDLE;
@@ -125,7 +125,7 @@ auto create_device() -> Device
 
   print_relevant_device_properties(get_gpu());
 
-  return Device {device};
+  return DevicePtr {device};
 }
 
 }  // namespace glow::vk

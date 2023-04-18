@@ -2,8 +2,8 @@
 
 #include <boost/assert.hpp>
 
-#define GRAVEL_ASSERT(Expr) BOOST_ASSERT(Expr)
-#define GRAVEL_ASSERT_MSG(Expr, Msg) BOOST_ASSERT_MSG(Expr, Msg)
+#define GLOW_ASSERT(Expr) BOOST_ASSERT(Expr)
+#define GLOW_ASSERT_MSG(Expr, Msg) BOOST_ASSERT_MSG(Expr, Msg)
 
 namespace boost {
 
