@@ -18,7 +18,6 @@
 #include "graphics/rendering_options.hpp"
 #include "scene/transform.hpp"
 #include "ui/camera_options.hpp"
-#include "ui/dock_space.hpp"
 #include "ui/menu_bar.hpp"
 #include "ui/scene_tree_dock.hpp"
 
