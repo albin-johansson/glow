@@ -7,6 +7,9 @@
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 
+// This comment is here to keep the include after <imgui.h>
+#include <ImGuizmo.h>
+
 #include "common/debug/error.hpp"
 #include "common/type/math.hpp"
 #include "engine/backend.hpp"
