@@ -11,9 +11,30 @@
 
 namespace glow::vk {
 
+/// Helper type for wrapping a VkImage/VmaAllocation pair.
+class AllocatedImage final {
+ public:
+  GLOW_DELETE_COPY(AllocatedImage);
+
+  VkImage image {VK_NULL_HANDLE};
+  VmaAllocation allocation {VK_NULL_HANDLE};
+
+  AllocatedImage() noexcept = default;
+
+  ~AllocatedImage() noexcept;
+
+  AllocatedImage(AllocatedImage&& other) noexcept;
+
+  auto operator=(AllocatedImage&& other) noexcept -> AllocatedImage&;
+
+ private:
+  void destroy() noexcept;
+};
+
 class Image final {
  public:
   GLOW_DELETE_COPY(Image);
+  GLOW_DEFAULT_MOVE(Image);
 
   /// Creates an empty GPU image.
   ///
@@ -36,12 +57,6 @@ class Image final {
         uint32 mip_levels,
         VkSampleCountFlagBits samples);
 
-  ~Image() noexcept;
-
-  Image(Image&& other) noexcept;
-
-  auto operator=(Image&& other) noexcept -> Image&;
-
   /// Changes the layout of the image, which is initially `VK_IMAGE_LAYOUT_UNDEFINED`.
   void change_layout(VkImageLayout new_layout);
 
@@ -52,7 +67,7 @@ class Image final {
 
   [[nodiscard]] static auto max_mip_levels(const VkExtent3D extent) -> uint32;
 
-  [[nodiscard]] auto get() noexcept -> VkImage { return mImage; }
+  [[nodiscard]] auto get() noexcept -> VkImage { return mData.image; }
   [[nodiscard]] auto get_extent() const noexcept -> const VkExtent3D& { return mExtent; }
   [[nodiscard]] auto get_format() const noexcept -> VkFormat { return mFormat; }
   [[nodiscard]] auto get_layout() const noexcept -> VkImageLayout { return mLayout; }
@@ -63,15 +78,12 @@ class Image final {
   [[nodiscard]] auto get_mip_levels() const noexcept -> uint32 { return mMipLevels; }
 
  private:
-  VkImage mImage {VK_NULL_HANDLE};
-  VmaAllocation mAllocation {VK_NULL_HANDLE};
+  AllocatedImage mData;
   VkExtent3D mExtent {};
   VkFormat mFormat {VK_FORMAT_UNDEFINED};
   VkImageLayout mLayout {VK_IMAGE_LAYOUT_UNDEFINED};
   VkSampleCountFlagBits mSamples {};
   uint32 mMipLevels {1};
-
-  void destroy() noexcept;
 };
 
 /// Creates a 2D image with the pixel data of the image the specified file path.

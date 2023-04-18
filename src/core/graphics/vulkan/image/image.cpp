@@ -94,6 +94,42 @@ void transition_image_layout(VkCommandBuffer command_buffer,
 
 }  // namespace
 
+AllocatedImage::~AllocatedImage() noexcept
+{
+  destroy();
+}
+
+void AllocatedImage::destroy() noexcept
+{
+  if (image != VK_NULL_HANDLE) {
+    GLOW_ASSERT(allocation != VK_NULL_HANDLE);
+    vmaDestroyImage(get_allocator(), image, allocation);
+  }
+}
+
+AllocatedImage::AllocatedImage(AllocatedImage&& other) noexcept
+    : image {other.image},
+      allocation {other.allocation}
+{
+  other.image = VK_NULL_HANDLE;
+  other.allocation = VK_NULL_HANDLE;
+}
+
+auto AllocatedImage::operator=(AllocatedImage&& other) noexcept -> AllocatedImage&
+{
+  if (this != &other) {
+    destroy();
+
+    image = other.image;
+    allocation = other.allocation;
+
+    other.image = VK_NULL_HANDLE;
+    other.allocation = VK_NULL_HANDLE;
+  }
+
+  return *this;
+}
+
 Image::Image(const VkImageType type,
              const VkExtent3D extent,
              const VkFormat format,
@@ -147,61 +183,16 @@ Image::Image(const VkImageType type,
   GLOW_VK_CALL(vmaCreateImage(get_allocator(),
                               &image_info,
                               &allocation_info,
-                              &mImage,
-                              &mAllocation,
+                              &mData.image,
+                              &mData.allocation,
                               nullptr),
                "[VK] Could not create image");
-}
-
-Image::~Image() noexcept
-{
-  destroy();
-}
-
-void Image::destroy() noexcept
-{
-  if (mImage != VK_NULL_HANDLE) {
-    vmaDestroyImage(get_allocator(), mImage, mAllocation);
-  }
-}
-
-Image::Image(Image&& other) noexcept
-    : mImage {other.mImage},
-      mAllocation {other.mAllocation},
-      mExtent {other.mExtent},
-      mFormat {other.mFormat},
-      mLayout {other.mLayout},
-      mSamples {other.mSamples},
-      mMipLevels {other.mMipLevels}
-{
-  other.mImage = VK_NULL_HANDLE;
-  other.mAllocation = VK_NULL_HANDLE;
-}
-
-auto Image::operator=(Image&& other) noexcept -> Image&
-{
-  if (this != &other) {
-    destroy();
-
-    mImage = other.mImage;
-    mAllocation = other.mAllocation;
-    mExtent = other.mExtent;
-    mFormat = other.mFormat;
-    mLayout = other.mLayout;
-    mSamples = other.mSamples;
-    mMipLevels = other.mMipLevels;
-
-    other.mImage = VK_NULL_HANDLE;
-    other.mAllocation = VK_NULL_HANDLE;
-  }
-
-  return *this;
 }
 
 void Image::change_layout(const VkImageLayout new_layout)
 {
   execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
-    transition_image_layout(cmd_buffer, mImage, mLayout, new_layout, mMipLevels, 0);
+    transition_image_layout(cmd_buffer, mData.image, mLayout, new_layout, mMipLevels, 0);
     mLayout = new_layout;
   });
 }
@@ -224,7 +215,7 @@ void Image::copy_from_buffer(VkBuffer buffer)
         .imageExtent = mExtent,
     };
 
-    vkCmdCopyBufferToImage(cmd_buffer, buffer, mImage, mLayout, 1, &region);
+    vkCmdCopyBufferToImage(cmd_buffer, buffer, mData.image, mLayout, 1, &region);
   });
 }
 
@@ -241,7 +232,7 @@ void Image::generate_mipmaps()
       const uint32 base_level = level - 1;
 
       transition_image_layout(cmd_buffer,
-                              mImage,
+                              mData.image,
                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                               1,
@@ -267,16 +258,16 @@ void Image::generate_mipmaps()
       blit.dstSubresource.layerCount = 1;
 
       vkCmdBlitImage(cmd_buffer,
-                     mImage,
+                     mData.image,
                      VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                     mImage,
+                     mData.image,
                      VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                      1,
                      &blit,
                      VK_FILTER_LINEAR);
 
       transition_image_layout(cmd_buffer,
-                              mImage,
+                              mData.image,
                               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
                               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                               1,
@@ -293,7 +284,7 @@ void Image::generate_mipmaps()
 
     // Transitions the last mipmap image to the optimal shader read layout
     transition_image_layout(cmd_buffer,
-                            mImage,
+                            mData.image,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
                             1,
