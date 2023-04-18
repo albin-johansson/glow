@@ -5,6 +5,7 @@
 #include "common/predef.hpp"
 #include "common/primitives.hpp"
 #include "common/type/maybe.hpp"
+#include "common/type/memory.hpp"
 #include "common/type/vector.hpp"
 #include "graphics/vulkan/image/framebuffer.hpp"
 #include "graphics/vulkan/image/image.hpp"
@@ -12,14 +13,18 @@
 
 namespace glow::vk {
 
+struct SwapchainDeleter final {
+  void operator()(VkSwapchainKHR swapchain) noexcept;
+};
+
+using SwapchainPtr = Unique<VkSwapchainKHR_T, SwapchainDeleter>;
+
 class Swapchain final {
  public:
   GLOW_DELETE_COPY(Swapchain);
-  GLOW_DELETE_MOVE(Swapchain);
+  GLOW_DEFAULT_MOVE(Swapchain);
 
   Swapchain();
-
-  ~Swapchain();
 
   void recreate(VkRenderPass render_pass);
 
@@ -35,13 +40,13 @@ class Swapchain final {
 
   [[nodiscard]] auto get_image_count() const -> uint32;
 
-  [[nodiscard]] auto get() -> VkSwapchainKHR { return mSwapchain; }
+  [[nodiscard]] auto get() -> VkSwapchainKHR { return mSwapchain.get(); }
   [[nodiscard]] auto get_image_format() const -> VkFormat { return mImageFormat; }
   [[nodiscard]] auto get_image_extent() const -> VkExtent2D { return mImageExtent; }
   [[nodiscard]] auto get_image_index() const -> uint32 { return mImageIndex; }
 
  private:
-  VkSwapchainKHR mSwapchain {VK_NULL_HANDLE};
+  SwapchainPtr mSwapchain;
   VkExtent2D mImageExtent {};
   VkFormat mImageFormat {};
 

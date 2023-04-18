@@ -3,6 +3,7 @@
 #include <algorithm>  // clamp, min
 #include <array>      // size
 #include <limits>     // numeric_limits
+#include <utility>    // move
 
 #include <imgui_impl_vulkan.h>
 #include <spdlog/spdlog.h>
@@ -85,18 +86,16 @@ namespace {
 
 }  // namespace
 
+void SwapchainDeleter::operator()(VkSwapchainKHR swapchain) noexcept
+{
+  vkDestroySwapchainKHR(get_device(), swapchain, nullptr);
+}
+
 Swapchain::Swapchain()
 {
   create_swapchain();
   create_image_views();
   create_depth_buffer();
-}
-
-Swapchain::~Swapchain()
-{
-  if (mSwapchain != VK_NULL_HANDLE) {
-    vkDestroySwapchainKHR(get_device(), mSwapchain, nullptr);
-  }
 }
 
 void Swapchain::create_image_views()
@@ -146,9 +145,9 @@ void Swapchain::recreate(VkRenderPass render_pass)
   mDepthImageView.reset();
   mDepthImage.reset();
 
-  VkSwapchainKHR old_swapchain = mSwapchain;
-  create_swapchain(old_swapchain);
-  vkDestroySwapchainKHR(get_device(), old_swapchain, nullptr);
+  auto old_swapchain = std::move(mSwapchain);
+  create_swapchain(old_swapchain.get());
+  old_swapchain.reset();
 
   create_image_views();
   create_depth_buffer();
@@ -214,10 +213,12 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
   mImageExtent = create_info.imageExtent;
   mImageFormat = create_info.imageFormat;
 
-  GLOW_VK_CALL(vkCreateSwapchainKHR(get_device(), &create_info, nullptr, &mSwapchain),
+  VkSwapchainKHR swapchain = VK_NULL_HANDLE;
+  GLOW_VK_CALL(vkCreateSwapchainKHR(get_device(), &create_info, nullptr, &swapchain),
                "[VK] Could not create swapchain");
+  mSwapchain.reset(swapchain);
 
-  mImages = get_swapchain_images(get_device(), mSwapchain);
+  mImages = get_swapchain_images(get_device(), mSwapchain.get());
 }
 
 void Swapchain::create_framebuffers(VkRenderPass render_pass)
@@ -236,7 +237,7 @@ void Swapchain::create_framebuffers(VkRenderPass render_pass)
 auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
 {
   return vkAcquireNextImageKHR(get_device(),
-                               mSwapchain,
+                               mSwapchain.get(),
                                UINT64_MAX,
                                semaphore,
                                VK_NULL_HANDLE,
@@ -245,6 +246,8 @@ auto Swapchain::acquire_next_image(VkSemaphore semaphore) -> VkResult
 
 auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
 {
+  VkSwapchainKHR swapchain = mSwapchain.get();
+
   const VkPresentInfoKHR present_info {
       .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
       .pNext = nullptr,
@@ -255,7 +258,7 @@ auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
 
       // Target swapchain image
       .swapchainCount = 1,
-      .pSwapchains = &mSwapchain,
+      .pSwapchains = &swapchain,
       .pImageIndices = &mImageIndex,
 
       .pResults = nullptr,
