@@ -19,6 +19,7 @@
 
 namespace glow {
 
+/// Implements an OpenGL 4.1.0 renderer backend.
 class OpenGLBackend final : public Backend {
  public:
   explicit OpenGLBackend(SDL_Window* window);
@@ -33,22 +34,18 @@ class OpenGLBackend final : public Backend {
 
   void end_frame() override;
 
-  void render_scene(const Scene& scene,
-                    const Vec2& framebuffer_size,
-                    Dispatcher& dispatcher) override;
+  void render_scene(const Scene& scene, Dispatcher& dispatcher) override;
 
   void set_environment_texture(Scene& scene, const Path& path) override;
 
   void load_model(Scene& scene, const Path& path) override;
-
-  [[nodiscard]] auto get_primary_framebuffer_handle() -> void* override;
 
   [[nodiscard]] auto should_quit() const -> bool override { return mQuit; }
 
  private:
   gl::Renderer mRenderer;
   Maybe<gl::Texture2D> mEnvTexture;
-  gl::Framebuffer mPrimaryFBO;
+  gl::Framebuffer mOffscreenFB;
   bool mQuit {false};
 
   void render_environment(const Scene& scene,

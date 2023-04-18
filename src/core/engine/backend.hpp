@@ -31,7 +31,6 @@ class Backend {
   virtual void end_frame() = 0;
 
   virtual void render_scene(const Scene& scene,
-                            const Vec2& framebuffer_size,
                             Dispatcher& dispatcher) = 0;
 
   virtual void set_environment_texture(Scene& scene, const Path& path) = 0;
@@ -39,8 +38,6 @@ class Backend {
   virtual void load_model(Scene& scene, const Path& path) = 0;
 
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
-
-  [[nodiscard]] virtual auto get_primary_framebuffer_handle() -> void* = 0;
 };
 
 [[nodiscard]] auto create_backend(SDL_Window* window, GraphicsApi api) -> Unique<Backend>;

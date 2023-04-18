@@ -205,10 +205,27 @@ void Engine::render()
     return;
   }
 
-  update_dock_space(mRestoreLayout);
-
   show_menu_bar(mScene, mDispatcher);
-  show_scene_viewport(mScene, *mBackend, mDispatcher);
+
+  const auto& io = ImGui::GetIO();
+
+  const auto window_pos = ImGui::GetWindowPos();
+  const auto window_size = ImGui::GetWindowSize();
+  ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+
+  if (!ImGuizmo::IsUsing() && ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
+    const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);
+
+    const auto& camera_options = mScene.get<CameraOptions>();
+    const auto yaw = camera_options.sensitivity * -mouse_delta.x * io.DeltaTime;
+    const auto pitch = camera_options.sensitivity * -mouse_delta.y * io.DeltaTime;
+    mDispatcher.enqueue<RotateActiveCameraEvent>(yaw, pitch);
+
+    ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+  }
+
+  mBackend->render_scene(mScene, mDispatcher);
+
   show_scene_tree_dock(mScene, mDispatcher);
 
   if (mShowStyleEditor) {

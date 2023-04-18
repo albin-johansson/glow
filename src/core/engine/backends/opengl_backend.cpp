@@ -83,9 +83,7 @@ void OpenGLBackend::end_frame()
   mRenderer.swap_buffers();
 }
 
-void OpenGLBackend::render_scene(const Scene& scene,
-                                 const Vec2& framebuffer_size,
-                                 Dispatcher& dispatcher)
+void OpenGLBackend::render_scene(const Scene& scene, Dispatcher& dispatcher)
 {
   // Reset options
   const auto& rendering_options = scene.get<RenderingOptions>();
@@ -96,19 +94,23 @@ void OpenGLBackend::render_scene(const Scene& scene,
 
   SDL_GL_SetSwapInterval(rendering_options.test(RenderingOption::VSync) ? 1 : 0);
 
-  // Update framebuffer dimensions
-  mPrimaryFBO.bind();
-  mPrimaryFBO.resize(framebuffer_size);
-  mPrimaryFBO.clear();
+  mOffscreenFB.bind();
 
-  const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
+  const Vec2 fb_size = mOffscreenFB.get_size();
+  const auto fb_aspect_ratio = fb_size.x / fb_size.y;
+
+  if (fb_size.x != ImGui::GetWindowWidth() || fb_size.y != ImGui::GetWindowHeight()) {
+    mOffscreenFB.resize(Vec2 {ImGui::GetWindowWidth(), ImGui::GetWindowHeight()});
+  }
+
+  mOffscreenFB.clear();
 
   if (scene.has_active_camera()) {
     const auto& [camera_entity, camera] = scene.get_active_camera();
     const auto& camera_transform = scene.get<Transform>(camera_entity);
 
-    if (camera.aspect_ratio != aspect_ratio) {
-      dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
+    if (camera.aspect_ratio != fb_aspect_ratio) {
+      dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, fb_aspect_ratio);
     }
 
     const auto projection = to_projection_matrix(camera, GraphicsApi::OpenGL);
@@ -210,12 +212,6 @@ void OpenGLBackend::load_model(Scene& scene, const Path& path)
   gl::assign_model(scene, model_entity, path);
 
   ++index;
-}
-
-auto OpenGLBackend::get_primary_framebuffer_handle() -> void*
-{
-  const auto id = static_cast<uintptr>(mPrimaryFBO.get_id());
-  return bitcast<void*>(id);
 }
 
 }  // namespace glow

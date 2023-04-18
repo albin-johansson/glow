@@ -27,6 +27,7 @@
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "init/dear_imgui_vulkan.hpp"
 #include "scene/scene.hpp"
+#include "ui/events.hpp"
 
 namespace glow {
 namespace {
@@ -237,30 +238,41 @@ auto VulkanBackend::begin_frame(const Scene& scene) -> Result
   return kSuccess;
 }
 
-void VulkanBackend::render_scene(const Scene& scene,
-                                 const Vec2& framebuffer_size,
-                                 Dispatcher& dispatcher)
+void VulkanBackend::render_scene(const Scene& scene, Dispatcher& dispatcher)
 {
   auto& frame = mFrames.at(mFrameIndex);
 
-  // TODO resize swap chain images if necessary
-
   const auto swapchain_image_extent = mSwapchain.get_image_extent();
-  const auto aspect_ratio = framebuffer_size.x / framebuffer_size.y;
+  const auto viewport_aspect_ratio = static_cast<float32>(swapchain_image_extent.width) /
+                                     static_cast<float32>(swapchain_image_extent.height);
 
   const auto& [camera_entity, camera] = scene.get_active_camera();
   const auto& camera_transform = scene.get<Transform>(camera_entity);
 
-  if (camera.aspect_ratio != aspect_ratio) {
-    // dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, aspect_ratio);
+  if (camera.aspect_ratio != viewport_aspect_ratio) {
+    dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, viewport_aspect_ratio);
   }
+
+  const VkViewport viewport {
+      .x = 0.0f,
+      .y = 0.0f,
+      .width = static_cast<float>(swapchain_image_extent.width),
+      .height = static_cast<float>(swapchain_image_extent.height),
+      .minDepth = 0.0f,
+      .maxDepth = 1.0f,
+  };
+
+  const VkRect2D scissor {
+      .offset = VkOffset2D {0, 0},
+      .extent = swapchain_image_extent,
+  };
+
+  vkCmdSetViewport(frame.command_buffer, 0, 1, &viewport);
+  vkCmdSetScissor(frame.command_buffer, 0, 1, &scissor);
 
   vkCmdBindPipeline(frame.command_buffer,
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     mShadingPipeline.get());
-
-  vk::cmd::set_viewport(frame.command_buffer, swapchain_image_extent);
-  vk::cmd::set_scissor(frame.command_buffer, VkOffset2D {0, 0}, swapchain_image_extent);
 
   update_static_matrix_buffer(camera, camera_transform);
   push_static_matrix_descriptor();
@@ -439,15 +451,6 @@ void VulkanBackend::load_model(Scene& scene, const Path& path)
   vk::assign_model(scene, model_entity, path);
 
   ++index;
-}
-
-auto VulkanBackend::get_primary_framebuffer_handle() -> void*
-{
-  // TODO need to use different render target framebuffer, not the actual one in swapchain
-  //  VkFramebuffer framebuffer = mSwapchain.get_current_framebuffer();
-  //  return static_cast<void*>(framebuffer);
-
-  return nullptr;
 }
 
 }  // namespace glow
