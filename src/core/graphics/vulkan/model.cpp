@@ -22,7 +22,8 @@ namespace {
     if (auto image = load_image_2d(model_dir / *path,
                                    VK_FORMAT_R8G8B8A8_SRGB,
                                    VK_IMAGE_USAGE_SAMPLED_BIT)) {
-      ImageView view {*image, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT};
+      auto view =
+          create_image_view(*image, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_COLOR_BIT);
       VkImageView result = view.get();
 
       cache.views.try_emplace(image->get(), std::move(view));
