@@ -5,7 +5,6 @@
 
 #include "common/debug/assert.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
-#include "graphics/vulkan/cmd/commands.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
 namespace glow::vk {
@@ -165,7 +164,13 @@ auto Buffer::get_allocation_info() -> VmaAllocationInfo
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, const usize data_size)
 {
   execute_immediately([=](VkCommandBuffer cmd_buffer) {
-    cmd::copy_buffer(cmd_buffer, src_buffer, dst_buffer, data_size);
+    const VkBufferCopy region {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = data_size,
+    };
+
+    vkCmdCopyBuffer(cmd_buffer, src_buffer, dst_buffer, 1, &region);
   });
 }
 
