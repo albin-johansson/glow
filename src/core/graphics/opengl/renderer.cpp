@@ -52,8 +52,8 @@ void Renderer::init_uniform_buffers()
 void Renderer::load_environment_program()
 {
   compile_and_link_program(mEnvProgram,
-                           "assets/shaders/environment.vert",
-                           "assets/shaders/environment.frag");
+                           "assets/shaders/gl/environment.vert",
+                           "assets/shaders/gl/environment.frag");
 
   mEnvProgram.set_uniform("env_texture", 0).check("env_texture");
   mEnvProgram.set_uniform_block_binding("EnvironmentBuffer", 0)
@@ -63,8 +63,8 @@ void Renderer::load_environment_program()
 void Renderer::load_shading_program()
 {
   compile_and_link_program(mShadingProgram,
-                           "assets/shaders/shading.vert",
-                           "assets/shaders/shading.frag");
+                           "assets/shaders/gl/shading.vert",
+                           "assets/shaders/gl/shading.frag");
 
   mShadingProgram.set_uniform("material_diffuse_tex", 5).check("material_diffuse_tex");
   mShadingProgram.set_uniform_block_binding("MatrixBuffer", 0).check("Matrix UBO");
