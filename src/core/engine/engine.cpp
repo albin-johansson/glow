@@ -21,7 +21,6 @@
 #include "ui/dock_space.hpp"
 #include "ui/menu_bar.hpp"
 #include "ui/scene_tree_dock.hpp"
-#include "ui/scene_viewport.hpp"
 
 namespace glow {
 namespace {

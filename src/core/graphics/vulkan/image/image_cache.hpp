@@ -15,7 +15,7 @@ struct ImageCache final {
   GLOW_MOVE_ONLY_COMPONENT(ImageCache);
 
   Map<Path, Image> images;
-  Map<VkImage, ImageView> views;
+  Map<VkImage, ImageViewPtr> views;
 };
 
 }  // namespace glow::vk

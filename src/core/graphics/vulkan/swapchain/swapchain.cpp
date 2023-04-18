@@ -6,6 +6,7 @@
 #include <utility>    // move
 
 #include <imgui_impl_vulkan.h>
+#include <magic_enum.hpp>
 #include <spdlog/spdlog.h>
 
 #include "common/debug/assert.hpp"
@@ -71,15 +72,14 @@ namespace {
   }
 }
 
-[[nodiscard]] auto get_swapchain_images(VkDevice device, VkSwapchainKHR swapchain)
-    -> Vector<VkImage>
+[[nodiscard]] auto get_swapchain_images(VkSwapchainKHR swapchain) -> Vector<VkImage>
 {
   uint32 image_count = 0;
-  vkGetSwapchainImagesKHR(device, swapchain, &image_count, nullptr);
+  vkGetSwapchainImagesKHR(get_device(), swapchain, &image_count, nullptr);
 
   Vector<VkImage> images;
   images.resize(image_count);
-  vkGetSwapchainImagesKHR(device, swapchain, &image_count, images.data());
+  vkGetSwapchainImagesKHR(get_device(), swapchain, &image_count, images.data());
 
   return images;
 }
@@ -104,46 +104,41 @@ void Swapchain::create_image_views()
   mImageViews.reserve(mImages.size());
 
   for (VkImage image : mImages) {
-    mImageViews.emplace_back(image,
-                             mImageFormat,
-                             VK_IMAGE_VIEW_TYPE_2D,
-                             VK_IMAGE_ASPECT_COLOR_BIT);
+    mImageViews.push_back(create_image_view(image,
+                                            mImageFormat,
+                                            VK_IMAGE_VIEW_TYPE_2D,
+                                            VK_IMAGE_ASPECT_COLOR_BIT));
   }
 }
 
 void Swapchain::create_depth_buffer()
 {
-  mDepthImage.emplace(VK_IMAGE_TYPE_2D,
-                      VkExtent3D {mImageExtent.width, mImageExtent.height, 1},
-                      VK_FORMAT_D32_SFLOAT_S8_UINT,
-                      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                      1,
-                      VK_SAMPLE_COUNT_1_BIT);
-  mDepthImageView.emplace(mDepthImage->get(),
-                          VK_FORMAT_D32_SFLOAT_S8_UINT,
-                          VK_IMAGE_VIEW_TYPE_2D,
-                          VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
+  mDepthTexture.emplace(mImageExtent,
+                        VK_FORMAT_D32_SFLOAT_S8_UINT,
+                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                        1,
+                        VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT,
+                        VK_SAMPLE_COUNT_1_BIT);
 }
 
 void Swapchain::recreate(VkRenderPass render_pass)
 {
-  int width = 0;
-  int height = 0;
-  SDL_GetWindowSizeInPixels(get_window(), &width, &height);
+  int window_width = 0;
+  int window_height = 0;
+  SDL_GetWindowSizeInPixels(get_window(), &window_width, &window_height);
 
-  while (width == 0 || height == 0) {
-    SDL_GetWindowSizeInPixels(get_window(), &width, &height);
+  while (window_width == 0 || window_height == 0) {
+    SDL_GetWindowSizeInPixels(get_window(), &window_width, &window_height);
     SDL_WaitEvent(nullptr);
   }
 
   // Avoid touching resources that may still be in use
   vkDeviceWaitIdle(get_device());
 
-  // Destroy existing resources
+  // Destroy existing resources in the right order
   mFramebuffers.clear();
   mImageViews.clear();
-  mDepthImageView.reset();
-  mDepthImage.reset();
+  mDepthTexture.reset();
 
   auto old_swapchain = std::move(mSwapchain);
   create_swapchain(old_swapchain.get());
@@ -197,6 +192,8 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
   };
 
   if (queue_family_indices.graphics_family != queue_family_indices.present_family) {
+    spdlog::debug("[VK] Using distinct graphics and presentation queues");
+
     // In this case we opt for concurrent mode, so that images can be (easily) used across
     // multiple queue families, since the graphics and present queues are distinct.
     create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -204,6 +201,8 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
     create_info.pQueueFamilyIndices = queue_family_indices_arr;
   }
   else {
+    spdlog::debug("[VK] Queue supports both graphics and presentation operations");
+
     // Here we can safely opt for the exclusive mode, leading to the best performance.
     create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     create_info.queueFamilyIndexCount = 0;
@@ -218,18 +217,27 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
                "[VK] Could not create swapchain");
   mSwapchain.reset(swapchain);
 
-  mImages = get_swapchain_images(get_device(), mSwapchain.get());
+  mImages = get_swapchain_images(mSwapchain.get());
+
+  spdlog::debug(
+      "[VK] Created swapchain with {} images using format {}, presented using {}",
+      mImages.size(),
+      magic_enum::enum_name(mImageFormat),
+      magic_enum::enum_name(create_info.presentMode));
 }
 
 void Swapchain::create_framebuffers(VkRenderPass render_pass)
 {
+  GLOW_ASSERT(render_pass != VK_NULL_HANDLE);
+  GLOW_ASSERT(mDepthTexture.has_value());
+
   mFramebuffers.clear();
   mFramebuffers.reserve(mImageViews.size());
 
   for (auto& image_view : mImageViews) {
     mFramebuffers.push_back(create_framebuffer(render_pass,
                                                image_view.get(),
-                                               mDepthImageView.value().get(),
+                                               mDepthTexture->get_view(),
                                                mImageExtent));
   }
 }
@@ -269,6 +277,11 @@ auto Swapchain::present_image(VkSemaphore render_finished_semaphore) -> VkResult
 
 auto Swapchain::get_current_framebuffer() -> VkFramebuffer
 {
+  GLOW_ASSERT(!mFramebuffers.empty());
+  GLOW_ASSERT(!mImageViews.empty());
+  GLOW_ASSERT(!mImages.empty());
+  GLOW_ASSERT(mDepthTexture.has_value());
+
   return mFramebuffers.at(static_cast<usize>(mImageIndex)).get();
 }
 
