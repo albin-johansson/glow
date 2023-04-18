@@ -11,9 +11,9 @@ struct FenceDeleter final {
 };
 
 /// Represents a binary semaphore, for CPU-side synchronization (known as a "fence").
-using Fence = Unique<VkFence_T, FenceDeleter>;
+using FencePtr = Unique<VkFence_T, FenceDeleter>;
 
-[[nodiscard]] auto create_fence(bool signaled = true) -> Fence;
+[[nodiscard]] auto create_fence(bool signaled = true) -> FencePtr;
 
 /// Resets a fence to its unsignaled state.
 void reset_fence(VkFence fence);

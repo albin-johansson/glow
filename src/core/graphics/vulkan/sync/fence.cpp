@@ -19,7 +19,7 @@ void FenceDeleter::operator()(VkFence fence) noexcept
   vkDestroyFence(get_device(), fence, nullptr);
 }
 
-auto create_fence(const bool signaled) -> Fence
+auto create_fence(const bool signaled) -> FencePtr
 {
   GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -35,7 +35,7 @@ auto create_fence(const bool signaled) -> Fence
   GLOW_VK_CALL(vkCreateFence(get_device(), &create_info, nullptr, &fence),
                "[VK] Could not create fence");
 
-  return Fence {fence};
+  return FencePtr {fence};
 }
 
 void reset_fence(VkFence fence)

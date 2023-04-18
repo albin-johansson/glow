@@ -10,6 +10,6 @@ struct DescriptorSetLayoutDeleter final {
   void operator()(VkDescriptorSetLayout layout) noexcept;
 };
 
-using DescriptorSetLayout = Unique<VkDescriptorSetLayout_T, DescriptorSetLayoutDeleter>;
+using DescriptorSetLayoutPtr = Unique<VkDescriptorSetLayout_T, DescriptorSetLayoutDeleter>;
 
 }  // namespace glow::vk

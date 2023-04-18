@@ -12,7 +12,7 @@ void ShaderModuleDeleter::operator()(VkShaderModule shader) noexcept
   vkDestroyShaderModule(get_device(), shader, nullptr);
 }
 
-auto create_shader_module(const Path& shader_path) -> ShaderModule
+auto create_shader_module(const Path& shader_path) -> ShaderModulePtr
 {
   const auto code = load_binary_file(shader_path);
   if (!code) {
@@ -29,7 +29,7 @@ auto create_shader_module(const Path& shader_path) -> ShaderModule
   GLOW_VK_CALL(vkCreateShaderModule(get_device(), &create_info, nullptr, &shader),
                "[VK] Could not create shader module");
 
-  return ShaderModule {shader};
+  return ShaderModulePtr {shader};
 }
 
 }  // namespace glow::vk

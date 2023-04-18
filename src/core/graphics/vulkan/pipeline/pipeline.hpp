@@ -12,7 +12,7 @@ struct PipelineDeleter final {
   void operator()(VkPipeline pipeline) noexcept;
 };
 
-using Pipeline = Unique<VkPipeline_T, PipelineDeleter>;
+using PipelinePtr = Unique<VkPipeline_T, PipelineDeleter>;
 
 [[nodiscard]] auto create_pipeline_shader_stage(VkShaderStageFlagBits stage,
                                                 VkShaderModule shader_module)

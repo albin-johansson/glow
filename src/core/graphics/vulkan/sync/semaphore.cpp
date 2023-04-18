@@ -11,7 +11,7 @@ void SemaphoreDeleter::operator()(VkSemaphore semaphore) noexcept
   vkDestroySemaphore(get_device(), semaphore, nullptr);
 }
 
-auto create_semaphore() -> Semaphore
+auto create_semaphore() -> SemaphorePtr
 {
   GLOW_ASSERT(get_device() != VK_NULL_HANDLE);
 
@@ -25,7 +25,7 @@ auto create_semaphore() -> Semaphore
   GLOW_VK_CALL(vkCreateSemaphore(get_device(), &create_info, nullptr, &semaphore),
                "[VK] Could not create semaphore");
 
-  return Semaphore {semaphore};
+  return SemaphorePtr {semaphore};
 }
 
 }  // namespace glow::vk

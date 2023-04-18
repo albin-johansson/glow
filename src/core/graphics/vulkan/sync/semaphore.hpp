@@ -11,8 +11,8 @@ struct SemaphoreDeleter final {
 };
 
 /// Represents a binary semaphore, for GPU-side synchronization.
-using Semaphore = Unique<VkSemaphore_T, SemaphoreDeleter>;
+using SemaphorePtr = Unique<VkSemaphore_T, SemaphoreDeleter>;
 
-[[nodiscard]] auto create_semaphore() -> Semaphore;
+[[nodiscard]] auto create_semaphore() -> SemaphorePtr;
 
 }  // namespace glow::vk

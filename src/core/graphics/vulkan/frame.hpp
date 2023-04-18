@@ -13,9 +13,9 @@ namespace glow::vk {
 struct FrameData final {
   VkCommandBuffer command_buffer {VK_NULL_HANDLE};
 
-  Semaphore image_available_semaphore {create_semaphore()};
-  Semaphore render_finished_semaphore {create_semaphore()};
-  Fence in_flight_fence {create_fence(true)};
+  SemaphorePtr image_available_semaphore {create_semaphore()};
+  SemaphorePtr render_finished_semaphore {create_semaphore()};
+  FencePtr in_flight_fence {create_fence(true)};
 
   Buffer static_matrix_ubo {Buffer::uniform(sizeof(StaticMatrices))};
   Buffer material_ubo {Buffer::uniform(sizeof(MaterialBuffer))};

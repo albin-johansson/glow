@@ -11,8 +11,8 @@ struct ShaderModuleDeleter final {
   void operator()(VkShaderModule shader) noexcept;
 };
 
-using ShaderModule = Unique<VkShaderModule_T, ShaderModuleDeleter>;
+using ShaderModulePtr = Unique<VkShaderModule_T, ShaderModuleDeleter>;
 
-[[nodiscard]] auto create_shader_module(const Path& shader_path) -> ShaderModule;
+[[nodiscard]] auto create_shader_module(const Path& shader_path) -> ShaderModulePtr;
 
 }  // namespace glow::vk

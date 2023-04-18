@@ -81,9 +81,9 @@ class VulkanBackend final : public Backend {
   vk::PipelineCachePtr mPipelineCache;
   vk::ImGuiData mImGuiData;
   vk::CommandPoolPtr mCommandPool;
-  vk::DescriptorSetLayout mShadingDescriptorSetLayout;
-  vk::PipelineLayout mShadingPipelineLayout;
-  vk::Pipeline mShadingPipeline;
+  vk::DescriptorSetLayoutPtr mShadingDescriptorSetLayout;
+  vk::PipelineLayoutPtr mShadingPipelineLayout;
+  vk::PipelinePtr mShadingPipeline;
   Vector<vk::FrameData> mFrames;
   usize mFrameIndex {0};
   vk::MaterialBuffer mMaterialBuffer;

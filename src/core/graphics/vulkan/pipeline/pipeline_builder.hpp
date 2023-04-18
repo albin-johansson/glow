@@ -82,7 +82,8 @@ class PipelineBuilder final {
                 VkBlendFactor src_factor = VK_BLEND_FACTOR_ONE,
                 VkBlendFactor dst_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
                 VkBlendFactor src_alpha_factor = VK_BLEND_FACTOR_ONE,
-                VkBlendFactor dst_alpha_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA) -> Self&;
+                VkBlendFactor dst_alpha_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
+      -> Self&;
 
   [[nodiscard]] auto build(VkRenderPass pass, VkPipelineLayout layout) const
       -> VkPipeline;
@@ -90,8 +91,8 @@ class PipelineBuilder final {
  private:
   VkPipelineCache mCache;
 
-  ShaderModule mVertexShader;
-  ShaderModule mFragmentShader;
+  ShaderModulePtr mVertexShader;
+  ShaderModulePtr mFragmentShader;
   VkPipelineShaderStageCreateInfo mShaderStages[2] {};
 
   VkPipelineDynamicStateCreateInfo mDynamicState {};
