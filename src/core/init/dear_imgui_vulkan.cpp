@@ -4,7 +4,7 @@
 #include <imgui_impl_vulkan.h>
 
 #include "common/debug/error.hpp"
-#include "graphics/vulkan/cmd/command_buffer.hpp"
+#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
 
 namespace glow {

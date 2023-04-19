@@ -12,7 +12,7 @@
 #include "common/type/chrono.hpp"
 #include "common/type/map.hpp"
 #include "graphics/vulkan/buffer.hpp"
-#include "graphics/vulkan/cmd/command_buffer.hpp"
+#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 #include "io/texture_loader.hpp"

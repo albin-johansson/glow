@@ -4,7 +4,7 @@
 #include <cstring>    // memcpy
 
 #include "common/debug/assert.hpp"
-#include "graphics/vulkan/cmd/command_buffer.hpp"
+#include "graphics/vulkan/command_buffer.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"
 
 namespace glow::vk {

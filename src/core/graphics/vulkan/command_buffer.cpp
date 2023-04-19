@@ -1,6 +1,6 @@
 #include "command_buffer.hpp"
 
-#include "graphics/vulkan/cmd/command_pool.hpp"
+#include "graphics/vulkan/command_pool.hpp"
 #include "graphics/vulkan/context.hpp"
 #include "graphics/vulkan/queue.hpp"
 #include "graphics/vulkan/util/vk_call.hpp"

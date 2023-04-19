@@ -10,7 +10,7 @@
 #include "graphics/camera.hpp"
 #include "graphics/vulkan/allocator.hpp"
 #include "graphics/vulkan/buffer.hpp"
-#include "graphics/vulkan/cmd/command_pool.hpp"
+#include "graphics/vulkan/command_pool.hpp"
 #include "graphics/vulkan/device.hpp"
 #include "graphics/vulkan/frame.hpp"
 #include "graphics/vulkan/image/sampler.hpp"
