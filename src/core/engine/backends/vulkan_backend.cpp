@@ -346,11 +346,11 @@ void VulkanBackend::render_model(const Scene& scene,
                                             &diffuse_image_info));
     }
 
-    vk::push_descriptor_set(frame.command_buffer,
-                            mShadingPipelineLayout.get(),
-                            0,
-                            vk::u32_size(write_buffer),
-                            write_buffer.data());
+    vk::push_descriptor_sets(frame.command_buffer,
+                             mShadingPipelineLayout.get(),
+                             0,
+                             vk::u32_size(write_buffer),
+                             write_buffer.data());
 
     mesh.vertex_buffer->bind_as_vertex_buffer(frame.command_buffer);
     mesh.index_buffer->bind_as_index_buffer(frame.command_buffer, VK_INDEX_TYPE_UINT32);
@@ -442,11 +442,11 @@ void VulkanBackend::push_static_matrix_descriptor()
       vk::StaticMatrices::descriptor_set_write(VK_NULL_HANDLE, &buffer_info),
   };
 
-  vk::push_descriptor_set(frame.command_buffer,
-                          mShadingPipelineLayout.get(),
-                          0,
-                          array_length(writes),
-                          writes);
+  vk::push_descriptor_sets(frame.command_buffer,
+                           mShadingPipelineLayout.get(),
+                           0,
+                           array_length(writes),
+                           writes);
 }
 
 void VulkanBackend::set_environment_texture([[maybe_unused]] Scene& scene,

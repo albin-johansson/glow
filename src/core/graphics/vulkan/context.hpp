@@ -24,11 +24,11 @@ auto create_debug_messenger(VkInstance instance,
 void destroy_debug_messenger(VkInstance instance,
                              VkDebugUtilsMessengerEXT messenger) noexcept;
 
-void push_descriptor_set(VkCommandBuffer cmd_buffer,
-                         VkPipelineLayout layout,
-                         uint32 set,
-                         uint32 write_count,
-                         const VkWriteDescriptorSet* writes);
+void push_descriptor_sets(VkCommandBuffer cmd_buffer,
+                          VkPipelineLayout layout,
+                          uint32 set,
+                          uint32 write_count,
+                          const VkWriteDescriptorSet* writes);
 
 void set_instance(VkInstance instance) noexcept;
 void set_surface(VkSurfaceKHR surface) noexcept;
