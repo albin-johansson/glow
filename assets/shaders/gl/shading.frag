@@ -11,9 +11,8 @@ in VsOutput {
 
 layout (location = 0) out vec4 frag_color;
 
-/* Binding 5 */ uniform sampler2D material_diffuse_tex;
+uniform sampler2D uMaterialDiffuseTex;
 
-// Binding 1
 layout (std140) uniform MaterialBuffer {
   vec4 ambient;
   vec4 diffuse;
@@ -28,7 +27,7 @@ layout (std140) uniform MaterialBuffer {
 void main()
 {
   if (Material.has_diffuse_tex) {
-    frag_color = texture(material_diffuse_tex, In.tex_coords);
+    frag_color = texture(uMaterialDiffuseTex, In.tex_coords);
   }
   else {
     frag_color = vec4(Material.diffuse.rgb, 1.0);

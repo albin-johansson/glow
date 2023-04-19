@@ -61,9 +61,8 @@ void Renderer::load_environment_program()
                            "assets/shaders/gl/environment.vert",
                            "assets/shaders/gl/environment.frag");
 
-  mEnvProgram.set_uniform("env_texture", 0).check("env_texture");
-  mEnvProgram.set_uniform_block_binding("EnvironmentBuffer", 0)
-      .check("EnvironmentBuffer UBO");
+  mEnvProgram.set_uniform("uEnvTexture", 0).check("uEnvTexture");
+  mEnvProgram.set_uniform_block_binding("EnvironmentBuffer", 0).check("EnvBuffer UBO");
 }
 
 void Renderer::load_shading_program()
@@ -72,7 +71,7 @@ void Renderer::load_shading_program()
                            "assets/shaders/gl/shading.vert",
                            "assets/shaders/gl/shading.frag");
 
-  mShadingProgram.set_uniform("material_diffuse_tex", 5).check("material_diffuse_tex");
+  mShadingProgram.set_uniform("uMaterialDiffuseTex", 5).check("uMaterialDiffuseTex");
   mShadingProgram.set_uniform_block_binding("MatrixBuffer", 0).check("Matrix UBO");
   mShadingProgram.set_uniform_block_binding("MaterialBuffer", 1).check("Material UBO");
 }
