@@ -16,7 +16,8 @@
 namespace glow::vk {
 namespace {
 
-[[nodiscard]] auto get_instance_extension_names(SDL_Window* window) -> Vector<const char*>
+[[nodiscard]] auto _get_instance_extension_names(SDL_Window* window)
+    -> Vector<const char*>
 {
   uint32 extension_count = 0;
   SDL_Vulkan_GetInstanceExtensions(window, &extension_count, nullptr);
@@ -37,7 +38,7 @@ namespace {
 }
 
 template <typename T>
-void load_function(VkInstance instance, T& func, const char* name)
+void _load_function(VkInstance instance, T& func, const char* name)
 {
   func = reinterpret_cast<T>(vkGetInstanceProcAddr(instance, name));
 }
@@ -53,7 +54,7 @@ auto create_instance() -> InstancePtr
 {
   spdlog::debug("[VK] Creating Vulkan instance...");
 
-  const auto extension_names = get_instance_extension_names(get_window());
+  const auto extension_names = _get_instance_extension_names(get_window());
 
   const VkApplicationInfo application_info {
       .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -101,20 +102,20 @@ auto create_instance() -> InstancePtr
   auto& functions = get_extension_functions();
 
   if constexpr (kDebugBuild) {
-    load_function(instance,
-                  functions.vkCreateDebugUtilsMessengerEXT,
-                  "vkCreateDebugUtilsMessengerEXT");
-    load_function(instance,
-                  functions.vkDestroyDebugUtilsMessengerEXT,
-                  "vkDestroyDebugUtilsMessengerEXT");
+    _load_function(instance,
+                   functions.vkCreateDebugUtilsMessengerEXT,
+                   "vkCreateDebugUtilsMessengerEXT");
+    _load_function(instance,
+                   functions.vkDestroyDebugUtilsMessengerEXT,
+                   "vkDestroyDebugUtilsMessengerEXT");
   }
 
-  load_function(instance,
-                functions.vkCmdPushDescriptorSetKHR,
-                "vkCmdPushDescriptorSetKHR");
-  load_function(instance,
-                functions.vkCmdPushDescriptorSetWithTemplateKHR,
-                "vkCmdPushDescriptorSetWithTemplateKHR");
+  _load_function(instance,
+                 functions.vkCmdPushDescriptorSetKHR,
+                 "vkCmdPushDescriptorSetKHR");
+  _load_function(instance,
+                 functions.vkCmdPushDescriptorSetWithTemplateKHR,
+                 "vkCmdPushDescriptorSetWithTemplateKHR");
 
   return InstancePtr {instance};
 }

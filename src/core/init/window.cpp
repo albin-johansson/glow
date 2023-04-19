@@ -22,7 +22,7 @@ struct ObjectDeleter final {
   void operator()(void* obj) noexcept { SDL_UnloadObject(obj); }
 };
 
-[[nodiscard]] auto to_window_flags(const GraphicsAPI api) -> uint32
+[[nodiscard]] auto _to_window_flags(const GraphicsAPI api) -> uint32
 {
   const auto base_flags =
       SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE;
@@ -38,7 +38,7 @@ struct ObjectDeleter final {
   }
 }
 
-void use_win32_dark_title_bar(SDL_Window* window)
+void _use_win32_dark_title_bar(SDL_Window* window)
 {
 #if GLOW_OS_WINDOWS
   SDL_SysWMinfo wm_info {};
@@ -72,14 +72,14 @@ Window::Window(const GraphicsAPI api)
                                 SDL_WINDOWPOS_CENTERED,
                                 1000,
                                 750,
-                                to_window_flags(api))}
+                                _to_window_flags(api))}
 {
   if (!mWindow) {
     throw Error {fmt::format("Could not create window: {}", SDL_GetError())};
   }
 
   gWindow = mWindow.get();
-  use_win32_dark_title_bar(mWindow.get());
+  _use_win32_dark_title_bar(mWindow.get());
 
   const auto title = fmt::format("Glow [{}]", get_short_name(api));
   SDL_SetWindowTitle(mWindow.get(), title.c_str());

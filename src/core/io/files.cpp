@@ -16,7 +16,7 @@ struct SDLPathDeleter final {
   void operator()(char* path) noexcept { SDL_free(path); }
 };
 
-[[nodiscard]] auto determine_persistent_file_dir() -> Path
+[[nodiscard]] auto _determine_persistent_file_dir() -> Path
 {
   Unique<char, SDLPathDeleter> raw_path {SDL_GetPrefPath("albin-johansson", "glow")};
 
@@ -81,7 +81,7 @@ auto create_file(const Path& path, FileType type) -> Maybe<OfStream>
 
 auto get_persistent_file_dir() -> const Path&
 {
-  static const auto dir = determine_persistent_file_dir();
+  static const auto dir = _determine_persistent_file_dir();
   return dir;
 }
 

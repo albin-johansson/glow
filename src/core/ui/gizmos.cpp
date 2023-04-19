@@ -13,7 +13,7 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto convert_gizmo_operation(const GizmoOperation operation)
+[[nodiscard]] auto _convert_gizmo_operation(const GizmoOperation operation)
     -> ImGuizmo::OPERATION
 {
   switch (operation) {
@@ -31,7 +31,7 @@ namespace {
   }
 }
 
-[[nodiscard]] auto convert_gizmo_mode(const GizmoMode mode) -> ImGuizmo::MODE
+[[nodiscard]] auto _convert_gizmo_mode(const GizmoMode mode) -> ImGuizmo::MODE
 {
   switch (mode) {
     case GizmoMode::Local:
@@ -62,8 +62,8 @@ void show_model_control_gizmo(const GizmosOptions& options,
 
   if (ImGuizmo::Manipulate(glm::value_ptr(view),
                            glm::value_ptr(projection),
-                           convert_gizmo_operation(options.operation),
-                           convert_gizmo_mode(options.mode),
+                           _convert_gizmo_operation(options.operation),
+                           _convert_gizmo_mode(options.mode),
                            transform_matrix)) {
     float translation[3] {};
     float rotation[3] {};

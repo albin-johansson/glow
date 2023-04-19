@@ -10,7 +10,7 @@
 namespace glow {
 namespace {
 
-void set_hints_for_opengl()
+void _set_hints_for_opengl()
 {
   // Request OpenGL 4.1 core
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -59,7 +59,7 @@ SDL::SDL(const GraphicsAPI api)
   SDL_SetHint(SDL_HINT_APP_NAME, "Glow");
 
   if (mAPI == GraphicsAPI::OpenGL) {
-    set_hints_for_opengl();
+    _set_hints_for_opengl();
   }
   else if (mAPI == GraphicsAPI::Vulkan) {
     if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {

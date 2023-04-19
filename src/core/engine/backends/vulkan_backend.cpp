@@ -31,7 +31,7 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto select_gpu() -> VkPhysicalDevice
+[[nodiscard]] auto _select_gpu() -> VkPhysicalDevice
 {
   GLOW_ASSERT(vk::get_instance() != VK_NULL_HANDLE);
   GLOW_ASSERT(vk::get_surface() != VK_NULL_HANDLE);
@@ -42,7 +42,7 @@ namespace {
   return gpu;
 }
 
-[[nodiscard]] auto create_render_pass(const VkFormat swapchain_image_format)
+[[nodiscard]] auto _create_render_pass(const VkFormat swapchain_image_format)
     -> vk::RenderPassInfo
 {
   vk::RenderPassBuilder builder;
@@ -76,7 +76,7 @@ namespace {
   return builder.build();
 }
 
-[[nodiscard]] auto create_graphics_command_pool() -> vk::CommandPoolPtr
+[[nodiscard]] auto _create_graphics_command_pool() -> vk::CommandPoolPtr
 {
   const auto queue_family_indices =
       vk::get_queue_family_indices(vk::get_gpu(), vk::get_surface());
@@ -96,15 +96,15 @@ VulkanBackend::VulkanBackend()
     : mInstance {vk::create_instance()},
       mDebugMessenger {kDebugBuild ? vk::create_debug_messenger() : nullptr},
       mSurface {vk::create_surface()},
-      mGPU {select_gpu()},
+      mGPU {_select_gpu()},
       mDevice {vk::create_device()},
       mAllocator {vk::create_allocator()},
       mSwapchain {},
-      mRenderPassInfo {create_render_pass(mSwapchain.get_image_format())},
+      mRenderPassInfo {_create_render_pass(mSwapchain.get_image_format())},
       mSampler {vk::create_sampler(VK_SAMPLER_ADDRESS_MODE_REPEAT)},
       mPipelineCache {vk::create_pipeline_cache()},
       mImGuiData {},
-      mGraphicsCommandPool {create_graphics_command_pool()}
+      mGraphicsCommandPool {_create_graphics_command_pool()}
 {
   create_shading_pipeline();
   create_frame_data();

@@ -11,7 +11,7 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto convert_texture_channels(const TextureChannels format) -> int
+[[nodiscard]] auto _convert_texture_channels(const TextureChannels format) -> int
 {
   switch (format) {
     case TextureChannels::Gray:
@@ -55,7 +55,7 @@ auto load_texture_data(const Path& path,
                         &data.size.x,
                         &data.size.y,
                         &data.channels,
-                        convert_texture_channels(channels));
+                        _convert_texture_channels(channels));
   }
   else {
     pixels = stbi_load(path_str.c_str(),

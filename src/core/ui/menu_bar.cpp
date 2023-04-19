@@ -12,7 +12,7 @@
 namespace glow {
 namespace {
 
-void show_file_menu(const Scene&, Dispatcher& dispatcher)
+void _show_file_menu(const Scene&, Dispatcher& dispatcher)
 {
   if (ImGui::BeginMenu("File")) {
     if (ImGui::MenuItem(ICON_FA_ARROW_RIGHT_FROM_BRACKET " Exit")) {
@@ -23,7 +23,7 @@ void show_file_menu(const Scene&, Dispatcher& dispatcher)
   }
 }
 
-void show_view_menu(const Scene&, Dispatcher& dispatcher)
+void _show_view_menu(const Scene&, Dispatcher& dispatcher)
 {
   if (ImGui::BeginMenu("View")) {
     if (ImGui::MenuItem(ICON_FA_ROTATE " Reset UI")) {
@@ -62,7 +62,7 @@ void show_view_menu(const Scene&, Dispatcher& dispatcher)
   }
 }
 
-void show_renderer_menu(const Scene& scene, Dispatcher& dispatcher)
+void _show_renderer_menu(const Scene& scene, Dispatcher& dispatcher)
 {
   const auto& renderer_info = scene.get<RendererInfo>();
   const auto& rendering_options = scene.get<RenderingOptions>();
@@ -124,7 +124,7 @@ void show_renderer_menu(const Scene& scene, Dispatcher& dispatcher)
   }
 }
 
-void show_environment_menu(const Scene& scene, Dispatcher& dispatcher)
+void _show_environment_menu(const Scene& scene, Dispatcher& dispatcher)
 {
   const auto& env_options = scene.get<EnvironmentOptions>();
 
@@ -169,14 +169,14 @@ void show_environment_menu(const Scene& scene, Dispatcher& dispatcher)
   }
 }
 
-void show_help_menu(const Scene&, Dispatcher& dispatcher)
+void _show_help_menu(const Scene&, Dispatcher& dispatcher)
 {
   if (ImGui::BeginMenu("Help")) {
     ImGui::EndMenu();
   }
 }
 
-void show_debug_menu(const Scene&, Dispatcher& dispatcher)
+void _show_debug_menu(const Scene&, Dispatcher& dispatcher)
 {
   if (ImGui::BeginMenu("Debug")) {
     if (ImGui::MenuItem(ICON_FA_PALETTE " Open Style Editor...")) {
@@ -198,12 +198,12 @@ void show_debug_menu(const Scene&, Dispatcher& dispatcher)
 void show_menu_bar(const Scene& scene, Dispatcher& dispatcher)
 {
   if (ImGui::BeginMainMenuBar()) {
-    show_file_menu(scene, dispatcher);
-    show_view_menu(scene, dispatcher);
-    show_renderer_menu(scene, dispatcher);
-    show_environment_menu(scene, dispatcher);
-    show_help_menu(scene, dispatcher);
-    show_debug_menu(scene, dispatcher);
+    _show_file_menu(scene, dispatcher);
+    _show_view_menu(scene, dispatcher);
+    _show_renderer_menu(scene, dispatcher);
+    _show_environment_menu(scene, dispatcher);
+    _show_help_menu(scene, dispatcher);
+    _show_debug_menu(scene, dispatcher);
 
     ImGui::EndMainMenuBar();
   }

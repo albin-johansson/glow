@@ -14,9 +14,9 @@
 namespace glow::vk {
 namespace {
 
-[[nodiscard]] auto load_image_if_missing(const Path& model_dir,
-                                         Maybe<Path> path,
-                                         ImageCache& cache) -> VkImageView
+[[nodiscard]] auto _load_image_if_missing(const Path& model_dir,
+                                          Maybe<Path> path,
+                                          ImageCache& cache) -> VkImageView
 {
   if (path.has_value() && !cache.images.contains(*path)) {
     if (auto image = load_image_2d(model_dir / *path,
@@ -39,9 +39,9 @@ namespace {
   return VK_NULL_HANDLE;
 }
 
-[[nodiscard]] auto create_material(Scene& scene,
-                                   const MaterialData& material_data,
-                                   const Path& model_dir) -> Entity
+[[nodiscard]] auto _create_material(Scene& scene,
+                                    const MaterialData& material_data,
+                                    const Path& model_dir) -> Entity
 {
   const auto material_entity = scene.get_registry().create();
   auto& material = scene.add<Material>(material_entity);
@@ -49,9 +49,9 @@ namespace {
   auto& cache = scene.get<ImageCache>();
 
   material.diffuse_tex =
-      load_image_if_missing(model_dir, material_data.diffuse_tex, cache);
+      _load_image_if_missing(model_dir, material_data.diffuse_tex, cache);
   material.specular_tex =
-      load_image_if_missing(model_dir, material_data.specular_tex, cache);
+      _load_image_if_missing(model_dir, material_data.specular_tex, cache);
 
   material.ambient = material_data.ambient;
   material.diffuse = material_data.diffuse;
@@ -61,7 +61,7 @@ namespace {
   return material_entity;
 }
 
-[[nodiscard]] auto create_mesh(const MeshData& mesh_data, const Entity material_entity)
+[[nodiscard]] auto _create_mesh(const MeshData& mesh_data, const Entity material_entity)
     -> Mesh
 {
   Mesh mesh;
@@ -91,13 +91,14 @@ void assign_model(Scene& scene, const Entity entity, const Path& path)
     material_entities.reserve(model_data->materials.size());
 
     for (const auto& [material_id, material_data] : model_data->materials) {
-      const auto material_entity = create_material(scene, material_data, model_data->dir);
+      const auto material_entity =
+          _create_material(scene, material_data, model_data->dir);
       material_entities[material_id] = material_entity;
     }
 
     for (const auto& mesh_data : model_data->meshes) {
       const auto material_entity = material_entities.at(mesh_data.material_id);
-      model.meshes.push_back(create_mesh(mesh_data, material_entity));
+      model.meshes.push_back(_create_mesh(mesh_data, material_entity));
     }
   }
 }

@@ -7,9 +7,9 @@
 namespace glow::vk {
 namespace {
 
-void allocate_command_buffers_helper(VkCommandPool cmd_pool,
-                                     const uint32 count,
-                                     VkCommandBuffer* out_buffers)
+void _allocate_command_buffers_helper(VkCommandPool cmd_pool,
+                                      const uint32 count,
+                                      VkCommandBuffer* out_buffers)
 {
   GLOW_ASSERT(out_buffers != nullptr);
 
@@ -57,7 +57,7 @@ auto allocate_command_buffers(VkCommandPool cmd_pool, const uint32 count)
   Vector<VkCommandBuffer> cmd_buffers;
   cmd_buffers.resize(count);
 
-  allocate_command_buffers_helper(cmd_pool, count, cmd_buffers.data());
+  _allocate_command_buffers_helper(cmd_pool, count, cmd_buffers.data());
 
   return cmd_buffers;
 }
@@ -65,7 +65,7 @@ auto allocate_command_buffers(VkCommandPool cmd_pool, const uint32 count)
 auto allocate_command_buffer(VkCommandPool cmd_pool) -> VkCommandBuffer
 {
   VkCommandBuffer cmd_buffer = VK_NULL_HANDLE;
-  allocate_command_buffers_helper(cmd_pool, 1, &cmd_buffer);
+  _allocate_command_buffers_helper(cmd_pool, 1, &cmd_buffer);
 
   return cmd_buffer;
 }

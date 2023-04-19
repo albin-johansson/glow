@@ -13,7 +13,7 @@
 namespace glow::vk {
 namespace {
 
-[[nodiscard]] auto rate_gpu(VkPhysicalDevice gpu) -> int
+[[nodiscard]] auto _rate_gpu(VkPhysicalDevice gpu) -> int
 {
   VkPhysicalDeviceProperties properties;
   vkGetPhysicalDeviceProperties(gpu, &properties);
@@ -31,7 +31,7 @@ namespace {
   return score;
 }
 
-[[nodiscard]] auto has_required_extensions(VkPhysicalDevice gpu) -> bool
+[[nodiscard]] auto _has_required_extensions(VkPhysicalDevice gpu) -> bool
 {
   HashSet<String> missing_extensions {std::begin(kRequiredDeviceExtensions),
                                       std::end(kRequiredDeviceExtensions)};
@@ -44,7 +44,7 @@ namespace {
   return missing_extensions.empty();
 }
 
-[[nodiscard]] auto is_gpu_suitable(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> bool
+[[nodiscard]] auto _is_gpu_suitable(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> bool
 {
   const auto has_extensions = has_required_extensions(gpu);
   if (!has_extensions) {
@@ -194,7 +194,7 @@ auto get_suitable_physical_device(VkInstance instance, VkSurfaceKHR surface)
   gpu_scores.reserve(gpus.size());
 
   for (const auto& gpu : gpus) {
-    gpu_scores[gpu] = is_gpu_suitable(gpu, surface) ? rate_gpu(gpu) : -1;
+    gpu_scores[gpu] = _is_gpu_suitable(gpu, surface) ? _rate_gpu(gpu) : -1;
   }
 
   const auto gpu_iter = std::max_element(gpu_scores.begin(), gpu_scores.end());

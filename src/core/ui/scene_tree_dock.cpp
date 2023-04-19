@@ -17,11 +17,11 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto show_drag_input(const char* label,
-                                   const Vec3& vec,
-                                   const float min = 0.0f,
-                                   const float max = 0.0f,
-                                   const ImGuiSliderFlags flags = 0) -> Maybe<Vec3>
+[[nodiscard]] auto _show_drag_input(const char* label,
+                                    const Vec3& vec,
+                                    const float min = 0.0f,
+                                    const float max = 0.0f,
+                                    const ImGuiSliderFlags flags = 0) -> Maybe<Vec3>
 {
   float buffer[3] {vec.x, vec.y, vec.z};
   if (ImGui::DragFloat3(label, buffer, 1.0f, min, max, "%.2f", flags)) {
@@ -32,42 +32,42 @@ namespace {
   }
 }
 
-void show_transform_component(const Scene& scene,
-                              const Transform& transform,
-                              const Entity entity,
-                              Dispatcher& dispatcher)
+void _show_transform_component(const Scene& scene,
+                               const Transform& transform,
+                               const Entity entity,
+                               Dispatcher& dispatcher)
 {
   ImGui::SeparatorText(ICON_FA_UP_DOWN_LEFT_RIGHT " Transform");
 
   const auto& transform_options = scene.get<TransformOptions>(entity);
 
   ImGui::BeginDisabled(!transform_options.use_position);
-  if (const auto translation = show_drag_input("Position", transform.position)) {
+  if (const auto translation = _show_drag_input("Position", transform.position)) {
     dispatcher.enqueue<UpdateTransformTranslationEvent>(entity, *translation);
   }
   ImGui::EndDisabled();
 
   ImGui::BeginDisabled(!transform_options.use_rotation);
-  if (const auto rotation = show_drag_input("Rotation", transform.rotation)) {
+  if (const auto rotation = _show_drag_input("Rotation", transform.rotation)) {
     dispatcher.enqueue<UpdateTransformRotationEvent>(entity, *rotation);
   }
   ImGui::EndDisabled();
 
   ImGui::BeginDisabled(!transform_options.use_scale);
-  if (const auto scale = show_drag_input("Scale",
-                                         transform.scale,
-                                         0.001f,
-                                         10'000,
-                                         ImGuiSliderFlags_Logarithmic)) {
+  if (const auto scale = _show_drag_input("Scale",
+                                          transform.scale,
+                                          0.001f,
+                                          10'000,
+                                          ImGuiSliderFlags_Logarithmic)) {
     dispatcher.enqueue<UpdateTransformScaleEvent>(entity, *scale);
   }
   ImGui::EndDisabled();
 }
 
-void show_camera_component(const Scene& scene,
-                           const Camera& camera,
-                           const Entity entity,
-                           Dispatcher& dispatcher)
+void _show_camera_component(const Scene& scene,
+                            const Camera& camera,
+                            const Entity entity,
+                            Dispatcher& dispatcher)
 {
   ImGui::SeparatorText(ICON_FA_CAMERA " Camera");
   ImGui::Text("Aspect ratio: %.2f", camera.aspect_ratio);
@@ -98,9 +98,9 @@ void show_camera_component(const Scene& scene,
   }
 }
 
-void show_scene_node_widget(const Scene& scene,
-                            const Entity entity,
-                            Dispatcher& dispatcher)
+void _show_scene_node_widget(const Scene& scene,
+                             const Entity entity,
+                             Dispatcher& dispatcher)
 {
   GLOW_ASSERT(scene.get_registry().all_of<Node>(entity));
 
@@ -113,11 +113,11 @@ void show_scene_node_widget(const Scene& scene,
     ImGui::Indent();
 
     if (const auto* transform = scene.find<Transform>(entity)) {
-      show_transform_component(scene, *transform, entity, dispatcher);
+      _show_transform_component(scene, *transform, entity, dispatcher);
     }
 
     if (const auto* camera = scene.find<Camera>(entity)) {
-      show_camera_component(scene, *camera, entity, dispatcher);
+      _show_camera_component(scene, *camera, entity, dispatcher);
     }
 
     if (const auto* model = scene.find<gl::Model>(entity)) {
@@ -128,7 +128,7 @@ void show_scene_node_widget(const Scene& scene,
     ImGui::Spacing();
 
     for (const auto child_entity : node.children) {
-      show_scene_node_widget(scene, child_entity, dispatcher);
+      _show_scene_node_widget(scene, child_entity, dispatcher);
     }
 
     ImGui::Spacing();
@@ -145,7 +145,7 @@ void show_scene_tree_dock(const Scene& scene, Dispatcher& dispatcher)
   if (ImGui::Begin("Scene")) {
     const auto& registry = scene.get_registry();
     for (auto [entity, node] : registry.view<Node>(entt::exclude<ChildNode>).each()) {
-      show_scene_node_widget(scene, entity, dispatcher);
+      _show_scene_node_widget(scene, entity, dispatcher);
     }
   }
 

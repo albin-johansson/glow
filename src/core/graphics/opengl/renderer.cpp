@@ -19,9 +19,9 @@
 namespace glow::gl {
 namespace {
 
-void compile_and_link_program(Program& program,
-                              const char* vert_path,
-                              const char* frag_path)
+void _compile_and_link_program(Program& program,
+                               const char* vert_path,
+                               const char* frag_path)
 {
   program.load_shader_files(vert_path, frag_path).check("Compilation error");
   program.link().check("Link error");
@@ -57,9 +57,9 @@ void Renderer::init_uniform_buffers()
 
 void Renderer::load_environment_program()
 {
-  compile_and_link_program(mEnvProgram,
-                           "assets/shaders/gl/environment.vert",
-                           "assets/shaders/gl/environment.frag");
+  _compile_and_link_program(mEnvProgram,
+                            "assets/shaders/gl/environment.vert",
+                            "assets/shaders/gl/environment.frag");
 
   mEnvProgram.set_uniform("uEnvTexture", 0).check("uEnvTexture");
   mEnvProgram.set_uniform_block_binding("EnvironmentBuffer", 0).check("EnvBuffer UBO");
@@ -67,9 +67,9 @@ void Renderer::load_environment_program()
 
 void Renderer::load_shading_program()
 {
-  compile_and_link_program(mShadingProgram,
-                           "assets/shaders/gl/shading.vert",
-                           "assets/shaders/gl/shading.frag");
+  _compile_and_link_program(mShadingProgram,
+                            "assets/shaders/gl/shading.vert",
+                            "assets/shaders/gl/shading.frag");
 
   mShadingProgram.set_uniform("uMaterialDiffuseTex", 5).check("uMaterialDiffuseTex");
   mShadingProgram.set_uniform_block_binding("MatrixBuffer", 0).check("Matrix UBO");
@@ -78,9 +78,9 @@ void Renderer::load_shading_program()
 
 void Renderer::load_framebuffer_program()
 {
-  compile_and_link_program(mFramebufferProgram,
-                           "assets/shaders/gl/framebuffer.vert",
-                           "assets/shaders/gl/framebuffer.frag");
+  _compile_and_link_program(mFramebufferProgram,
+                            "assets/shaders/gl/framebuffer.vert",
+                            "assets/shaders/gl/framebuffer.frag");
 
   mFramebufferProgram.set_uniform("uFramebuffer", 0).check("uFramebuffer");
   mFramebufferProgram.set_uniform_block_binding("Options", 0)

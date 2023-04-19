@@ -11,10 +11,10 @@
 namespace glow::vk {
 namespace {
 
-VKAPI_ATTR auto debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
-                                       VkDebugUtilsMessageTypeFlagsEXT,
-                                       const VkDebugUtilsMessengerCallbackDataEXT* data,
-                                       void*) -> VkBool32
+VKAPI_ATTR auto _debug_message_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
+                                        VkDebugUtilsMessageTypeFlagsEXT,
+                                        const VkDebugUtilsMessengerCallbackDataEXT* data,
+                                        void*) -> VkBool32
 {
   auto level = spdlog::level::debug;
 
@@ -59,7 +59,7 @@ auto create_debug_messenger() -> DebugMessengerPtr
                      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
                      VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
 
-      .pfnUserCallback = &debug_message_callback,
+      .pfnUserCallback = &_debug_message_callback,
       .pUserData = nullptr,
   };
 

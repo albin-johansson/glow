@@ -24,7 +24,7 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto determine_refresh_rate() -> float64
+[[nodiscard]] auto _determine_refresh_rate() -> float64
 {
   SDL_DisplayMode mode {};
   if (SDL_GetDesktopDisplayMode(0, &mode) == 0) {
@@ -42,7 +42,7 @@ Engine::Engine(const GraphicsAPI api)
     : mInitializer {api},
       mWindow {mInitializer.get_window().get_handle()},
       mCounterFreq(static_cast<float64>(SDL_GetPerformanceFrequency())),
-      mFixedDelta {1.0 / determine_refresh_rate()}
+      mFixedDelta {1.0 / _determine_refresh_rate()}
 {
   spdlog::debug("[Engine] Counter frequency: {:L}", mCounterFreq);
   spdlog::debug("[Engine] Fixed delta: {:.4f}", mFixedDelta);

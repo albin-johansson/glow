@@ -24,14 +24,14 @@ inline const HashMap<uint, const char*> kErrorMessages = {
     {GL_STACK_OVERFLOW, "GL_STACK_OVERFLOW"},
 };
 
-[[nodiscard]] auto get_integer(const uint name) -> uint
+[[nodiscard]] auto _get_integer(const uint name) -> uint
 {
   int id {};
   glGetIntegerv(name, &id);
   return static_cast<uint>(id);
 }
 
-[[nodiscard]] auto get_string_length(const GLubyte* str) -> usize
+[[nodiscard]] auto _get_string_length(const GLubyte* str) -> usize
 {
   const GLubyte* ptr = str;
 
@@ -42,13 +42,13 @@ inline const HashMap<uint, const char*> kErrorMessages = {
   return static_cast<usize>(ptr - str);
 }
 
-[[nodiscard]] auto to_string(const GLubyte* raw_str) -> String
+[[nodiscard]] auto _to_string(const GLubyte* raw_str) -> String
 {
   if (!raw_str) {
     return String {};
   }
 
-  const auto length = get_string_length(raw_str);
+  const auto length = _get_string_length(raw_str);
 
   String result;
   result.resize(length);
@@ -129,57 +129,57 @@ auto convert_buffer_usage(const BufferUsage usage) -> uint
 
 auto get_bound_vertex_array() -> uint
 {
-  return get_integer(GL_VERTEX_ARRAY_BINDING);
+  return _get_integer(GL_VERTEX_ARRAY_BINDING);
 }
 
 auto get_bound_vertex_buffer() -> uint
 {
-  return get_integer(GL_ARRAY_BUFFER_BINDING);
+  return _get_integer(GL_ARRAY_BUFFER_BINDING);
 }
 
 auto get_bound_index_buffer() -> uint
 {
-  return get_integer(GL_ELEMENT_ARRAY_BUFFER_BINDING);
+  return _get_integer(GL_ELEMENT_ARRAY_BUFFER_BINDING);
 }
 
 auto get_bound_uniform_buffer() -> uint
 {
-  return get_integer(GL_UNIFORM_BUFFER_BINDING);
+  return _get_integer(GL_UNIFORM_BUFFER_BINDING);
 }
 
 auto get_bound_framebuffer() -> uint
 {
-  return get_integer(GL_FRAMEBUFFER_BINDING);
+  return _get_integer(GL_FRAMEBUFFER_BINDING);
 }
 
 auto get_bound_texture() -> uint
 {
-  return get_integer(GL_TEXTURE_BINDING_2D);
+  return _get_integer(GL_TEXTURE_BINDING_2D);
 }
 
 auto get_bound_program() -> uint
 {
-  return get_integer(GL_CURRENT_PROGRAM);
+  return _get_integer(GL_CURRENT_PROGRAM);
 }
 
 auto get_renderer_name() -> String
 {
-  return to_string(glGetString(GL_RENDERER));
+  return _to_string(glGetString(GL_RENDERER));
 }
 
 auto get_vendor_name() -> String
 {
-  return to_string(glGetString(GL_VENDOR));
+  return _to_string(glGetString(GL_VENDOR));
 }
 
 auto get_version() -> String
 {
-  return to_string(glGetString(GL_VERSION));
+  return _to_string(glGetString(GL_VERSION));
 }
 
 auto get_glsl_version() -> String
 {
-  return to_string(glGetString(GL_SHADING_LANGUAGE_VERSION));
+  return _to_string(glGetString(GL_SHADING_LANGUAGE_VERSION));
 }
 
 }  // namespace glow::gl

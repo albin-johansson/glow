@@ -20,7 +20,7 @@
 namespace glow::vk {
 namespace {
 
-[[nodiscard]] auto pick_swap_surface_format(const Vector<VkSurfaceFormatKHR>& formats)
+[[nodiscard]] auto _pick_swap_surface_format(const Vector<VkSurfaceFormatKHR>& formats)
     -> VkSurfaceFormatKHR
 {
   for (const auto& format : formats) {
@@ -35,7 +35,7 @@ namespace {
   return formats.at(0);
 }
 
-[[nodiscard]] auto pick_swap_present_mode(const Vector<VkPresentModeKHR>& modes)
+[[nodiscard]] auto _pick_swap_present_mode(const Vector<VkPresentModeKHR>& modes)
     -> VkPresentModeKHR
 {
   for (const auto mode : modes) {
@@ -49,7 +49,7 @@ namespace {
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 
-[[nodiscard]] auto pick_swap_extent(const VkSurfaceCapabilitiesKHR& capabilities)
+[[nodiscard]] auto _pick_swap_extent(const VkSurfaceCapabilitiesKHR& capabilities)
     -> VkExtent2D
 {
   if (capabilities.currentExtent.width != std::numeric_limits<uint32>::max()) {
@@ -72,7 +72,7 @@ namespace {
   }
 }
 
-[[nodiscard]] auto get_swapchain_images(VkSwapchainKHR swapchain) -> Vector<VkImage>
+[[nodiscard]] auto _get_swapchain_images(VkSwapchainKHR swapchain) -> Vector<VkImage>
 {
   uint32 image_count = 0;
   vkGetSwapchainImagesKHR(get_device(), swapchain, &image_count, nullptr);
@@ -159,11 +159,11 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
       queue_family_indices.present_family.value(),
   };
 
-  const auto surface_format = pick_swap_surface_format(swapchain_support.formats);
-  const auto present_mode = pick_swap_present_mode(swapchain_support.present_modes);
+  const auto surface_format = _pick_swap_surface_format(swapchain_support.formats);
+  const auto present_mode = _pick_swap_present_mode(swapchain_support.present_modes);
 
   mImageFormat = surface_format.format;
-  mImageExtent = pick_swap_extent(swapchain_support.capabilities);
+  mImageExtent = _pick_swap_extent(swapchain_support.capabilities);
 
   uint32 min_image_count = swapchain_support.capabilities.minImageCount + 1;
   if (swapchain_support.capabilities.maxImageCount > 0) {
@@ -217,7 +217,7 @@ void Swapchain::create_swapchain(VkSwapchainKHR old_swapchain)
                "[VK] Could not create swapchain");
   mSwapchain.reset(swapchain);
 
-  mImages = get_swapchain_images(mSwapchain.get());
+  mImages = _get_swapchain_images(mSwapchain.get());
 
   spdlog::debug(
       "[VK] Created swapchain with {} images using format {}, presented using {}",

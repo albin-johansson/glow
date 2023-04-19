@@ -13,7 +13,7 @@ namespace {
 
 inline constexpr ImWchar kFontIconRange[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
 
-void init_style(ImGuiStyle& style)
+void _init_style(ImGuiStyle& style)
 {
   style.WindowPadding = ImVec2 {6, 6};
   style.FramePadding = ImVec2 {6, 3};
@@ -133,9 +133,6 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsAPI api)
     throw Error {"[GUI] Failed to create ImGui context"};
   }
 
-  auto& io = ImGui::GetIO();
-  // io.ConfigFlags |= static_cast<ImGuiConfigFlags>(ImGuiConfigFlags_DockingEnable);
-
   if (api == GraphicsAPI::OpenGL) {
     mGL.emplace(window);
   }
@@ -145,7 +142,7 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsAPI api)
   }
 
   ImGui::StyleColorsDark();
-  init_style(ImGui::GetStyle());
+  _init_style(ImGui::GetStyle());
 }
 
 DearImGui::~DearImGui()

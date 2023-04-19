@@ -16,7 +16,7 @@
 namespace glow::vk {
 namespace {
 
-void print_relevant_device_properties(VkPhysicalDevice gpu)
+void _print_relevant_device_properties(VkPhysicalDevice gpu)
 {
   VkPhysicalDevicePushDescriptorPropertiesKHR push_descriptor_properties {};
   push_descriptor_properties.sType =
@@ -123,7 +123,7 @@ auto create_device() -> DevicePtr
   set_graphics_queue(graphics_queue);
   set_presentation_queue(presentation_queue);
 
-  print_relevant_device_properties(get_gpu());
+  _print_relevant_device_properties(get_gpu());
 
   return DevicePtr {device};
 }

@@ -39,12 +39,12 @@ const HashMap<VkImageLayout, VkPipelineStageFlags> kTransitionStageMap {
     {VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT}};
 
-void transition_image_layout(VkCommandBuffer command_buffer,
-                             VkImage image,
-                             const VkImageLayout old_layout,
-                             const VkImageLayout new_layout,
-                             const uint32 level_count,
-                             const uint32 base_level)
+void _transition_image_layout(VkCommandBuffer command_buffer,
+                              VkImage image,
+                              const VkImageLayout old_layout,
+                              const VkImageLayout new_layout,
+                              const uint32 level_count,
+                              const uint32 base_level)
 {
   GLOW_ASSERT(kTransitionAccessMap.contains(old_layout));
   GLOW_ASSERT(kTransitionAccessMap.contains(new_layout));
@@ -192,7 +192,7 @@ Image::Image(const VkImageType type,
 void Image::change_layout(const VkImageLayout new_layout)
 {
   execute_immediately(get_graphics_command_pool(), [=, this](VkCommandBuffer cmd_buffer) {
-    transition_image_layout(cmd_buffer, mData.image, mLayout, new_layout, mMipLevels, 0);
+    _transition_image_layout(cmd_buffer, mData.image, mLayout, new_layout, mMipLevels, 0);
     mLayout = new_layout;
   });
 }
@@ -231,12 +231,12 @@ void Image::generate_mipmaps()
     for (uint32 level = 1; level < mMipLevels; ++level) {
       const uint32 base_level = level - 1;
 
-      transition_image_layout(cmd_buffer,
-                              mData.image,
-                              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                              1,
-                              base_level);
+      _transition_image_layout(cmd_buffer,
+                               mData.image,
+                               VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                               1,
+                               base_level);
 
       VkImageBlit blit {};
       blit.srcOffsets[0] = {0, 0, 0};
@@ -266,12 +266,12 @@ void Image::generate_mipmaps()
                      &blit,
                      VK_FILTER_LINEAR);
 
-      transition_image_layout(cmd_buffer,
-                              mData.image,
-                              VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                              VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                              1,
-                              base_level);
+      _transition_image_layout(cmd_buffer,
+                               mData.image,
+                               VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                               VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                               1,
+                               base_level);
 
       if (mip_width > 1) {
         mip_width /= 2;
@@ -283,12 +283,12 @@ void Image::generate_mipmaps()
     }
 
     // Transitions the last mipmap image to the optimal shader read layout
-    transition_image_layout(cmd_buffer,
-                            mData.image,
-                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            1,
-                            mMipLevels - 1);
+    _transition_image_layout(cmd_buffer,
+                             mData.image,
+                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                             1,
+                             mMipLevels - 1);
 
     mLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
   });

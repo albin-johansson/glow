@@ -11,12 +11,12 @@
 namespace glow {
 namespace {
 
-[[nodiscard]] auto convert_color(const aiColor4D& color) -> Vec3
+[[nodiscard]] auto _convert_color(const aiColor4D& color) -> Vec3
 {
   return Vec3 {color.r, color.g, color.b};
 }
 
-[[nodiscard]] auto convert_matrix(const aiMatrix4x4& row_major) -> Mat4
+[[nodiscard]] auto _convert_matrix(const aiMatrix4x4& row_major) -> Mat4
 {
   Mat4 column_major {1.0f};
 
@@ -43,12 +43,12 @@ namespace {
   return column_major;
 }
 
-[[nodiscard]] auto convert_vector(const aiVector3D& from) -> Vec3
+[[nodiscard]] auto _convert_vector(const aiVector3D& from) -> Vec3
 {
   return Vec3 {from.x, from.y, from.z};
 }
 
-[[nodiscard]] auto get_texture(const aiMaterial* material, const aiTextureType type)
+[[nodiscard]] auto _get_texture(const aiMaterial* material, const aiTextureType type)
     -> Maybe<Path>
 {
   if (material->GetTextureCount(type) > 0) {
@@ -61,7 +61,7 @@ namespace {
   }
 }
 
-[[nodiscard]] auto load_material_data(const aiScene* scene, const aiMesh* mesh)
+[[nodiscard]] auto _load_material_data(const aiScene* scene, const aiMesh* mesh)
     -> MaterialData
 {
   const auto* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -69,12 +69,12 @@ namespace {
   MaterialData material_data;
   material_data.name = material->GetName().C_Str();
 
-  material_data.diffuse_tex = get_texture(material, aiTextureType_DIFFUSE);
-  material_data.specular_tex = get_texture(material, aiTextureType_SPECULAR);
-  material_data.roughness_tex = get_texture(material, aiTextureType_DIFFUSE_ROUGHNESS);
-  material_data.metalness_tex = get_texture(material, aiTextureType_METALNESS);
-  material_data.ao_tex = get_texture(material, aiTextureType_AMBIENT_OCCLUSION);
-  material_data.normal_tex = get_texture(material, aiTextureType_NORMALS);
+  material_data.diffuse_tex = _get_texture(material, aiTextureType_DIFFUSE);
+  material_data.specular_tex = _get_texture(material, aiTextureType_SPECULAR);
+  material_data.roughness_tex = _get_texture(material, aiTextureType_DIFFUSE_ROUGHNESS);
+  material_data.metalness_tex = _get_texture(material, aiTextureType_METALNESS);
+  material_data.ao_tex = _get_texture(material, aiTextureType_AMBIENT_OCCLUSION);
+  material_data.normal_tex = _get_texture(material, aiTextureType_NORMALS);
 
   aiColor4D ambient_color {};
   aiColor4D diffuse_color {};
@@ -86,10 +86,10 @@ namespace {
   material->Get(AI_MATKEY_COLOR_SPECULAR, specular_color);
   material->Get(AI_MATKEY_COLOR_EMISSIVE, emission_color);
 
-  material_data.ambient = convert_color(ambient_color);
-  material_data.diffuse = convert_color(diffuse_color);
-  material_data.specular = convert_color(specular_color);
-  material_data.emission = convert_color(emission_color);
+  material_data.ambient = _convert_color(ambient_color);
+  material_data.diffuse = _convert_color(diffuse_color);
+  material_data.specular = _convert_color(specular_color);
+  material_data.emission = _convert_color(emission_color);
 
   material->Get(AI_MATKEY_ROUGHNESS_FACTOR, material_data.roughness);
   material->Get(AI_MATKEY_METALLIC_FACTOR, material_data.metalness);
@@ -100,21 +100,22 @@ namespace {
   return material_data;
 }
 
-[[nodiscard]] auto create_mesh_vertex(const aiMesh* mesh, const uint vertex_idx) -> Vertex
+[[nodiscard]] auto _create_mesh_vertex(const aiMesh* mesh, const uint vertex_idx)
+    -> Vertex
 {
   Vertex vertex;
 
   const auto& position = mesh->mVertices[vertex_idx];
-  vertex.position = convert_vector(position);
+  vertex.position = _convert_vector(position);
 
   if (mesh->HasNormals()) {
     const auto& normal = mesh->mNormals[vertex_idx];
-    vertex.normal = convert_vector(normal);
+    vertex.normal = _convert_vector(normal);
   }
 
   if (mesh->HasTextureCoords(0)) {
     const auto& tex_coords = mesh->mTextureCoords[0][vertex_idx];
-    vertex.tex_coords = convert_vector(tex_coords);
+    vertex.tex_coords = _convert_vector(tex_coords);
   }
   else {
     vertex.tex_coords = Vec2 {0, 0};
@@ -123,14 +124,14 @@ namespace {
   return vertex;
 }
 
-[[nodiscard]] auto load_mesh_data(const aiNode* node, const aiMesh* mesh) -> MeshData
+[[nodiscard]] auto _load_mesh_data(const aiNode* node, const aiMesh* mesh) -> MeshData
 {
   MeshData mesh_data;
   mesh_data.material_id = mesh->mMaterialIndex;
-  mesh_data.transform = convert_matrix(node->mTransformation);
+  mesh_data.transform = _convert_matrix(node->mTransformation);
 
   for (uint vertex_idx = 0; vertex_idx < mesh->mNumVertices; ++vertex_idx) {
-    mesh_data.vertices.push_back(create_mesh_vertex(mesh, vertex_idx));
+    mesh_data.vertices.push_back(_create_mesh_vertex(mesh, vertex_idx));
   }
 
   for (uint face_idx = 0; face_idx < mesh->mNumFaces; ++face_idx) {
@@ -144,22 +145,22 @@ namespace {
   return mesh_data;
 }
 
-void process_node(ModelData& model, const aiScene* scene, const aiNode* node)
+void _process_node(ModelData& model, const aiScene* scene, const aiNode* node)
 {
   for (uint mesh_idx = 0; mesh_idx < node->mNumMeshes; ++mesh_idx) {
     const auto* mesh = scene->mMeshes[node->mMeshes[mesh_idx]];
 
     auto [iter, did_insert] = model.materials.try_emplace(mesh->mMaterialIndex);
     if (did_insert) {
-      iter->second = load_material_data(scene, mesh);
+      iter->second = _load_material_data(scene, mesh);
     }
 
-    model.meshes.push_back(load_mesh_data(node, mesh));
+    model.meshes.push_back(_load_mesh_data(node, mesh));
   }
 
   for (uint child_idx = 0; child_idx < node->mNumChildren; ++child_idx) {
     const auto* child_node = node->mChildren[child_idx];
-    process_node(model, scene, child_node);
+    _process_node(model, scene, child_node);
   }
 }
 
@@ -186,7 +187,7 @@ auto load_model_data(const Path& path, const GraphicsAPI api) -> Maybe<ModelData
   ModelData model;
   model.dir = path.parent_path();
 
-  process_node(model, scene, scene->mRootNode);
+  _process_node(model, scene, scene->mRootNode);
 
   const auto end_time = Clock::now();
   const auto total_duration = chrono::duration_cast<Milliseconds>(end_time - start_time);
