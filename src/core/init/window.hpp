@@ -14,7 +14,7 @@ struct WindowDeleter final {
 /// Simple RAII wrapper around an SDL window instance.
 class Window final {
  public:
-  explicit Window(GraphicsApi api);
+  explicit Window(GraphicsAPI api);
 
   [[nodiscard]] auto get_handle() -> SDL_Window* { return mWindow.get(); }
 

@@ -2,7 +2,6 @@
 #include <exception>  // set_terminate
 
 #include <SDL2/SDL.h>
-#include <magic_enum.hpp>
 #include <spdlog/spdlog.h>
 
 #include "common/debug/error.hpp"
@@ -27,7 +26,7 @@ auto main(const int argc, char* argv[]) -> int
     spdlog::set_level(log_level);
 
     const auto api = command_line_args->api;
-    spdlog::info("[Main] Using {} as the graphics API", magic_enum::enum_name(api));
+    spdlog::info("[Main] Using {}", get_short_name(api));
 
     glow::Engine engine {api};
     engine.set_backend(glow::create_backend(engine.get_window(), api));

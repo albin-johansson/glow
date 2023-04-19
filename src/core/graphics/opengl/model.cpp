@@ -96,7 +96,7 @@ namespace {
 
 void assign_model(Scene& scene, const Entity entity, const Path& path)
 {
-  if (const auto model_data = load_model_data(path, GraphicsApi::OpenGL)) {
+  if (const auto model_data = load_model_data(path, GraphicsAPI::OpenGL)) {
     auto& model = scene.add<Model>(entity);
     model.meshes.reserve(model_data->meshes.size());
 

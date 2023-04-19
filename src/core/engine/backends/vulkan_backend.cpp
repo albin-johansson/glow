@@ -394,8 +394,8 @@ void VulkanBackend::present_image()
 void VulkanBackend::update_static_matrix_buffer(const Camera& camera,
                                                 const Transform& camera_transform)
 {
-  mStaticMatrices.proj = to_projection_matrix(camera, GraphicsApi::Vulkan);
-  mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsApi::Vulkan);
+  mStaticMatrices.proj = to_projection_matrix(camera, GraphicsAPI::Vulkan);
+  mStaticMatrices.view = to_view_matrix(camera, camera_transform, GraphicsAPI::Vulkan);
   mStaticMatrices.view_proj = mStaticMatrices.proj * mStaticMatrices.view;
 
   auto& frame = mFrames.at(mFrameIndex);

@@ -126,7 +126,7 @@ void init_style(ImGuiStyle& style)
 
 }  // namespace
 
-DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
+DearImGui::DearImGui(SDL_Window* window, const GraphicsAPI api)
 {
   IMGUI_CHECKVERSION();
   if (!ImGui::CreateContext()) {
@@ -136,11 +136,11 @@ DearImGui::DearImGui(SDL_Window* window, const GraphicsApi api)
   auto& io = ImGui::GetIO();
   // io.ConfigFlags |= static_cast<ImGuiConfigFlags>(ImGuiConfigFlags_DockingEnable);
 
-  if (api == GraphicsApi::OpenGL) {
+  if (api == GraphicsAPI::OpenGL) {
     mGL.emplace(window);
   }
 
-  if (api == GraphicsApi::Vulkan) {
+  if (api == GraphicsAPI::Vulkan) {
     mVK.emplace(window);
   }
 

@@ -49,7 +49,7 @@ void set_hints_for_opengl()
 
 }  // namespace
 
-SDL::SDL(const GraphicsApi api)
+SDL::SDL(const GraphicsAPI api)
     : mAPI {api}
 {
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -58,10 +58,10 @@ SDL::SDL(const GraphicsApi api)
 
   SDL_SetHint(SDL_HINT_APP_NAME, "Glow");
 
-  if (mAPI == GraphicsApi::OpenGL) {
+  if (mAPI == GraphicsAPI::OpenGL) {
     set_hints_for_opengl();
   }
-  else if (mAPI == GraphicsApi::Vulkan) {
+  else if (mAPI == GraphicsAPI::Vulkan) {
     if (SDL_Vulkan_LoadLibrary(nullptr) == -1) {
       throw Error {fmt::format("Could not load Vulkan library: {}", SDL_GetError())};
     }
@@ -70,7 +70,7 @@ SDL::SDL(const GraphicsApi api)
 
 SDL::~SDL()
 {
-  if (mAPI == GraphicsApi::Vulkan) {
+  if (mAPI == GraphicsAPI::Vulkan) {
     SDL_Vulkan_UnloadLibrary();
   }
   SDL_Quit();

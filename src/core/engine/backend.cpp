@@ -6,13 +6,13 @@
 
 namespace glow {
 
-auto create_backend(SDL_Window* window, const GraphicsApi api) -> Unique<Backend>
+auto create_backend(SDL_Window* window, const GraphicsAPI api) -> Unique<Backend>
 {
   switch (api) {
-    case GraphicsApi::OpenGL:
+    case GraphicsAPI::OpenGL:
       return std::make_unique<OpenGLBackend>(window);
 
-    case GraphicsApi::Vulkan:
+    case GraphicsAPI::Vulkan:
       return std::make_unique<VulkanBackend>();
 
     default:

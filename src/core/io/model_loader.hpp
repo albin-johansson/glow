@@ -59,6 +59,6 @@ struct ModelData final {
 ///
 /// \param path file path to the model file.
 /// \param api the graphics API that will be used to render the model.
-[[nodiscard]] auto load_model_data(const Path& path, GraphicsApi api) -> Maybe<ModelData>;
+[[nodiscard]] auto load_model_data(const Path& path, GraphicsAPI api) -> Maybe<ModelData>;
 
 }  // namespace glow

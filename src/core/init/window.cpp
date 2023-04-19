@@ -1,7 +1,6 @@
 #include "window.hpp"
 
 #include <fmt/format.h>
-#include <magic_enum.hpp>
 
 #include "common/debug/error.hpp"
 #include "common/predef.hpp"
@@ -23,15 +22,15 @@ struct ObjectDeleter final {
   void operator()(void* obj) noexcept { SDL_UnloadObject(obj); }
 };
 
-[[nodiscard]] auto to_window_flags(const GraphicsApi api) -> uint32
+[[nodiscard]] auto to_window_flags(const GraphicsAPI api) -> uint32
 {
   const auto base_flags =
       SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE;
   switch (api) {
-    case GraphicsApi::OpenGL:
+    case GraphicsAPI::OpenGL:
       return base_flags | SDL_WINDOW_OPENGL;
 
-    case GraphicsApi::Vulkan:
+    case GraphicsAPI::Vulkan:
       return base_flags | SDL_WINDOW_VULKAN;
 
     default:
@@ -67,7 +66,7 @@ void WindowDeleter::operator()(SDL_Window* window) noexcept
   gWindow = nullptr;
 }
 
-Window::Window(const GraphicsApi api)
+Window::Window(const GraphicsAPI api)
     : mWindow {SDL_CreateWindow("Glow",
                                 SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED,
@@ -82,7 +81,7 @@ Window::Window(const GraphicsApi api)
   gWindow = mWindow.get();
   use_win32_dark_title_bar(mWindow.get());
 
-  const auto title = fmt::format("Glow [{}]", magic_enum::enum_name(api));
+  const auto title = fmt::format("Glow [{}]", get_short_name(api));
   SDL_SetWindowTitle(mWindow.get(), title.c_str());
 }
 

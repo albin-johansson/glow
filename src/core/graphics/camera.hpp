@@ -46,7 +46,7 @@ void rotate_camera(const Camera& camera,
 /// \param camera the camera component.
 /// \param api the graphics API to adjust the matrix for.
 /// \return a projection matrix.
-[[nodiscard]] auto to_projection_matrix(const Camera& camera, GraphicsApi api) -> Mat4;
+[[nodiscard]] auto to_projection_matrix(const Camera& camera, GraphicsAPI api) -> Mat4;
 
 /// Creates a view matrix based on a camera.
 ///
@@ -56,6 +56,6 @@ void rotate_camera(const Camera& camera,
 /// \return a view matrix.
 [[nodiscard]] auto to_view_matrix(const Camera& camera,
                                   const Transform& transform,
-                                  GraphicsApi api) -> Mat4;
+                                  GraphicsAPI api) -> Mat4;
 
 }  // namespace glow

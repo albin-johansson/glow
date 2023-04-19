@@ -7,12 +7,12 @@ namespace glow {
 /// Simple RAII wrapper around an SDL instance.
 class SDL final {
  public:
-  explicit SDL(GraphicsApi api);
+  explicit SDL(GraphicsAPI api);
 
   ~SDL();
 
  private:
-  GraphicsApi mAPI {};
+  GraphicsAPI mAPI {};
 };
 
 }  // namespace glow

@@ -38,7 +38,7 @@ namespace {
 
 }  // namespace
 
-Engine::Engine(const GraphicsApi api)
+Engine::Engine(const GraphicsAPI api)
     : mInitializer {api},
       mWindow {mInitializer.get_window().get_handle()},
       mCounterFreq(static_cast<float64>(SDL_GetPerformanceFrequency())),

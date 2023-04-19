@@ -12,7 +12,7 @@ namespace glow {
 /// Handles the initialization of fundamental resources.
 class EngineInitializer final {
  public:
-  explicit EngineInitializer(GraphicsApi api);
+  explicit EngineInitializer(GraphicsAPI api);
 
   [[nodiscard]] auto get_window() -> Window& { return mWindow; }
   [[nodiscard]] auto get_imgui() -> DearImGui& { return mImGui.value(); }

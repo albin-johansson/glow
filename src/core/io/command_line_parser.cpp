@@ -23,9 +23,9 @@ inline constexpr const char* kEpilog =
 inline constexpr StringView kDefaultApi = "OpenGL";
 inline constexpr int kDefaultLogLevel = 4;
 
-inline const Map<StringView, GraphicsApi> kSupportedAPIs {
-    {"OpenGL", GraphicsApi::OpenGL},
-    {"Vulkan", GraphicsApi::Vulkan},
+inline const Map<StringView, GraphicsAPI> kSupportedAPIs {
+    {"OpenGL", GraphicsAPI::OpenGL},
+    {"Vulkan", GraphicsAPI::Vulkan},
 };
 
 inline const HashMap<int, LogLevel> kLogLevels {

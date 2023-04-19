@@ -19,7 +19,7 @@ class DearImGui final {
   GLOW_DELETE_COPY(DearImGui);
   GLOW_DELETE_MOVE(DearImGui);
 
-  DearImGui(SDL_Window* window, GraphicsApi api);
+  DearImGui(SDL_Window* window, GraphicsAPI api);
 
   ~DearImGui();
 

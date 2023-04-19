@@ -20,7 +20,7 @@ GLOW_FORWARD_DECLARE_C(Backend);
 
 class Engine final {
  public:
-  explicit Engine(GraphicsApi api);
+  explicit Engine(GraphicsAPI api);
 
   void init();
 

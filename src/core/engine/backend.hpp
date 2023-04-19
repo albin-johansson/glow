@@ -40,6 +40,6 @@ class Backend {
   [[nodiscard]] virtual auto should_quit() const -> bool = 0;
 };
 
-[[nodiscard]] auto create_backend(SDL_Window* window, GraphicsApi api) -> Unique<Backend>;
+[[nodiscard]] auto create_backend(SDL_Window* window, GraphicsAPI api) -> Unique<Backend>;
 
 }  // namespace glow

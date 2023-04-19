@@ -13,7 +13,7 @@ using LogLevel = spdlog::level::level_enum;
 
 struct CommandLineArgs final {
   LogLevel log_level {LogLevel::info};    ///< Log level to use.
-  GraphicsApi api {GraphicsApi::OpenGL};  ///< The graphics backend to use.
+  GraphicsAPI api {GraphicsAPI::OpenGL};  ///< The graphics backend to use.
   Maybe<Path> env_path;                   ///< Path to an environment texture to load.
   Vector<Path> model_paths;               ///< Paths to model files to load at startup.
 };

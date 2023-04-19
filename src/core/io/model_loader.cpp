@@ -165,14 +165,14 @@ void process_node(ModelData& model, const aiScene* scene, const aiNode* node)
 
 }  // namespace
 
-auto load_model_data(const Path& path, const GraphicsApi api) -> Maybe<ModelData>
+auto load_model_data(const Path& path, const GraphicsAPI api) -> Maybe<ModelData>
 {
   const auto start_time = Clock::now();
 
   Assimp::Importer importer;
 
   auto flags = aiProcessPreset_TargetRealtime_Quality;
-  if (api == GraphicsApi::Vulkan) {
+  if (api == GraphicsAPI::Vulkan) {
     flags |= aiProcess_MakeLeftHanded;
   }
 
