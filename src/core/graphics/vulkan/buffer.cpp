@@ -100,7 +100,7 @@ auto Buffer::create(const VkBufferUsageFlags usage,
   return gpu_buffer;
 }
 
-Buffer::~Buffer()
+Buffer::~Buffer() noexcept
 {
   dispose();
 }
@@ -152,15 +152,15 @@ void Buffer::set_data(const void* data, const usize data_size)
   vmaUnmapMemory(get_allocator(), mAllocation);
 }
 
-void Buffer::bind_as_vertex_buffer(VkCommandBuffer command_buffer) const
+void Buffer::bind_as_vertex_buffer(VkCommandBuffer cmd_buffer) const
 {
   const VkDeviceSize offset = 0;
-  vkCmdBindVertexBuffers(command_buffer, 0, 1, &mBuffer, &offset);
+  vkCmdBindVertexBuffers(cmd_buffer, 0, 1, &mBuffer, &offset);
 }
 
-void Buffer::bind_as_index_buffer(VkCommandBuffer command_buffer, VkIndexType type) const
+void Buffer::bind_as_index_buffer(VkCommandBuffer cmd_buffer, VkIndexType type) const
 {
-  vkCmdBindIndexBuffer(command_buffer, mBuffer, 0, type);
+  vkCmdBindIndexBuffer(cmd_buffer, mBuffer, 0, type);
 }
 
 auto Buffer::get_allocation_info() -> VmaAllocationInfo
@@ -168,19 +168,6 @@ auto Buffer::get_allocation_info() -> VmaAllocationInfo
   VmaAllocationInfo info {};
   vmaGetAllocationInfo(get_allocator(), mAllocation, &info);
   return info;
-}
-
-void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, const usize data_size)
-{
-  execute_immediately(get_graphics_command_pool(), [=](VkCommandBuffer cmd_buffer) {
-    const VkBufferCopy region {
-        .srcOffset = 0,
-        .dstOffset = 0,
-        .size = data_size,
-    };
-
-    vkCmdCopyBuffer(cmd_buffer, src_buffer, dst_buffer, 1, &region);
-  });
 }
 
 }  // namespace glow::vk
