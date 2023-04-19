@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 
+#include <SDL2/SDL.h>
 #include <glad/glad.h>
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
@@ -11,8 +12,9 @@
 #include "common/debug/assert.hpp"
 #include "common/predef.hpp"
 #include "graphics/opengl/model.hpp"
+#include "graphics/opengl/texture_2d.hpp"
 #include "graphics/opengl/util.hpp"
-#include "texture_2d.hpp"
+#include "init/window.hpp"
 
 namespace glow::gl {
 namespace {
@@ -33,6 +35,7 @@ Renderer::Renderer(SDL_Window* window)
   init_uniform_buffers();
   load_environment_program();
   load_shading_program();
+  load_framebuffer_program();
 }
 
 void Renderer::init_uniform_buffers()
@@ -45,6 +48,9 @@ void Renderer::init_uniform_buffers()
 
   mMaterialUBO.bind();
   mMaterialUBO.reserve_space(sizeof(MaterialBuffer));
+
+  mFramebufferProgramOptionsUBO.bind();
+  mFramebufferProgramOptionsUBO.reserve_space(sizeof(FramebufferProgramOptions));
 
   UniformBuffer::unbind();
 }
@@ -69,6 +75,17 @@ void Renderer::load_shading_program()
   mShadingProgram.set_uniform("material_diffuse_tex", 5).check("material_diffuse_tex");
   mShadingProgram.set_uniform_block_binding("MatrixBuffer", 0).check("Matrix UBO");
   mShadingProgram.set_uniform_block_binding("MaterialBuffer", 1).check("Material UBO");
+}
+
+void Renderer::load_framebuffer_program()
+{
+  compile_and_link_program(mFramebufferProgram,
+                           "assets/shaders/gl/framebuffer.vert",
+                           "assets/shaders/gl/framebuffer.frag");
+
+  mFramebufferProgram.set_uniform("uFramebuffer", 0).check("uFramebuffer");
+  mFramebufferProgram.set_uniform_block_binding("Options", 0)
+      .check("FramebufferProgramOptions");
 }
 
 void Renderer::begin_frame()
@@ -115,6 +132,33 @@ void Renderer::unbind_shading_program()
   Program::unbind();
   UniformBuffer::unbind_block(0);
   UniformBuffer::unbind_block(1);
+}
+
+void Renderer::render_buffer_to_screen(const Framebuffer& framebuffer)
+{
+  Framebuffer::unbind();
+
+  Vec2i viewport_size {};
+  SDL_GetWindowSizeInPixels(get_window(), &viewport_size.x, &viewport_size.y);
+
+  glViewport(0, 0, viewport_size.x, viewport_size.y);
+
+  glClearColor(0, 0, 0, 1);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, framebuffer.get_color_texture_id());
+
+  mFramebufferProgramOptionsUBO.bind();
+  mFramebufferProgramOptionsUBO.update_data(0,
+                                            sizeof mFramebufferProgramOptions,
+                                            &mFramebufferProgramOptions);
+  UniformBuffer::unbind();
+
+  mFramebufferProgramOptionsUBO.bind_block(0);
+  mFramebufferProgram.bind();
+
+  mQuad.draw_without_depth_test();
 }
 
 void Renderer::render_environment(const Texture2D& texture)

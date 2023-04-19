@@ -210,9 +210,12 @@ void Engine::render()
 
   const auto& io = ImGui::GetIO();
 
-  const auto window_pos = ImGui::GetWindowPos();
-  const auto window_size = ImGui::GetWindowSize();
-  ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+  Vec2i window_size {};
+  SDL_GetWindowSize(get_window(), &window_size.x, &window_size.y);
+  ImGuizmo::SetRect(0,
+                    0,
+                    static_cast<float>(window_size.x),
+                    static_cast<float>(window_size.y));
 
   if (!ImGuizmo::IsUsing() && ImGui::IsItemActive() && ImGui::IsWindowHovered()) {
     const auto mouse_delta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left, 0.05f);

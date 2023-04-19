@@ -16,6 +16,7 @@
 #include "graphics/opengl/util.hpp"
 #include "graphics/renderer_info.hpp"
 #include "graphics/rendering_options.hpp"
+#include "init/window.hpp"
 #include "io/texture_loader.hpp"
 #include "scene/scene.hpp"
 #include "scene/transform.hpp"
@@ -96,11 +97,11 @@ void OpenGLBackend::render_scene(const Scene& scene, Dispatcher& dispatcher)
 
   mOffscreenFB.bind();
 
-  const Vec2 fb_size = mOffscreenFB.get_size();
-  const auto fb_aspect_ratio = fb_size.x / fb_size.y;
+  Vec2i window_resolution {};
+  SDL_GetWindowSizeInPixels(get_window(), &window_resolution.x, &window_resolution.y);
 
-  if (fb_size.x != ImGui::GetWindowWidth() || fb_size.y != ImGui::GetWindowHeight()) {
-    mOffscreenFB.resize(Vec2 {ImGui::GetWindowWidth(), ImGui::GetWindowHeight()});
+  if (window_resolution != mOffscreenFB.get_size()) {
+    mOffscreenFB.resize(window_resolution);
   }
 
   mOffscreenFB.clear();
@@ -108,6 +109,9 @@ void OpenGLBackend::render_scene(const Scene& scene, Dispatcher& dispatcher)
   if (scene.has_active_camera()) {
     const auto& [camera_entity, camera] = scene.get_active_camera();
     const auto& camera_transform = scene.get<Transform>(camera_entity);
+
+    const Vec2 fb_size = mOffscreenFB.get_size();
+    const auto fb_aspect_ratio = fb_size.x / fb_size.y;
 
     if (camera.aspect_ratio != fb_aspect_ratio) {
       dispatcher.enqueue<SetCameraAspectRatioEvent>(camera_entity, fb_aspect_ratio);
@@ -127,8 +131,14 @@ void OpenGLBackend::render_scene(const Scene& scene, Dispatcher& dispatcher)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     gl::Framebuffer::unbind();
-    GLOW_GL_CHECK_ERRORS();
   }
+
+  auto& present_options = mRenderer.get_framebuffer_program_options_buffer();
+  present_options.gamma = 2.2f;
+  present_options.gamma_correction_enabled = GL_TRUE;
+
+  mRenderer.render_buffer_to_screen(mOffscreenFB);
+  GLOW_GL_CHECK_ERRORS();
 }
 
 void OpenGLBackend::render_environment(const Scene& scene,

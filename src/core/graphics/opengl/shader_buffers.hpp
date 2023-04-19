@@ -34,4 +34,10 @@ struct MaterialBuffer final {
   int32 has_emission_tex {false};
 };
 
+/// This struct corresponds to a std140 layout uniform block.
+struct FramebufferProgramOptions final {
+  float32 gamma {2.2f};
+  int32 gamma_correction_enabled {0};
+};
+
 }  // namespace glow::gl
