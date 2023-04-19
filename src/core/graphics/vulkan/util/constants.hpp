@@ -6,6 +6,8 @@
 
 namespace glow::vk {
 
+inline constexpr uint32 kTargetVulkanVersion = VK_API_VERSION_1_2;
+
 inline constexpr usize kMaxFramesInFlight = 2;
 
 /// Names of the validations layers we use.

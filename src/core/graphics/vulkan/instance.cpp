@@ -64,7 +64,7 @@ auto create_instance() -> InstancePtr
       .pEngineName = "No Engine",
       .engineVersion = VK_MAKE_VERSION(0, 1, 0),
 
-      .apiVersion = VK_API_VERSION_1_2,
+      .apiVersion = kTargetVulkanVersion,
   };
 
   VkInstanceCreateInfo instance_create_info {
