@@ -5,6 +5,7 @@
 
 #include "common/debug/error.hpp"
 #include "graphics/vulkan/cmd/command_buffer.hpp"
+#include "graphics/vulkan/context.hpp"
 
 namespace glow {
 
@@ -22,9 +23,10 @@ DearImGuiVulkan::~DearImGuiVulkan()
 
 void DearImGuiVulkan::recreate_font_textures()
 {
-  vk::execute_immediately([](VkCommandBuffer cmd_buffer) {
-    ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
-  });
+  vk::execute_immediately(vk::get_graphics_command_pool(),
+                          [](VkCommandBuffer cmd_buffer) {
+                            ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
+                          });
 
   ImGui_ImplVulkan_DestroyFontUploadObjects();
 }

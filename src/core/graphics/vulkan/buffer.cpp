@@ -85,10 +85,19 @@ auto Buffer::create(const VkBufferUsageFlags usage,
   auto staging_buffer = Buffer::staging(data_size, usage);
   staging_buffer.set_data(data, data_size);
 
-  auto buffer = Buffer::gpu(data_size, usage);
-  copy_buffer(staging_buffer.get(), buffer.get(), data_size);
+  auto gpu_buffer = Buffer::gpu(data_size, usage);
 
-  return buffer;
+  execute_immediately(get_graphics_command_pool(), [&](VkCommandBuffer cmd_buffer) {
+    const VkBufferCopy region {
+        .srcOffset = 0,
+        .dstOffset = 0,
+        .size = data_size,
+    };
+
+    vkCmdCopyBuffer(cmd_buffer, staging_buffer.get(), gpu_buffer.get(), 1, &region);
+  });
+
+  return gpu_buffer;
 }
 
 Buffer::~Buffer()
@@ -163,7 +172,7 @@ auto Buffer::get_allocation_info() -> VmaAllocationInfo
 
 void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, const usize data_size)
 {
-  execute_immediately([=](VkCommandBuffer cmd_buffer) {
+  execute_immediately(get_graphics_command_pool(), [=](VkCommandBuffer cmd_buffer) {
     const VkBufferCopy region {
         .srcOffset = 0,
         .dstOffset = 0,

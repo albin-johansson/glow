@@ -11,7 +11,7 @@ inline VkSurfaceKHR gSurface = VK_NULL_HANDLE;
 inline VkDevice gDevice = VK_NULL_HANDLE;
 inline VkQueue gGraphicsQueue = VK_NULL_HANDLE;
 inline VkQueue gPresentationQueue = VK_NULL_HANDLE;
-inline VkCommandPool gCommandPool = VK_NULL_HANDLE;
+inline VkCommandPool gGraphicsCommandPool = VK_NULL_HANDLE;
 inline VmaAllocator gAllocator = VK_NULL_HANDLE;
 
 }  // namespace
@@ -81,9 +81,9 @@ void set_presentation_queue(VkQueue queue) noexcept
   gPresentationQueue = queue;
 }
 
-void set_command_pool(VkCommandPool pool) noexcept
+void set_graphics_command_pool(VkCommandPool pool) noexcept
 {
-  gCommandPool = pool;
+  gGraphicsCommandPool = pool;
 }
 
 void set_allocator(VmaAllocator allocator) noexcept
@@ -121,9 +121,9 @@ auto get_presentation_queue() noexcept -> VkQueue
   return gPresentationQueue;
 }
 
-auto get_command_pool() noexcept -> VkCommandPool
+auto get_graphics_command_pool() noexcept -> VkCommandPool
 {
-  return gCommandPool;
+  return gGraphicsCommandPool;
 }
 
 auto get_allocator() noexcept -> VmaAllocator

@@ -36,7 +36,7 @@ void set_gpu(VkPhysicalDevice gpu) noexcept;
 void set_device(VkDevice device) noexcept;
 void set_graphics_queue(VkQueue queue) noexcept;
 void set_presentation_queue(VkQueue queue) noexcept;
-void set_command_pool(VkCommandPool pool) noexcept;
+void set_graphics_command_pool(VkCommandPool pool) noexcept;
 void set_allocator(VmaAllocator allocator) noexcept;
 
 [[nodiscard]] auto get_instance() noexcept -> VkInstance;
@@ -45,7 +45,7 @@ void set_allocator(VmaAllocator allocator) noexcept;
 [[nodiscard]] auto get_device() noexcept -> VkDevice;
 [[nodiscard]] auto get_graphics_queue() noexcept -> VkQueue;
 [[nodiscard]] auto get_presentation_queue() noexcept -> VkQueue;
-[[nodiscard]] auto get_command_pool() noexcept -> VkCommandPool;
+[[nodiscard]] auto get_graphics_command_pool() noexcept -> VkCommandPool;
 [[nodiscard]] auto get_allocator() noexcept -> VmaAllocator;
 
 }  // namespace glow::vk

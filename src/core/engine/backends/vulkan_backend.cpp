@@ -76,6 +76,20 @@ namespace {
   return builder.build();
 }
 
+[[nodiscard]] auto create_graphics_command_pool() -> vk::CommandPoolPtr
+{
+  const auto queue_family_indices =
+      vk::get_queue_family_indices(vk::get_gpu(), vk::get_surface());
+  const auto graphics_family_index = queue_family_indices.graphics_family.value();
+
+  auto cmd_pool =
+      vk::create_command_pool(graphics_family_index,
+                              VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+  vk::set_graphics_command_pool(cmd_pool.get());
+
+  return cmd_pool;
+}
+
 }  // namespace
 
 VulkanBackend::VulkanBackend()
@@ -90,8 +104,7 @@ VulkanBackend::VulkanBackend()
       mSampler {vk::create_sampler(VK_SAMPLER_ADDRESS_MODE_REPEAT)},
       mPipelineCache {vk::create_pipeline_cache()},
       mImGuiData {},
-      mCommandPool {
-          vk::create_command_pool(VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT)}
+      mGraphicsCommandPool {create_graphics_command_pool()}
 {
   create_shading_pipeline();
   create_frame_data();
@@ -141,7 +154,7 @@ void VulkanBackend::create_frame_data()
 {
   for (usize index = 0; index < vk::kMaxFramesInFlight; ++index) {
     auto& frame = mFrames.emplace_back();
-    frame.command_buffer = vk::allocate_command_buffer(mCommandPool.get());
+    frame.command_buffer = vk::allocate_command_buffer(mGraphicsCommandPool.get());
   }
 }
 

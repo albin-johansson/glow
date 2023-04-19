@@ -76,7 +76,7 @@ class VulkanBackend final : public Backend {
   vk::SamplerPtr mSampler;
   vk::PipelineCachePtr mPipelineCache;
   vk::ImGuiData mImGuiData;
-  vk::CommandPoolPtr mCommandPool;
+  vk::CommandPoolPtr mGraphicsCommandPool;
   vk::DescriptorSetLayoutPtr mShadingDescriptorSetLayout;
   vk::PipelineLayoutPtr mShadingPipelineLayout;
   vk::PipelinePtr mShadingPipeline;

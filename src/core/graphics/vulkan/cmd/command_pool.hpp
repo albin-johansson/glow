@@ -15,8 +15,14 @@ struct CommandPoolDeleter final {
 
 using CommandPoolPtr = Unique<VkCommandPool_T, CommandPoolDeleter>;
 
-/// Creates a command pool for the graphics queue.
-[[nodiscard]] auto create_command_pool(VkCommandPoolCreateFlags flags) -> CommandPoolPtr;
+/// Creates a command pool for a specific queue.
+///
+/// \param queue_family_index index of the queue family that derived command buffers will
+/// be submitted to.
+/// \param flags optional command pool creation flags.
+[[nodiscard]] auto create_command_pool(uint32 queue_family_index,
+                                       VkCommandPoolCreateFlags flags = 0)
+    -> CommandPoolPtr;
 
 /// Allocates a specific amount of command buffers from a pool.
 [[nodiscard]] auto allocate_command_buffers(VkCommandPool command_pool, uint32 count)

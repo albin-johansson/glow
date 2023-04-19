@@ -191,7 +191,7 @@ Image::Image(const VkImageType type,
 
 void Image::change_layout(const VkImageLayout new_layout)
 {
-  execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
+  execute_immediately(get_graphics_command_pool(), [=, this](VkCommandBuffer cmd_buffer) {
     transition_image_layout(cmd_buffer, mData.image, mLayout, new_layout, mMipLevels, 0);
     mLayout = new_layout;
   });
@@ -199,7 +199,7 @@ void Image::change_layout(const VkImageLayout new_layout)
 
 void Image::copy_from_buffer(VkBuffer buffer)
 {
-  execute_immediately([=, this](VkCommandBuffer cmd_buffer) {
+  execute_immediately(get_graphics_command_pool(), [=, this](VkCommandBuffer cmd_buffer) {
     const VkBufferImageCopy region {
         .bufferOffset = 0,
         .bufferRowLength = 0,
@@ -224,7 +224,7 @@ void Image::generate_mipmaps()
   GLOW_ASSERT(mSamples | VK_SAMPLE_COUNT_1_BIT);
   GLOW_ASSERT(mLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-  execute_immediately([this](VkCommandBuffer cmd_buffer) {
+  execute_immediately(get_graphics_command_pool(), [this](VkCommandBuffer cmd_buffer) {
     auto mip_width = static_cast<int32>(mExtent.width);
     auto mip_height = static_cast<int32>(mExtent.height);
 
