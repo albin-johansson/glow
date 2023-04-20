@@ -39,7 +39,7 @@ auto DescriptorSetLayoutBuilder::descriptor(const uint32 binding,
   return *this;
 }
 
-auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
+auto DescriptorSetLayoutBuilder::build() const -> DescriptorSetLayoutPtr
 {
   const Vector<VkDescriptorBindingFlags> binding_flags(
       mBindings.size(),
@@ -71,7 +71,7 @@ auto DescriptorSetLayoutBuilder::build() const -> VkDescriptorSetLayout
   GLOW_VK_CALL(vkCreateDescriptorSetLayout(get_device(), &info, nullptr, &layout),
                "[VK] Could not create descriptor set layout");
 
-  return layout;
+  return DescriptorSetLayoutPtr {layout};
 }
 
 auto PipelineLayoutBuilder::reset() -> Self&
@@ -100,7 +100,7 @@ auto PipelineLayoutBuilder::push_constant(const VkShaderStageFlags stages,
   return *this;
 }
 
-auto PipelineLayoutBuilder::build() const -> VkPipelineLayout
+auto PipelineLayoutBuilder::build() const -> PipelineLayoutPtr
 {
   const VkPipelineLayoutCreateInfo create_info {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -118,7 +118,7 @@ auto PipelineLayoutBuilder::build() const -> VkPipelineLayout
   GLOW_VK_CALL(vkCreatePipelineLayout(get_device(), &create_info, nullptr, &layout),
                "[VK] Could not create pipeline layout");
 
-  return layout;
+  return PipelineLayoutPtr {layout};
 }
 
 PipelineBuilder::PipelineBuilder(VkPipelineCache cache)
@@ -133,6 +133,9 @@ PipelineBuilder::PipelineBuilder(VkPipelineCache cache)
 
 auto PipelineBuilder::reset() -> Self&
 {
+  mRenderPass = VK_NULL_HANDLE;
+  mLayout = VK_NULL_HANDLE;
+
   mVertexShader.reset();
   mFragmentShader.reset();
 
@@ -143,6 +146,18 @@ auto PipelineBuilder::reset() -> Self&
       .multisample(VK_SAMPLE_COUNT_1_BIT)
       .input_assembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
       .blending(false);
+}
+
+auto PipelineBuilder::render_pass(VkRenderPass render_pass) -> Self&
+{
+  mRenderPass = render_pass;
+  return *this;
+}
+
+auto PipelineBuilder::layout(VkPipelineLayout layout) -> Self&
+{
+  mLayout = layout;
+  return *this;
 }
 
 auto PipelineBuilder::shaders(const char* vertex_path, const char* fragment_path) -> Self&
@@ -234,10 +249,15 @@ auto PipelineBuilder::blending(const bool enabled,
   return *this;
 }
 
-auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
-    -> VkPipeline
+auto PipelineBuilder::build() const -> PipelinePtr
 {
-  if (!mVertexShader || !mFragmentShader) {
+  if (!mRenderPass) {
+    throw Error {"[VK] Missing pipeline render pass"};
+  }
+  else if (!mLayout) {
+    throw Error {"[VK] Missing pipeline layout"};
+  }
+  else if (!mVertexShader || !mFragmentShader) {
     throw Error {"[VK] Missing pipeline shaders"};
   }
   else if (!mRasterizationState) {
@@ -256,10 +276,10 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
     throw Error {"[VK] Missing vertex input attribute descriptions"};
   }
 
-  auto& rasterization = mRasterizationState.value();
-  auto& multisample = mMultisampleState.value();
-  auto& input_assembly = mInputAssemblyState.value();
-  auto& color_blend = mColorBlendState.value();
+  const auto& rasterization = mRasterizationState.value();
+  const auto& multisample = mMultisampleState.value();
+  const auto& input_assembly = mInputAssemblyState.value();
+  const auto& color_blend = mColorBlendState.value();
 
   const VkPipelineVertexInputStateCreateInfo vertex_input_state {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -291,8 +311,8 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
       .pColorBlendState = &color_blend,
       .pDynamicState = &mDynamicState,
 
-      .layout = layout,
-      .renderPass = pass,
+      .layout = mLayout,
+      .renderPass = mRenderPass,
       .subpass = 0,
 
       .basePipelineHandle = VK_NULL_HANDLE,
@@ -308,7 +328,7 @@ auto PipelineBuilder::build(VkRenderPass pass, VkPipelineLayout layout) const
                                          &pipeline),
                "[VK] Could not create pipeline");
 
-  return pipeline;
+  return PipelinePtr {pipeline};
 }
 
 }  // namespace glow::vk

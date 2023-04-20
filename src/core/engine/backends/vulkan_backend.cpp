@@ -119,24 +119,26 @@ VulkanBackend::~VulkanBackend() noexcept
 
 void VulkanBackend::create_shading_pipeline()
 {
-  vk::DescriptorSetLayoutBuilder descriptor_set_layout_builder;
-  descriptor_set_layout_builder  //
+  vk::DescriptorSetLayoutBuilder descriptor_set_layout;
+  descriptor_set_layout  //
       .use_push_descriptors()
       .descriptor(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
       .descriptor(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT)
       .descriptor(5,
                   VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
                   VK_SHADER_STAGE_FRAGMENT_BIT);
-  mShadingDescriptorSetLayout.reset(descriptor_set_layout_builder.build());
+  mShadingDescriptorSetLayout = descriptor_set_layout.build();
 
-  vk::PipelineLayoutBuilder pipeline_layout_builder;
-  pipeline_layout_builder  //
+  vk::PipelineLayoutBuilder pipeline_layout;
+  pipeline_layout  //
       .descriptor_set_layout(mShadingDescriptorSetLayout.get())
       .push_constant(VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(Mat4));
-  mShadingPipelineLayout.reset(pipeline_layout_builder.build());
+  mShadingPipelineLayout = pipeline_layout.build();
 
-  vk::PipelineBuilder pipeline_builder {mPipelineCache.get()};
-  pipeline_builder
+  vk::PipelineBuilder pipeline {mPipelineCache.get()};
+  pipeline  //
+      .render_pass(mRenderPassInfo.pass.get())
+      .layout(mShadingPipelineLayout.get())
       .shaders("assets/shaders/vk/shading.vert.spv", "assets/shaders/vk/shading.frag.spv")
       .vertex_input_binding(0, sizeof(Vertex))
       .vertex_attribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position))
@@ -146,8 +148,7 @@ void VulkanBackend::create_shading_pipeline()
       .multisample(VK_SAMPLE_COUNT_1_BIT)
       .input_assembly(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
       .blending(false);
-  mShadingPipeline.reset(
-      pipeline_builder.build(mRenderPassInfo.pass.get(), mShadingPipelineLayout.get()));
+  mShadingPipeline = pipeline.build();
 }
 
 void VulkanBackend::create_frame_data()

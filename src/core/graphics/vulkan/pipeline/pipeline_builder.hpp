@@ -6,6 +6,9 @@
 #include "common/type/array.hpp"
 #include "common/type/maybe.hpp"
 #include "common/type/vector.hpp"
+#include "graphics/vulkan/pipeline/descriptor_set_layout.hpp"
+#include "graphics/vulkan/pipeline/pipeline.hpp"
+#include "graphics/vulkan/pipeline/pipeline_layout.hpp"
 #include "graphics/vulkan/pipeline/shader_module.hpp"
 
 namespace glow::vk {
@@ -23,7 +26,7 @@ class DescriptorSetLayoutBuilder final {
                   VkShaderStageFlags stages,
                   uint32 count = 1) -> Self&;
 
-  [[nodiscard]] auto build() const -> VkDescriptorSetLayout;
+  [[nodiscard]] auto build() const -> DescriptorSetLayoutPtr;
 
  private:
   Vector<VkDescriptorSetLayoutBinding> mBindings;
@@ -40,7 +43,7 @@ class PipelineLayoutBuilder final {
 
   auto push_constant(VkShaderStageFlags stages, uint32 offset, uint32 size) -> Self&;
 
-  [[nodiscard]] auto build() const -> VkPipelineLayout;
+  [[nodiscard]] auto build() const -> PipelineLayoutPtr;
 
  private:
   Vector<VkDescriptorSetLayout> mDescriptorSetLayouts;
@@ -60,6 +63,10 @@ class PipelineBuilder final {
   explicit PipelineBuilder(VkPipelineCache cache);
 
   auto reset() -> Self&;
+
+  auto render_pass(VkRenderPass render_pass) -> Self&;
+
+  auto layout(VkPipelineLayout layout) -> Self&;
 
   auto shaders(const char* vertex_path, const char* fragment_path) -> Self&;
 
@@ -85,11 +92,12 @@ class PipelineBuilder final {
                 VkBlendFactor dst_alpha_factor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA)
       -> Self&;
 
-  [[nodiscard]] auto build(VkRenderPass pass, VkPipelineLayout layout) const
-      -> VkPipeline;
+  [[nodiscard]] auto build() const -> PipelinePtr;
 
  private:
-  VkPipelineCache mCache;
+  VkPipelineCache mCache {VK_NULL_HANDLE};
+  VkRenderPass mRenderPass {VK_NULL_HANDLE};
+  VkPipelineLayout mLayout {VK_NULL_HANDLE};
 
   ShaderModulePtr mVertexShader;
   ShaderModulePtr mFragmentShader;
