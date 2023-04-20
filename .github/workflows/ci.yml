@@ -35,7 +35,7 @@ jobs:
             !${{env.VCPKG_ROOT}}/packages
             !${{env.VCPKG_ROOT}}/downloads
             !${{env.VCPKG_ROOT}}/installed
-          key: gravel-macos-vcpkg-${{hashFiles('vcpkg.json')}}
+          key: glow-macos-vcpkg-${{hashFiles('vcpkg.json')}}
       - name: Install Vcpkg
         if: steps.restore-vcpkg.outputs.cache-hit != 'true'
         run: |
@@ -81,7 +81,7 @@ jobs:
             !${{env.VCPKG_ROOT}}/packages
             !${{env.VCPKG_ROOT}}/downloads
             !${{env.VCPKG_ROOT}}/installed
-          key: gravel-ubuntu-vcpkg-${{hashFiles('vcpkg.json')}}
+          key: glow-ubuntu-vcpkg-${{hashFiles('vcpkg.json')}}
       - name: Install Vcpkg
         if: steps.restore-vcpkg.outputs.cache-hit != 'true'
         run: |
@@ -124,7 +124,7 @@ jobs:
             !${{env.VCPKG_ROOT}}\packages
             !${{env.VCPKG_ROOT}}\downloads
             !${{env.VCPKG_ROOT}}\installed
-          key: gravel-windows-vcpkg-${{hashFiles('vcpkg.json')}}
+          key: glow-windows-vcpkg-${{hashFiles('vcpkg.json')}}
       - name: Install Vcpkg
         if: steps.restore-vcpkg.outputs.cache-hit != 'true'
         run: |
