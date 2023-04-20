@@ -46,7 +46,7 @@ namespace {
 
 [[nodiscard]] auto _is_gpu_suitable(VkPhysicalDevice gpu, VkSurfaceKHR surface) -> bool
 {
-  const auto has_extensions = has_required_extensions(gpu);
+  const auto has_extensions = _has_required_extensions(gpu);
   if (!has_extensions) {
     return false;
   }

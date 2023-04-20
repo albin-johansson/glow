@@ -62,7 +62,7 @@ auto load_texture_data(const Path& path,
                        &data.size.x,
                        &data.size.y,
                        &data.channels,
-                       convert_texture_channels(channels));
+                       _convert_texture_channels(channels));
   }
 
   data.pixels.reset(static_cast<uint8*>(pixels));
