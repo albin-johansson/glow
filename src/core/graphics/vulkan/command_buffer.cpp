@@ -57,7 +57,7 @@ void end_command_buffer(VkCommandBuffer cmd_buffer)
   GLOW_VK_CALL(vkEndCommandBuffer(cmd_buffer), "[VK] Could not end command buffer");
 }
 
-void execute_immediately(VkCommandPool cmd_pool, const UnaryCmdBufferFunc& func)
+void execute(VkCommandPool cmd_pool, const UnaryCmdBufferFunc& func)
 {
   VkCommandBuffer cmd_buffer = _record_one_time_commands(cmd_pool);
   func(cmd_buffer);

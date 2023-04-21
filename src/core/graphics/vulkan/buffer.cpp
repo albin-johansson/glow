@@ -87,7 +87,7 @@ auto Buffer::create(const VkBufferUsageFlags usage,
 
   auto gpu_buffer = Buffer::gpu(data_size, usage);
 
-  execute_immediately(get_graphics_command_pool(), [&](VkCommandBuffer cmd_buffer) {
+  execute(get_graphics_command_pool(), [&](VkCommandBuffer cmd_buffer) {
     const VkBufferCopy region {
         .srcOffset = 0,
         .dstOffset = 0,

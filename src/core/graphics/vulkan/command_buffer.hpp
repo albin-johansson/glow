@@ -32,6 +32,6 @@ void end_command_buffer(VkCommandBuffer cmd_buffer);
 ///
 /// \param cmd_pool the command pool to allocate the command buffer with.
 /// \param func a function object invoked with the temporary command buffer.
-void execute_immediately(VkCommandPool cmd_pool, const UnaryCmdBufferFunc& func);
+void execute(VkCommandPool cmd_pool, const UnaryCmdBufferFunc& func);
 
 }  // namespace glow::vk

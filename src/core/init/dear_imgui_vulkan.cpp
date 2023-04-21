@@ -23,10 +23,9 @@ DearImGuiVulkan::~DearImGuiVulkan()
 
 void DearImGuiVulkan::recreate_font_textures()
 {
-  vk::execute_immediately(vk::get_graphics_command_pool(),
-                          [](VkCommandBuffer cmd_buffer) {
-                            ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
-                          });
+  vk::execute(vk::get_graphics_command_pool(), [](VkCommandBuffer cmd_buffer) {
+    ImGui_ImplVulkan_CreateFontsTexture(cmd_buffer);
+  });
 
   ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
