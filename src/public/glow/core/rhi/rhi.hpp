@@ -27,6 +27,7 @@ class IShader;
 
 enum class Handedness : uint32;
 enum class DescriptorType : uint32;
+enum class IndexType : uint32;
 enum class PolygonMode : uint32;
 enum class CullMode : uint32;
 enum class PixelFormat : uint32;
