@@ -23,6 +23,7 @@ class IBuffer;
 class ITexture;
 class ICommandBuffer;
 class IGraphicsPipeline;
+class IShader;
 
 enum class Handedness : uint32;
 enum class DescriptorType : uint32;
