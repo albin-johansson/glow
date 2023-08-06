@@ -7,17 +7,33 @@ endif ()
 
 project(glow LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Build options
+option(GLOW_ENABLE_LTO "Enable link-time optimization" OFF)
+option(GLOW_VULKAN_SUBSET "Don't require a complete Vulkan implementation" OFF)
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-  message("Enabling IPO...")
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-endif ()
-
+set(GLOW_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src/public")
 set(GLOW_ASSET_DIR "${PROJECT_SOURCE_DIR}/assets")
 set(GLOW_LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
+
+set(GLOW_DEBUG_BUILD_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/build/debug")
+set(GLOW_RELEASE_BUILD_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/build/release")
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(GLOW_BUILD_OUTPUT_DIR "${GLOW_DEBUG_BUILD_OUTPUT_DIR}")
+elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+  set(GLOW_BUILD_OUTPUT_DIR "${GLOW_RELEASE_BUILD_OUTPUT_DIR}")
+else ()
+  message(FATAL_ERROR "Unsupported build type: ${CMAKE_BUILD_TYPE}")
+endif ()
+
+message(DEBUG "GLOW_ENABLE_LTO: ${GLOW_ENABLE_LTO}")
+message(DEBUG "GLOW_VULKAN_SUBSET: ${GLOW_VULKAN_SUBSET}")
+message(DEBUG "GLOW_BUILD_OUTPUT_DIR: ${GLOW_BUILD_OUTPUT_DIR}")
+message(DEBUG "GLOW_INCLUDE_DIR: ${GLOW_INCLUDE_DIR}")
+message(DEBUG "GLOW_LIB_DIR: ${GLOW_LIB_DIR}")
+message(DEBUG "GLOW_ASSET_DIR: ${GLOW_ASSET_DIR}")
 
 include(cmake/glow.cmake)
 
@@ -41,5 +57,4 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(Stb REQUIRED)
 find_package(unofficial-vulkan-memory-allocator CONFIG REQUIRED)
 
-add_subdirectory(src/core)
-add_subdirectory(src/app)
+add_subdirectory(src)
