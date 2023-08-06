@@ -12,6 +12,9 @@ struct RenderDeviceInfo final {
   std::string renderer_name;
 };
 
+struct RenderDeviceFeatures final {
+  bool sampler_anisotropy : 1 {};
+};
 
 /** Provides the top-level API for the render hardware interface (RHI). */
 class IRenderDevice {
@@ -24,6 +27,8 @@ class IRenderDevice {
 
   [[nodiscard]] virtual auto get_resource_manager() -> IResourceManager& = 0;
   [[nodiscard]] virtual auto get_resource_manager() const -> const IResourceManager& = 0;
+
+  [[nodiscard]] virtual auto get_features() const -> RenderDeviceFeatures = 0;
 
   [[nodiscard]] virtual auto get_info() const -> RenderDeviceInfo = 0;
 };
