@@ -2,6 +2,7 @@ project(glow-src CXX)
 
 # Glow target names
 set(GLOW_CORE_TARGET glow-core)
+set(GLOW_EDITOR_TARGET glow-editor)
 set(GLOW_VULKAN_RHI_TARGET glow-vulkan-rhi)
 set(GLOW_OPENGL_RHI_TARGET glow-opengl-rhi)
 
