@@ -24,14 +24,21 @@
 
 #include "glow/core/plugins/plugin.hpp"
 
-#include <boost/dll.hpp>
+#include <SDL2/SDL.h>
 
 namespace glow {
+namespace {
 
-using SharedLibrary = boost::dll::shared_library;
+struct SharedLibraryDeleter final {
+  void operator()(void* handle) noexcept { SDL_UnloadObject(handle); }
+};
+
+}  // namespace
+
+using SharedLibraryHandle = std::unique_ptr<void, SharedLibraryDeleter>;
 
 struct Plugin::Data final {
-  SharedLibrary dll;
+  SharedLibraryHandle dll;
 };
 
 Plugin::Plugin()
@@ -47,22 +54,30 @@ auto Plugin::operator=(Plugin&& other) noexcept -> Plugin& = default;
 
 void Plugin::load(const std::filesystem::path& file)
 {
-  mData->dll = SharedLibrary {file};
+  mData->dll.reset(SDL_LoadObject(file.string().c_str()));
 }
 
 auto Plugin::is_rhi_plugin() const -> bool
 {
-  return mData->dll.has("glow_rhi_init") && mData->dll.has("glow_rhi_get_name");
+  if (is_valid()) {
+    return _get_symbol("glow_rhi_init") && _get_symbol("glow_rhi_get_name");
+  }
+
+  return false;
 }
 
 auto Plugin::is_valid() const -> bool
 {
-  return mData->dll.is_loaded();
+  return mData->dll != nullptr;
 }
 
 auto Plugin::_get_symbol(const char* name) const -> void*
 {
-  return mData->dll.get<void*>(name);
+  if (is_valid()) {
+    return SDL_LoadFunction(mData->dll.get(), name);
+  }
+
+  return nullptr;
 }
 
 }  // namespace glow

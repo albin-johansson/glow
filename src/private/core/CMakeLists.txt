@@ -22,5 +22,4 @@ target_link_libraries(${GLOW_CORE_TARGET}
                       PRIVATE
                       SDL2::SDL2
                       Boost::boost
-                      Boost::filesystem
                       )
