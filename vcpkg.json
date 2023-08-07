@@ -11,6 +11,7 @@
     "argparse",
     "assimp",
     "boost-assert",
+    "boost-dll",
     "boost-predef",
     "boost-stacktrace",
     "entt",

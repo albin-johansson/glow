@@ -3,9 +3,8 @@ project(glow-opengl-rhi CXX)
 file(GLOB_RECURSE GLOW_OPENGL_RHI_SOURCE_FILES
      CONFIGURE_DEPENDS
      ${GLOW_INCLUDE_DIR}/opengl-rhi/*.hpp
-     *.cpp
-     **/*.cpp
-     **/*.hpp
+     ${PROJECT_SOURCE_DIR}/*.cpp
+     ${PROJECT_SOURCE_DIR}/*.hpp
      )
 
 add_library(${GLOW_OPENGL_RHI_TARGET} MODULE ${GLOW_OPENGL_RHI_SOURCE_FILES})

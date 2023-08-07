@@ -4,8 +4,8 @@ file(GLOB_RECURSE GLOW_CORE_SOURCE_FILES
      CONFIGURE_DEPENDS
      ${GLOW_INCLUDE_DIR}/core/*.hpp
      ${GLOW_INCLUDE_DIR}/core/**/*.hpp
-     **/*.cpp
-     **/*.hpp
+     ${PROJECT_SOURCE_DIR}/**/*.cpp
+     ${PROJECT_SOURCE_DIR}/**/*.hpp
      )
 
 add_library(${GLOW_CORE_TARGET} SHARED ${GLOW_CORE_SOURCE_FILES})
@@ -20,5 +20,7 @@ target_compile_definitions(${GLOW_CORE_TARGET}
 
 target_link_libraries(${GLOW_CORE_TARGET}
                       PRIVATE
+                      SDL2::SDL2
                       Boost::boost
+                      Boost::filesystem
                       )
