@@ -74,6 +74,7 @@ function(glow_prepare_target target)
   else ()
     target_compile_options(${target}
                            PRIVATE
+                           -fvisibility=hidden
                            -Wall
                            -Wextra
                            -Wpedantic
