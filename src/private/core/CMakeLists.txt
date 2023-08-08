@@ -18,6 +18,11 @@ target_compile_definitions(${GLOW_CORE_TARGET}
                            BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
                            )
 
+target_include_directories(${GLOW_CORE_TARGET}
+                           PRIVATE
+                           "${PROJECT_SOURCE_DIR}/.."
+                           )
+
 target_link_libraries(${GLOW_CORE_TARGET}
                       PRIVATE
                       SDL2::SDL2
