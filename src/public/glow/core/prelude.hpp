@@ -3,6 +3,12 @@
 #include <cstddef>  // size_t, ptrdiff_t
 #include <cstdint>  // uint{}_t, int{}_t, uintptr_t
 
+#ifdef NDEBUG
+  #define GLOW_DEBUG_BUILD 0
+#else
+  #define GLOW_DEBUG_BUILD 1
+#endif  // NDEBUG
+
 // TODO validate
 #if defined(_MSC_VER)
   #define GLOW_COMPILER_MSVC 1
