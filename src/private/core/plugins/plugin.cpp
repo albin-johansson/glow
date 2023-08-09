@@ -26,6 +26,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "glow/core/foundation/assert.hpp"
+
 namespace glow {
 namespace {
 
@@ -60,10 +62,27 @@ void Plugin::load(const std::filesystem::path& file)
 auto Plugin::is_rhi_plugin() const -> bool
 {
   if (is_valid()) {
-    return _get_symbol("glow_rhi_init") && _get_symbol("glow_rhi_get_name");
+    return _get_symbol("glow_rhi_get_name") &&  //
+           _get_symbol("glow_rhi_get_api") &&   //
+           _get_symbol("glow_rhi_create") &&    //
+           _get_symbol("glow_rhi_destroy");
   }
 
   return false;
+}
+
+auto Plugin::get_rhi_plugin_functions() const -> RHIPluginFunctions
+{
+  GLOW_ASSERT(is_rhi_plugin());
+
+  RHIPluginFunctions functions;
+
+  functions.get_name = get_function<RHIGetNameFn>("glow_rhi_get_name");
+  functions.get_api = get_function<RHIGetAPIFn>("glow_rhi_get_api");
+  functions.create = get_function<RHICreateFn>("glow_rhi_create");
+  functions.destroy = get_function<RHIDestroyFn>("glow_rhi_destroy");
+
+  return functions;
 }
 
 auto Plugin::is_valid() const -> bool

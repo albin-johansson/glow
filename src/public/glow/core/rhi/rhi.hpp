@@ -5,6 +5,9 @@
 
 namespace glow {
 
+// Note: Window is not part of the RHI, but used in RHI factory function signature.
+class Window;
+
 using RenderID = uint64;
 
 struct RenderDeviceInfo;
@@ -25,6 +28,7 @@ class ICommandBuffer;
 class IGraphicsPipeline;
 class IShader;
 
+enum class GraphicsAPI : uint32;
 enum class Handedness : uint32;
 enum class DescriptorType : uint32;
 enum class IndexType : uint32;
@@ -37,5 +41,10 @@ GLOW_FWD_FLAG_ENUM(ShaderStage, uint32);
 GLOW_FWD_FLAG_ENUM(MemoryHint, uint32);
 GLOW_FWD_FLAG_ENUM(BufferHint, uint32);
 GLOW_FWD_FLAG_ENUM(BufferUsage, uint32);
+
+using RHIGetNameFn = const char*();
+using RHIGetAPIFn = GraphicsAPI();
+using RHICreateFn = IRenderDevice*(Window*);
+using RHIDestroyFn = void(IRenderDevice*);
 
 }  // namespace glow

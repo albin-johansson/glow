@@ -24,54 +24,26 @@
 
 #pragma once
 
-#include <filesystem>   // path
-#include <memory>       // unique_ptr
-#include <type_traits>  // is_function_v
+#include <filesystem>  // path
+#include <vector>      // vector
 
+#include "glow/core/plugins/plugin.hpp"
 #include "glow/core/prelude.hpp"
-#include "glow/core/rhi/rhi.hpp"
+#include "glow/core/rhi/graphics_api.hpp"
 
 namespace glow {
 
-struct RHIPluginFunctions final {
-  RHIGetNameFn* get_name {};
-  RHIGetAPIFn* get_api {};
-  RHICreateFn* create {};
-  RHIDestroyFn* destroy {};
-};
-
-class GLOW_CORE_API Plugin final {
+class GLOW_CORE_API PluginManager final {
  public:
-  GLOW_CANNOT_COPY(Plugin);
+  void scan(const std::filesystem::path& dir);
 
-  Plugin();
+  [[nodiscard]] auto get_rhi(GraphicsAPI api) const -> RHIPluginFunctions;
 
-  ~Plugin() noexcept;
-
-  Plugin(Plugin&& other) noexcept;
-
-  auto operator=(Plugin&& other) noexcept -> Plugin&;
-
-  void load(const std::filesystem::path& file);
-
-  [[nodiscard]] auto is_rhi_plugin() const -> bool;
-
-  [[nodiscard]] auto get_rhi_plugin_functions() const -> RHIPluginFunctions;
-
-  [[nodiscard]] auto is_valid() const -> bool;
-
-  template <typename T>
-    requires std::is_function_v<T>
-  [[nodiscard]] auto get_function(const char* name) const -> T*
-  {
-    return reinterpret_cast<T*>(_get_symbol(name));
-  }
+  [[nodiscard]] auto has_rhi(GraphicsAPI api) const -> bool;
 
  private:
-  struct Data;
-  std::unique_ptr<Data> mData;
-
-  [[nodiscard]] auto _get_symbol(const char* name) const -> void*;
+  std::vector<Plugin> mPlugins;
+  std::vector<RHIPluginFunctions> mRHIPlugins;
 };
 
 }  // namespace glow
