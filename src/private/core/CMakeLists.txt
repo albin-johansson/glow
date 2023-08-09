@@ -10,7 +10,7 @@ file(GLOB_RECURSE GLOW_CORE_SOURCE_FILES
 
 add_library(${GLOW_CORE_TARGET} SHARED ${GLOW_CORE_SOURCE_FILES})
 
-glow_prepare_target(${GLOW_CORE_TARGET})
+glow_prepare_target(${GLOW_CORE_TARGET} FALSE)
 
 target_compile_definitions(${GLOW_CORE_TARGET}
                            PRIVATE
@@ -25,6 +25,7 @@ target_include_directories(${GLOW_CORE_TARGET}
 
 target_link_libraries(${GLOW_CORE_TARGET}
                       PRIVATE
-                      SDL2::SDL2
                       Boost::boost
+                      SDL2::SDL2
+                      Vulkan::Vulkan  # Needed for SDL to be able to locate Vulkan.
                       )

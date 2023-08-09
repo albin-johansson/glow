@@ -9,7 +9,7 @@ file(GLOB_RECURSE GLOW_VULKAN_RHI_SOURCE_FILES
 
 add_library(${GLOW_VULKAN_RHI_TARGET} MODULE ${GLOW_VULKAN_RHI_SOURCE_FILES})
 
-glow_prepare_target(${GLOW_VULKAN_RHI_TARGET})
+glow_prepare_target(${GLOW_VULKAN_RHI_TARGET} TRUE)
 
 target_compile_definitions(${GLOW_VULKAN_RHI_TARGET}
                            PRIVATE

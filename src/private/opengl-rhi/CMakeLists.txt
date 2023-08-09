@@ -9,7 +9,7 @@ file(GLOB_RECURSE GLOW_OPENGL_RHI_SOURCE_FILES
 
 add_library(${GLOW_OPENGL_RHI_TARGET} MODULE ${GLOW_OPENGL_RHI_SOURCE_FILES})
 
-glow_prepare_target(${GLOW_OPENGL_RHI_TARGET})
+glow_prepare_target(${GLOW_OPENGL_RHI_TARGET} TRUE)
 
 target_compile_definitions(${GLOW_OPENGL_RHI_TARGET}
                            PRIVATE

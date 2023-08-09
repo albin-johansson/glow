@@ -47,7 +47,7 @@ set(GLOW_PRECOMPILED_HEADERS
     )
 
 # Configures properties, compile options, precompiled headers, etc.
-function(glow_prepare_target target)
+function(glow_prepare_target target is_plugin)
   set_target_properties(${target}
                         PROPERTIES
                         CXX_STANDARD 23
@@ -58,6 +58,13 @@ function(glow_prepare_target target)
                         LIBRARY_OUTPUT_DIRECTORY ${GLOW_BUILD_OUTPUT_DIR}
                         ARCHIVE_OUTPUT_DIRECTORY ${GLOW_BUILD_OUTPUT_DIR}
                         )
+
+  if (${is_plugin} MATCHES TRUE)
+    set_target_properties(${target}
+                          PROPERTIES
+                          LIBRARY_OUTPUT_DIRECTORY "${GLOW_BUILD_OUTPUT_DIR}/plugins"
+                          )
+  endif ()
 
   if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${target}
@@ -81,6 +88,10 @@ function(glow_prepare_target target)
                            -Wconversion
                            -Wsign-conversion
                            )
+  endif ()
+
+  if (GLOW_VULKAN_SUBSET MATCHES ON)
+    target_compile_definitions(${target} PRIVATE GLOW_VULKAN_SUBSET)
   endif ()
 
   target_include_directories(${target} PRIVATE ${GLOW_INCLUDE_DIR})
