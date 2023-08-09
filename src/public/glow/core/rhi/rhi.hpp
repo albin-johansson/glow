@@ -19,7 +19,6 @@ struct PipelineRasterizerState;
 struct PipelineDepthStencilState;
 struct PipelineColorBlendState;
 
-class IRenderContext;
 class IRenderDevice;
 class IResourceManager;
 class IBuffer;
